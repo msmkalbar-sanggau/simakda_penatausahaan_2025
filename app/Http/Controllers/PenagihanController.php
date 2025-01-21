@@ -95,11 +95,11 @@ class PenagihanController extends Controller
             })->join('ms_kontrak as c', function ($join){
                 $join->on('a.kontrak','=','c.no_kontrak');
                 $join->on('a.kd_skpd','=','c.kd_skpd');
-            })->where('a.no_bukti', $no_bukti)->first(),
+            })->where(['a.no_bukti'=> $no_bukti, 'a.kd_skpd' =>$kd_skpd])->first(),
             'detail_tagih' => DB::table('trdtagih as a')->select('a.*')->join('trhtagih as b', function ($join) {
                 $join->on('a.no_bukti', '=', 'b.no_bukti');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            })->where('a.no_bukti', $no_bukti)->get(),
+            })->where(['a.no_bukti'=> $no_bukti, 'a.kd_skpd' =>$kd_skpd])->get(),
             'kontrak' => DB::table('ms_kontrak')->where('no_kontrak', $data_tagih->kontrak)->first(),
             'dttagih' => collect(DB::select("SELECT nmpel,nm_kerja,no_kontrak,nilai,SUM (lalu) AS lalu FROM (
                 SELECT a.nmpel AS nmpel,a.nm_kerja AS nm_kerja,a.no_kontrak AS no_kontrak,a.nilai AS nilai,SUM (b.total) AS lalu FROM ms_kontrak a LEFT JOIN trhtagih b ON b.kd_skpd =a.kd_skpd AND b.kontrak =a.no_kontrak WHERE a.kd_skpd = ? and a.no_kontrak = ? GROUP BY a.nmpel,a.nm_kerja,a.no_kontrak,a.nilai,b.total) oke
