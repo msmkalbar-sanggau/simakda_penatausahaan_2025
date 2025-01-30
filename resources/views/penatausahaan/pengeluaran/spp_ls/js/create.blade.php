@@ -155,7 +155,7 @@
                     jenis_beban2: jenis_beban2,
                 },
                 success: function(data) {
-                    let no_spp = "13.07/02.0/" + data.nilai + "/" + jenis_beban + "/" +
+                    let no_spp = "61.03/02.0/" + data.nilai + "/" + jenis_beban + "/" +
                         kd_skpd + "/M/" + bulan + "/" +
                         tahun_anggaran;
                     $('#no_urut').val(data.nilai);
@@ -1037,7 +1037,7 @@
                     jenis_beban2: jenis_beban2,
                 },
                 success: function(data) {
-                    let no_spp = "13.07/02.0/" + data.nilai + "/" + jenis_beban + "/" +
+                    let no_spp = "61.03/02.0/" + data.nilai + "/" + jenis_beban + "/" +
                         kd_skpd + "/M/" + bulan + "/" +
                         tahun_anggaran;
                     $('#no_urut').val(data.nilai);

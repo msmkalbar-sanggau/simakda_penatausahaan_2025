@@ -366,7 +366,7 @@
                             .nilai + ' !');
                         return;
                     }
-                    let nomor = "13.07/03.0/" + data.nilai + "/" + jns + "/" + kd_skpd + "/" + "M" +
+                    let nomor = "61.03/03.0/" + data.nilai + "/" + jns + "/" + kd_skpd + "/" + "M" +
                         "/" + bulan + "/" + tahun_anggaran
                     $('#no_spm').val(nomor);
                     $('#urut').val(data.nilai);

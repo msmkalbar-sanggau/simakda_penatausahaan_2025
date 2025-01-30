@@ -307,7 +307,7 @@
                 type: "POST",
                 dataType: 'json',
                 success: function(data) {
-                    let no_spp = "13.07/02.0/" + data.nilai + "/" + "GU-NIHIL" + "/" + kd_skpd +
+                    let no_spp = "61.03/02.0/" + data.nilai + "/" + "GU-NIHIL" + "/" + kd_skpd +
                         "/" +
                         "M" + "/" + bulan + "/" +
                         tahun_anggaran;

@@ -2420,7 +2420,7 @@ function cari_kontrak($data)
 
 function no_up($data, $kd_skpd, $bulan)
 {
-    return "13.07/02.0/" .$data . "/UP" . "/" . $kd_skpd . "/" ."M". "/". tahun_anggaran();
+    return "16.03/02.0/" .$data . "/UP" . "/" . $kd_skpd . "/" ."M". "/". tahun_anggaran();
 }
 
 function title()
