@@ -169,8 +169,18 @@ function noSPD($bulan)
 function getMonths()
 {
     return [
-        '1' => 'Januari', '2' => 'Februari', '3' => 'Maret', '4' => 'April', '5' => 'Mei', '6' => 'Juni',
-        '7' => 'Juli', '8' => 'Agustus', '9' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        '1' => 'Januari',
+        '2' => 'Februari',
+        '3' => 'Maret',
+        '4' => 'April',
+        '5' => 'Mei',
+        '6' => 'Juni',
+        '7' => 'Juli',
+        '8' => 'Agustus',
+        '9' => 'September',
+        '10' => 'Oktober',
+        '11' => 'November',
+        '12' => 'Desember'
     ];
 }
 
@@ -357,6 +367,59 @@ function tgl_spd($data)
 {
     $tgl_spd = DB::table('trhspd')->select('tgl_spd')->where(['no_spd' => $data])->first();
     return tanggal($tgl_spd->tgl_spd);
+}
+
+function nomorSppBaru($tipe, $nomorUrut, $tanggal, $beban)
+{
+    $month = intval(date("m", strtotime($tanggal)));
+
+    if ($month >= 1 && $month <= 3) {
+        $bulan = 1;
+    } else if ($month >= 4 && $month <= 6) {
+        $bulan = 2;
+    } else if ($month >= 7 && $month <= 9) {
+        $bulan = 3;
+    } else if ($month >= 10 && $month <= 12) {
+        $bulan = 4;
+    }
+
+    if (Str::length($nomorUrut) == '1') {
+        $nomor = "00000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '2') {
+        $nomor = "0000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '3') {
+        $nomor = "000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '4') {
+        $nomor = "00" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '5') {
+        $nomor = "0" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '6') {
+        $nomor = $nomorUrut;
+    }
+
+    $formatNomor = "14.07/" . $tipe . "/" . $nomor . "/" . $tipe  . "/" . Auth::user()->kd_skpd . "/" . status_anggaran() . "/" . $bulan . "/" . tahun_anggaran();
+
+    $newString =  explode("/", $formatNomor);
+
+    if ($tipe == 'spp') {
+        $newString[1] = "02.0";
+    } else if ($tipe == 'spm') {
+        $newString[1] = "03.0";
+    } else if ($tipe == 'sp2d') {
+        $newString[1] = "04.0";
+    }
+
+    if ($beban == '1') {
+        $newString[3] = "UP";
+    } else if ($beban == '2') {
+        $newString[3] = "GU";
+    } else if ($beban == '3') {
+        $newString[3] = "TU";
+    } else if (in_array($beban, ['4', '5', '6'])) {
+        $newString[3] = "LS";
+    }
+
+    return implode("/", $newString);
 }
 
 function bulan($data)
@@ -1094,6 +1157,9 @@ function cari_jenis($beban)
     }
     if ($beban == 6) {
         $jenis2 = "LS";
+    }
+    if ($beban == 7) {
+        $jenis2 = "GU-NIHIL";
     }
 
     return $jenis2;
@@ -2418,11 +2484,10 @@ function cari_kontrak($data)
     return $nama;
 }
 
-function no_up($data, $kd_skpd, $bulan)
+function no_up($data, $kd_skpd)
 {
-    return "13.07/02.0/" .$data . "/UP" . "/" . $kd_skpd . "/" ."M". "/". tahun_anggaran();
+    return $data . "/SPP" . "/UP" . "/" . $kd_skpd . "/" . tahun_anggaran();
 }
-
 function title()
 {
     $kd_skpd = Auth::user()->kd_skpd;
@@ -4218,4 +4283,45 @@ function kunci()
     $data = collect(DB::select("SELECT kunci_kontrak, kunci_tagih,kunci_spp,kunci_spp_up,kunci_spp_gu,kunci_spp_ls,kunci_spp_gu_nihil,kunci_spm,kunci_jurnal from ms_skpd where kd_skpd=?", [$kd_skpd]))->first();
 
     return $data;
+}
+
+function nomorPendapatan($jenis, $nomorUrut, $kodeSkpd, $tanggal)
+{
+    // $jenis "Penerimaan atau Penyetoran"
+    // $nomorUrut "Nomor secara berurutan"
+    // $kodeSkpd "Kode SKPD"
+    // $tanggal "Tanggal terima/setor"
+
+    $kodePemda = "61.00";
+
+    if ($jenis == 'penerimaan') {
+        $kodeJenis = "41.00";
+        $kodeNama = "STBP";
+    } else if ($jenis == 'penyetoran') {
+        $kodeJenis = "42.00";
+        $kodeNama = "STS";
+    }
+
+    if (Str::length($nomorUrut) == '1') {
+        $nomor = "00000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '2') {
+        $nomor = "0000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '3') {
+        $nomor = "000" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '4') {
+        $nomor = "00" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '5') {
+        $nomor = "0" . $nomorUrut;
+    } elseif (Str::length($nomorUrut) == '6') {
+        $nomor = $nomorUrut;
+    }
+
+    $bulan = intval(date("m", strtotime($tanggal)));
+
+    $tahunAnggaran = tahun_anggaran();
+
+
+    $nomorAkhir = $kodePemda . "/" . $kodeJenis . "/" . $nomor . "/" . $kodeNama . "/" . $kodeSkpd . "/" . $bulan . "/" . $tahunAnggaran;
+
+    return $nomorAkhir;
 }

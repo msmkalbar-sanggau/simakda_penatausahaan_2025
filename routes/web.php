@@ -220,7 +220,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::post('simpan_sppls', [SppLsController::class, 'simpanSppLs'])->name('sppls.simpan_sppls');
             Route::post('simpan_detail_sppls', [SppLsController::class, 'simpanDetailSppLs'])->name('sppls.simpan_detail_sppls');
             Route::get('tampil/{no_spp}', [SppLsController::class, 'tampilSppLs'])->where('no_spp', '(.*)')->name('sppls.show');
-            Route::delete('hapus_sppls', [SppLsController::class, 'hapusSppLs'])->name('sppls.hapus_sppls');
+            Route::post('hapus_sppls', [SppLsController::class, 'hapusSppLs'])->name('sppls.hapus_sppls');
             Route::post('cari_penagihan_sppls', [SppLsController::class, 'cariPenagihanSpp'])->name('sppls.cari_penagihan_sppls');
             Route::get('edit/{no_spp}', [SppLsController::class, 'editSppLs'])->where('no_spp', '(.*)')->name('sppls.edit');
             Route::post('simpan_sppls_edit', [SppLsController::class, 'simpanEditSppLs'])->name('sppls.simpan_sppls_edit');
@@ -437,6 +437,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::get('pernyataan_up', [SppUpController::class, 'pernyataanUp'])->name('sppup.pernyataan_up');
             Route::get('spp_up', [SppUpController::class, 'sppUp'])->name('sppup.spp_up');
             Route::get('rincian77_up', [SppUpController::class, 'rincian77Up'])->name('sppup.rincian77_up');
+            Route::post('batal_spp', [SppUpController::class, 'batalSpp'])->name('sppup.batal_spp');
         });
         // Pengesahan Angkas
         Route::group(['prefix' => 'pengesahan_angkas'], function () {
@@ -1333,6 +1334,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::get('edit/{no_spp?}/{kd_skpd?}', [SppGuController::class, 'edit'])->name('spp_gu.edit');
             Route::post('update', [SppGuController::class, 'update'])->name('spp_gu.update');
             Route::post('hapus', [SppGuController::class, 'hapus'])->name('spp_gu.hapus');
+            Route::post('batal', [SppGuController::class, 'batal'])->name('spp_gu.batal');
 
             // CETAKAN
             Route::get('pengantar', [SppGuController::class, 'pengantar'])->name('spp_gu.pengantar');
