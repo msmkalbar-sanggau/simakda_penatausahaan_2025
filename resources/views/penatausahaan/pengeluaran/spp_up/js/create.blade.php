@@ -23,7 +23,7 @@
             let bulan = new Date(tanggal);
             let bulan1 = bulan.getMonth() + 1;
             $("#bulan").val(bulan1);
-            get_spp();
+            // get_spp();
         });
 
         $('#kode_akun').on('change', function() {
@@ -44,12 +44,23 @@
             let nama_penerima = document.getElementById('nama_penerima').value;
             let nm_skpd = document.getElementById('nm_skpd').value;
             let kode_akun = document.getElementById('kode_akun').value;
+            let nama_akun = document.getElementById('nama_akun').value;
             let tahun_anggaran = document.getElementById('tahun_anggaran').value;
-            let no_urut = document.getElementById('no_urut').value;
+            // let no_urut = document.getElementById('no_urut').value;
             let kd_skpd = document.getElementById('kd_skpd').value;
             let nilai_up = rupiah(document.getElementById('nilai_up').value);
             let bulan = document.getElementById('bulan').value;
             let tahun_input = tgl_spp.substring(0., 4);
+            if (!no_spp) {
+                alert('Nomor SPP wajib diisi!');
+                return;
+            }
+
+            if (no_spp == 0) {
+                alert('Nomor SPP tidak boleh NULL!');
+                return;
+            }
+
             if (tgl_spp < tgl_spp_lalu) {
                 alert('Tanggal SPP tidak boleh kurang dari SPP Lalu...!!!');
                 return;
@@ -92,8 +103,9 @@
                     nama_penerima: nama_penerima,
                     nm_skpd: nm_skpd,
                     kode_akun: kode_akun,
+                    nama_akun: nama_akun,
                     nilai_up: nilai_up,
-                    no_urut: no_urut,
+                    // no_urut: no_urut,
                     kd_skpd: kd_skpd,
                 },
                 success: function(data) {
@@ -104,7 +116,8 @@
                         alert('Nomor SPP Sudah Terpakai...!!!,  Ganti Nomor SPP...!!!');
                         $('#simpan_spp').prop('disabled', false);
                     } else if (data.message == '1') {
-                        simpan_up();
+                        alert('Data berhasil ditambahkan!');
+                        window.location.href = "{{ route('sppup.index') }}";
                     }
                 }
             })
@@ -151,11 +164,11 @@
             return parseFloat(rupiah) || 0;
         }
 
-        function get_spp() {
-            let jenis_beban = document.getElementById('beban').value;
-            let kd_skpd = document.getElementById('kd_skpd').value;
-            let bulan = document.getElementById('bulan').value;
-            let tahun_anggaran = "{{ tahun_anggaran() }}";
+        // function get_spp() {
+        //     let jenis_beban = document.getElementById('beban').value;
+        //     let kd_skpd = document.getElementById('kd_skpd').value;
+        //     let bulan = document.getElementById('bulan').value;
+        //     let tahun_anggaran = "{{ tahun_anggaran() }}";
 
             // no spp
             $.ajax({

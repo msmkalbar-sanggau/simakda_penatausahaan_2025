@@ -37,11 +37,8 @@
                     name: 'tgl_spp'
                 },
                 {
-                    data: null,
+                    data: 'keperluan',
                     name: 'keperluan',
-                    render: function(data, type, row, meta) {
-                        return data.keperluan.substr(0, 10) + '.....';
-                    }
                 },
                 {
                     data: 'aksi',
@@ -330,6 +327,42 @@
             searchParams.append("jenis_print", jenis_print);
             window.open(url.toString(), "_blank");
         });
+
+        $('#batal_sppls').on('click', function() {
+            let no_spp = document.getElementById('no_spp_batal').value;
+            let keterangan = document.getElementById('keterangan_batal').value;
+            let beban = document.getElementById('beban_batal').value;
+            let tanya = confirm('Anda yakin akan Membatalkan SPP: ' + no_spp + '  ?');
+            if (tanya == true) {
+                if (!keterangan) {
+                    alert('Keterangan harus diisi!');
+                    return;
+                }
+                $.ajax({
+                    url: "{{ route('sppup.batal_spp') }}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        no_spp: no_spp,
+                        keterangan: keterangan,
+                        beban: beban,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(data) {
+                        if (data.message == '1') {
+                            alert('SPP Berhasil Dibatalkan');
+                            window.location.href = "{{ route('sppup.index') }}";
+                        } else if (data.message == '2') {
+                            alert('SPP telah jadi SPM!Tidak dapat dihapus!');
+                            return;
+                        } else {
+                            alert('SPP Berhasil Dibatalkan');
+                            return;
+                        }
+                    }
+                })
+            }
+        });
     });
 
     function cetak(no_spp, beban, kd_skpd) {
@@ -339,7 +372,13 @@
         $('#modal_cetak').modal('show');
     }
 
-    function deleteData(no_spp) {
+    function batal_spp(no_spp, beban, kd_skpd) {
+        $('#no_spp_batal').val(no_spp);
+        $('#beban_batal').val(beban);
+        $('#batal_spp').modal('show');
+    }
+
+    function deleteData(no_spp, kd_skpd) {
         let tanya = confirm('Apakah anda yakin untuk menghapus dengan Nomor SPP : ' + no_spp)
         if (tanya == true) {
             $.ajax({
@@ -347,15 +386,20 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    no_spp: no_spp
+                    no_spp: no_spp,
+                    kd_skpd: kd_skpd,
                 },
                 success: function(data) {
                     if (data.message == '1') {
                         alert('Data berhasil dihapus!');
                         location.reload();
+                    } else if (data.message == '2') {
+                        alert('SPP telah jadi SPM!Tidak dapat dihapus!');
+                        return;
                     } else {
                         alert('Data gagal dihapus!');
                         location.reload();
+                        return;
                     }
                 }
             })

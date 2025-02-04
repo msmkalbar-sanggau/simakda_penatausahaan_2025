@@ -5,8 +5,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <a href="{{ route('sppup.create') }}" id="tambah_spp_up" class="btn btn-primary" style="float: right;"
-                        {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a>
+                    <a href="{{ route('sppup.create') }}" id="tambah_spp_ls" class="btn btn-primary"
+                        style="float: right;">Tambah</a>
                 </div>
                 <div class="card-body">
                     <div class="table-rep-plugin">
@@ -202,6 +202,42 @@
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-md btn-secondary"
                                 data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="batal_spp" class="modal" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">KETERANGAN PEMBATALAN SPP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{-- No SPP --}}
+                    <div class="mb-3 row">
+                        <label for="no_spp_batal" class="col-md-2 col-form-label">No SPP</label>
+                        <div class="col-md-12">
+                            <input type="text" readonly class="form-control" id="no_spp_batal" name="no_spp_batal">
+                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal"
+                                hidden>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="keterangan_batal" class="col-md-2 col-form-label">Keterangan</label>
+                        <div class="col-md-12">
+                            <textarea type="text" class="form-control" id="keterangan_batal" name="keterangan_batal"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i
+                                    class="uil-ban"></i>Batal SPP</button>
+                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i
+                                    class="fa fa-undo"></i>Keluar</button>
                         </div>
                     </div>
                 </div>

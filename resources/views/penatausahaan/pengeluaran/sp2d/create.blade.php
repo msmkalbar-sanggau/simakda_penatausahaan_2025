@@ -51,12 +51,15 @@
                                     class="uil-refresh"></i></button>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="no_sp2d" name="no_sp2d" disabled>
-                            <input type="text" class="form-control" id="nomor_urut" name="nomor_urut" hidden>
+                            {{-- <input type="text" class="form-control" id="no_sp2d" name="no_sp2d" disabled>
+                            <input type="text" class="form-control" id="nomor_urut" name="nomor_urut" hidden> --}}
+                            <input type="number" name="no_sp2d" id="no_sp2d" min="1" class="form-control"
+                                oninput="this.value = Math.abs(this.value)" pattern="/^-?\d+\.?\d*$/">
                         </div>
                         <label for="tgl_sp2d" class="col-md-2 col-form-label">Tanggal SP2D</label>
                         <div class="col-md-4">
-                            <input type="date" class="form-control" id="tgl_sp2d" name="tgl_sp2d">
+                            <input type="date" class="form-control" id="tgl_sp2d" name="tgl_sp2d"
+                                value="{{ date('Y-m-d') }}">
                         </div>
                     </div>
                     {{-- No SPP dan Tanggal SPP --}}

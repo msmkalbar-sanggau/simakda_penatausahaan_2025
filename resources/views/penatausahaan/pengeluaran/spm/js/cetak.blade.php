@@ -24,7 +24,7 @@
                 if (data.status == 3) {
                     $(row).css("background-color", "#4bbe68");
                     $(row).css("color", "white");
-                } else if (data.sp2d_batal == '1') {
+                } else if (data.sp2d_batal == '1' || data.spmBatal == '1') {
                     $(row).css("background-color", "#ff0000");
                     $(row).css("color", "white");
                 } else if (data.status == 1) {
@@ -628,6 +628,9 @@
                         if (data.message == '1') {
                             alert('SPM Berhasil Dibatalkan');
                             window.location.href = "{{ route('spm.index') }}";
+                        } else if (data.message == '2') {
+                            alert('SPM Telah dibuat SP2D!Tidak dapat dibatalkan!');
+                            return;
                         } else {
                             alert('SPM Tidak Berhasil Dibatalkan');
                             return;

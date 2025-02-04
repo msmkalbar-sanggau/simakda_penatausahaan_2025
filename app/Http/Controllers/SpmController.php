@@ -40,10 +40,10 @@ class SpmController extends Controller
             $btn = '<a href="' . route("spm.tambah_potongan", Crypt::encryptString($row->no_spm)) . '" class="btn btn-secondary btn-sm" id="tambah_potongan" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Input Potongan & Pajak"><i class="uil-percentage"></i></a>';
             $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak SPM" style="margin-right:4px"><i class="uil-print"></i></a>';
             $btn .= '<a href="' . route("spm.tampil", Crypt::encryptString($row->no_spm)) . '" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Lihat" style="margin-right:4px"><i class="uil-eye"></i></a>';
-            if ($row->status == 0 && $row->sp2d_batal == 1) {
-                $btn .= '';
-            } else if ($row->status == 0 && $row->sp2d_batal != 1) {
+            if ($row->status != 3 && $row->spmBatal <> '1') {
                 $btn .= '<a href="javascript:void(0);" onclick="batal_spm(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Batal SPM" style="margin-right:4px"><i class="uil-ban"></i></a>';
+            // } else if ($row->status == 0 && $row->sp2d_batal != 1) {
+            //     $btn .= '<a href="javascript:void(0);" onclick="batal_spm(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Batal SPM" style="margin-right:4px"><i class="uil-ban"></i></a>';
             } else {
                 $btn .= '';
             }
@@ -103,16 +103,16 @@ class SpmController extends Controller
         //}
 
          $data_spp = DB::select("SELECT no_spp,tgl_spp,kd_skpd,nm_skpd,jns_spp,keperluan,bulan,no_spd,bank,nmrekan,no_rek,jns_beban,replace(replace(npwp,'.',''),'-','')as npwp
-        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=?) AND jns_spp IN ('1','2','7') and kd_skpd = ?
-        and (sp2d_batal!='1' or sp2d_batal is null) and status='2'
+        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=? and (spmBatal is null or spmBatal <>'1')) AND jns_spp IN ('1','2','7') and kd_skpd = ?
+        and (sp2d_batal!='1' or sp2d_batal is null) and status='0'
         UNION ALL
         SELECT no_spp,tgl_spp,kd_skpd,nm_skpd,jns_spp,keperluan,bulan,no_spd,bank,nmrekan,no_rek,jns_beban,replace(replace(npwp,'.',''),'-','')as npwp
-        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=?) AND jns_spp IN ('3') and kd_skpd = ? and status='2'
+        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=? and (spmBatal is null or spmBatal <>'1')) AND jns_spp IN ('3') and kd_skpd = ? and status='0'
         and (sp2d_batal!='1' or sp2d_batal is null)
         UNION ALL
         SELECT no_spp,tgl_spp,kd_skpd,nm_skpd,jns_spp,keperluan,bulan,no_spd,bank,nmrekan,no_rek,jns_beban,replace(replace(npwp,'.',''),'-','')as npwp
-        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=?) AND jns_spp IN ('4','5','6') and kd_skpd = ?
-        and (sp2d_batal!='1' or sp2d_batal is null) and status='2'", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]);
+        FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=? and (spmBatal is null or spmBatal <>'1')) AND jns_spp IN ('4','5','6') and kd_skpd = ?
+        and (sp2d_batal!='1' or sp2d_batal is null) and status='0'", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]);
         $data = [
             'data_spp' => $data_spp,
         ];
@@ -202,32 +202,35 @@ class SpmController extends Controller
         $nama = Auth::user()->nama;
 
         DB::beginTransaction();
-        try {
-            $cek = DB::table('trhspm')->where(['no_spp' => $no_spp])->count();
+        // try {
+
+            $nomorSppBaru = nomorSppBaru("spm", $no_spm, $tgl_spm, $beban);
+
+            $cek = DB::table('trhspm')
+            ->where(['no_spp' => $no_spp])
+            ->where(function ($query) {
+                $query->where('spmBatal', '<>', '1')->orWhereNull('spmBatal');
+            })
+            ->count();
+
             if ($cek > 0) {
                 return response()->json([
                     'message' => '3'
                 ]);
             }
 
-            $cek1 = DB::table('trhspm')->where(['no_spm' => $no_spm])->count();
+            $cek1 = DB::table('trhspm')
+                ->where(['no_spm' => $nomorSppBaru])
+                ->count();
+
             if ($cek1 > 0) {
-                    return response()->json([
-                        'message' => '1'
-                    ]);
-            }
-
-            $kode_spm = explode("/", $no_spm);
-            $kode_spp = explode("/", $no_spp);
-
-            if ($kode_spm[2] != $kode_spp[2]) {
                 return response()->json([
-                    'message' => '5'
+                    'message' => '1'
                 ]);
             }
 
             DB::table('trhspm')->insert([
-                'no_spm' => $no_spm,
+                'no_spm' => $nomorSppBaru,
                 'tgl_spm' => $tgl_spm,
                 'no_spp' => $no_spp,
                 'kd_skpd' => $kd_skpd,
@@ -243,28 +246,29 @@ class SpmController extends Controller
                 'no_rek' => $rekening,
                 'npwp' => $npwp,
                 'nilai' => $total,
-                'urut' => $urut,
+                'urut' => $no_spm,
                 'status' => '0',
                 'username' => $nama,
                 'last_update' => date('Y-m-d H:i:s')
             ]);
 
-            DB::table('trhspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $skpd])->update([
-                'status' => '1'
-            ]);
+            DB::table('trhspp')
+                ->where(['no_spp' => $no_spp, 'kd_skpd' => $skpd])
+                ->update([
+                    'status' => '1'
+                ]);
 
             DB::commit();
             return response()->json([
                 'message' => '2',
-                'url' => route('spm.tambah_potongan', Crypt::encryptString($no_spm))
+                'url' => route('spm.tambah_potongan', Crypt::encryptString($nomorSppBaru))
             ]);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => '0'
-            ]);
-        }
+        // } catch (Exception $e) {
+        //     DB::rollBack();
+        //     return response()->json([
+        //         'message' => '0'
+        //     ]);
+        // }
     }
 
     public function tambahPotongan(Request $request , $no_spm)
@@ -1115,61 +1119,35 @@ class SpmController extends Controller
         $no_spp = $request->no_spp;
         $keterangan = $request->keterangan;
         $beban = $request->beban;
-        // $batal_spm = $request->batal_spm;
         $user = Auth::user()->nama;
         $kd_skpd = Auth::user()->kd_skpd;
-        $lpj = DB::table('trhspp')->select('no_lpj')->where(['no_spp' => $no_spp])->first();
-        $no_lpj = $lpj->no_lpj;
 
         DB::beginTransaction();
         try {
-            // if ($batal_spm == "false") {
-            //     DB::table('trhspm')->where(['no_spm' => $no_spm, 'no_spp' => $no_spp])->update([
-            //         'sp2d_batal' => '1',
-            //         'ket_batal' => $keterangan,
-            //         'user_batal' => $user,
-            //         'tgl_batal' => date('d-m-y H:i:s')
-            //     ]);
-            // } else {
-            // DB::table('trhspm')->where(['no_spm' => $no_spm, 'no_spp' => $no_spp])->update([
-            //     'sp2d_batal' => '1',
-            //     'ket_batal' => $keterangan,
-            //     'user_batal' => $user,
-            //     'tgl_batal' => date('d-m-y H:i:s')
-            // ]);
+            $cekStatusSpm = DB::table('trhspm')
+                ->where(['no_spm' => $no_spm])
+                ->first()
+                ->status;
 
-            DB::table('trhspp')->where(['no_spp' => $no_spp])->update([
-                'sp2d_batal' => '1',
-                'ket_batal' => $keterangan,
-                'user_batal' => $user,
-                'tgl_batal' => date('d-m-y H:i:s')
-            ]);
-
-            if ($beban == '6') {
-                $no_tagih = DB::table('trhspp')->select('no_tagih')->where(['no_spp' => $no_spp])->first();
-                if ($no_tagih->no_tagih) {
-                    DB::table('trhspp')->where(['no_spp' => $no_spp])->update([
-                        'no_tagih' => '',
-                        'kontrak' => '',
-                        'sts_tagih' => '0',
-                        'nmrekan' => '',
-                        'pimpinan' => '',
-                    ]);
-                    DB::table('trhtagih')->where(['no_bukti' => $no_tagih->no_tagih])->update([
-                        'sts_tagih' => '0',
-                    ]);
-                }
-            }
-
-            if ($beban == '1' || $beban == '2' || $beban == '3') {
-                DB::table('trhlpj_unit as a')->join('trlpj_unit_temp as b', 'a.no_lpj', '=', 'b.no_lpj')->where(['b.no_lpj_global' => $no_lpj, 'kd_bp_skpd' => $kd_skpd])->update([
-                    'a.status' => '1',
-                ]);
-                DB::table('trhlpj')->where(['no_lpj' => $no_lpj, 'kd_skpd' => $kd_skpd])->update([
-                    'status' => '2',
+            if ($cekStatusSpm == '1') {
+                return response()->json([
+                    'message' => '2'
                 ]);
             }
-            // }
+
+            DB::table('trhspm')
+                ->where(['no_spm' => $no_spm])
+                ->update([
+                    'spmBatal' => '1',
+                    'keteranganBatal' => $keterangan
+                ]);
+
+            DB::table('trhspp')
+                ->where(['no_spp' => $no_spp])
+                ->update([
+                    'status' => '0'
+                ]);
+
             DB::commit();
             return response()->json([
                 'message' => '1'

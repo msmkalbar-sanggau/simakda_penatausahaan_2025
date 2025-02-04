@@ -122,21 +122,21 @@
             get_spm(no_spp, kd_skpd, beban, tahun_anggaran, no_spm, str);
         });
 
-        $('#cari_nospm').on('click', function() {
-            let no_spp = document.getElementById('no_spp').value;
-            let kd_skpd = document.getElementById('kd_skpd').value;
-            let beban = document.getElementById('beban').value;
-            let tahun_anggaran = "{{ tahun_anggaran() }}";
-            let no_spm = document.getElementById('no_spm').value;
-            get_spm(no_spp, kd_skpd, beban, tahun_anggaran, no_spm);
-        });
+        // $('#cari_nospm').on('click', function() {
+        //     let no_spp = document.getElementById('no_spp').value;
+        //     let kd_skpd = document.getElementById('kd_skpd').value;
+        //     let beban = document.getElementById('beban').value;
+        //     let tahun_anggaran = "{{ tahun_anggaran() }}";
+        //     let no_spm = document.getElementById('no_spm').value;
+        //     get_spm(no_spp, kd_skpd, beban, tahun_anggaran, no_spm);
+        // });
         // simpan spm
         $('#simpan_spm').on('click', function() {
             let no_spm = document.getElementById("no_spm").value;
             let no_spp = document.getElementById("no_spp").value;
             let tgl_spm = document.getElementById("tgl_spm").value;
             let tgl_spm_lalu = document.getElementById("tgl_spm_lalu").value;
-            let urut = document.getElementById("urut").value;
+            let urut = document.getElementById("no_spm").value;
             let tgl_spp = document.getElementById("tgl_spp").value;
             let beban = document.getElementById("beban").value;
             let bulan = document.getElementById("bulan").value;
@@ -166,6 +166,10 @@
             }
             if (!no_spm) {
                 alert("No SPM Tidak Boleh Kosong");
+                return;
+            }
+            if (no_spm == 0) {
+                alert("No SPM Tidak Boleh NULL");
                 return;
             }
             if (!no_spd) {
@@ -209,6 +213,9 @@
                     no_spp: no_spp,
                     jenis: jenis,
                 },
+                beforeSend: function() {
+                    $("#overlay").fadeIn(100);
+                },
                 success: function(data) {
                     if (data.message == '0') {
                         alert('Gagal Simpan..!!');
@@ -221,15 +228,15 @@
                             'Nomor SPP Sudah Terpakai...!!!,  Pilih Nomor SPP Lainnya...!!!'
                         );
                         $('#simpan_spm').prop('disabled', false);
-                    } else if (data.message == '5') {
-                        alert('Nomor SPM tidak sama dengan Nomor SPP....!!!');
-                        $('#simpan_spm').prop('disabled', false);
                     } else {
                         alert('Nomor bisa dipakai');
                         $('#simpan_spm').prop('disabled', false);
                         document.getElementById('potongan_spm').href = data.url;
                         $('#konfirmasi_potongan').modal('show');
                     }
+                },
+                complete: function(data) {
+                    $("#overlay").fadeOut(100);
                 }
             });
         });

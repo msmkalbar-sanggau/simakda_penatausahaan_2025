@@ -44,14 +44,13 @@ class SppLsController extends Controller
             $btn = '<a href="' . route("sppls.show", Crypt::encryptString($row->no_spp)) . '" class="btn btn-info btn-sm" style="margin-right:4px"><i class="fas fa-info-circle"></i></a>';
             $btn .= '<a href="' . route("sppls.edit", Crypt::encryptString($row->no_spp)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="fa fa-edit"></i></a>';
             $btn .= '<a href="javascript:void(0);" style="margin-right:4px" onclick="cetak(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm"><i class="uil-print"></i></a>';
-            if ($row->status == 0 && $row->sp2d_batal == 1){
-                $btn .= '';
-            }else if ($row->status == 0 && $row->sp2d_batal != 1) {
-                // $btn .= '<a href="javascript:void(0);" onclick="deleteData(\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" id="delete" style="margin-right:4px"><i class="fas fa-trash-alt"></i></a>';
-                // $btn .= '<a href="javascript:void(0);" onclick="batal_spp(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-ban"></i></a>';
+
+            if ($row->status == 1 || $row->sp2d_batal == '1') {
+                $btn .= "";
             } else {
-                $btn .= '';
+                $btn .= '<a href="javascript:void(0);" onclick="batal_spp(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-ban"></i></a>';
             }
+
             return $btn;
         })->rawColumns(['aksi'])->make(true);
     }
@@ -1012,17 +1011,25 @@ class SppLsController extends Controller
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
         $nama = Auth::user()->nama;
-        $cek = DB::table('trhspp')->where('no_spp', $data['no_spp'])->count();
-        DB::beginTransaction();
+
         try {
-            if ($cek > 0) {
+            DB::beginTransaction();
+
+            DB::raw('LOCK TABLES trhspp WRITE');
+            DB::raw('LOCK TABLES trdspp WRITE');
+
+            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban']);
+            $cek = DB::table('trhspp')
+            ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
+            ->count();
+            if ($cek > 0 ) {
                 return response()->json([
                     'message' => '2'
                 ]);
-            } else {
-                // input trhspp
-                DB::table('trhspp')->insert([
-                    'no_spp' => $data['no_spp'],
+            }
+            DB::table('trhspp')
+                ->insert([
+                    'no_spp' => $nomorSppBaru,
                     'kd_skpd' => $data['kd_skpd'],
                     'keperluan' => $data['keperluan'],
                     'bulan' => $data['bulan'],
@@ -1037,6 +1044,7 @@ class SppLsController extends Controller
                     'tgl_spp' => $data['tgl_spp'],
                     'status' => '0',
                     'username' => Auth::user()->nama,
+                    'last_update' =>  date('Y-m-d H:i:s'),
                     'nilai' => $data['total'],
                     'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
                     'nm_sub_kegiatan' => $data['nm_sub_kegiatan'],
@@ -1048,66 +1056,50 @@ class SppLsController extends Controller
                     'sts_tagih' => $data['sts_tagih'],
                     'alamat' => $data['alamat'],
                     'kontrak' => $data['no_kontrak'],
-                    //'lanjut' => $data['lanjut'],
                     'tgl_mulai' => $data['tgl_awal'],
                     'tgl_akhir' => $data['tgl_akhir'],
-                    'urut' => $data['no_urut'],
+                    'urut' => $data['no_spp'],
+                    'urut' => $data['no_spp'],
                     'penerima' => $data['nm_penerima'],
                 ]);
-                // set status trhtagih
-                if ($data['no_penagihan']) {
-                    DB::table('trhtagih')->where(['no_bukti' => $data['no_penagihan'], 'kd_skpd' => $kd_skpd])->update([
+            // set status trhtagih
+            if ($data['no_penagihan']) {
+                DB::table('trhtagih')
+                    ->where(['no_bukti' => $data['no_penagihan'], 'kd_skpd' => $kd_skpd])
+                    ->update([
                         'sts_tagih' => '1',
                     ]);
-                }
-                DB::table('trhspp')->where(['no_spp' => $data['no_spp'], 'kd_skpd' => $kd_skpd])->update([
-                    'username' => $nama,
-                    'last_update' => date('Y-m-d H:i:s'),
-                ]);
             }
-            DB::commit();
-            return response()->json([
-                'message' => '1'
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => '0'
-            ]);
-        }
-    }
 
-    public function simpanDetailSppLs(Request $request)
-    {
-        $data = $request->data;
-        $kd_skpd = Auth::user()->kd_skpd;
-        $nama = Auth::user()->nama;
-        DB::beginTransaction();
-        try {
-            DB::table('trdspp')->where(['no_spp' => $data['no_spp'], 'kd_skpd' => $kd_skpd])->delete();
+            DB::table('trdspp')->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $kd_skpd])->delete();
+
             if (isset($data['rincian_rekening'])) {
-                DB::table('trdspp')->insert(array_map(function ($value) use ($data, $kd_skpd) {
+                DB::table('trdspp')->insert(array_map(function ($value) use ($data, $kd_skpd, $nomorSppBaru) {
                     return [
-                        'no_spp' => $data['no_spp'],
+                        'no_spp' => $nomorSppBaru,
                         'kd_rek6' => $value['kd_rek6'],
                         'nm_rek6' => $value['nm_rek6'],
                         'nilai' => $value['nilai'],
                         'kd_skpd' => $kd_skpd,
+                        'nm_skpd' => nama_skpd($kd_skpd),
                         'kd_sub_kegiatan' => $value['kd_sub_kegiatan'],
                         'nm_sub_kegiatan' => $data['nm_sub_kegiatan'],
                         'no_spd' => $data['nomor_spd'],
                         'kd_bidang' => $data['bidang'],
                         'sumber' => $value['sumber'],
-                        'volume' => $value['volume_output'],
-                        'satuan' => $value['satuan_output'],
                     ];
                 }, $data['rincian_rekening']));
             }
-            DB::table('tb_transaksi')->where(['kd_skpd' => $kd_skpd, 'no_transaksi' => $data['no_spp'], 'username' => $nama])->delete();
-            DB::table('trhspp')->where(['kd_skpd' => $kd_skpd, 'no_spp' => $data['no_spp']])->whereNull('username')->update([
-                'username'  => $nama,
-                'last_update' => date('Y-m-d H:i:s')
-            ]);
+
+            DB::update("UPDATE a
+                                SET a.nm_sub_kegiatan=b.nm_sub_kegiatan
+                                FROM trdspp  a
+                                INNER JOIN trskpd b
+                                ON a.kd_sub_kegiatan=b.kd_sub_kegiatan AND a.kd_skpd=b.kd_skpd
+                                WHERE no_spp=?", [$nomorSppBaru]);
+
+            DB::raw("UNLOCK TABLES");
+
             DB::commit();
             return response()->json([
                 'message' => '1'
@@ -1115,10 +1107,54 @@ class SppLsController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => '0'
+                'message' => '0',
+                'error' => $e->getMessage()
             ]);
         }
     }
+
+    // public function simpanDetailSppLs(Request $request)
+    // {
+    //     $data = $request->data;
+    //     $kd_skpd = Auth::user()->kd_skpd;
+    //     $nama = Auth::user()->nama;
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::table('trdspp')->where(['no_spp' => $data['no_spp'], 'kd_skpd' => $kd_skpd])->delete();
+    //         if (isset($data['rincian_rekening'])) {
+    //             DB::table('trdspp')->insert(array_map(function ($value) use ($data, $kd_skpd) {
+    //                 return [
+    //                     'no_spp' => $data['no_spp'],
+    //                     'kd_rek6' => $value['kd_rek6'],
+    //                     'nm_rek6' => $value['nm_rek6'],
+    //                     'nilai' => $value['nilai'],
+    //                     'kd_skpd' => $kd_skpd,
+    //                     'kd_sub_kegiatan' => $value['kd_sub_kegiatan'],
+    //                     'nm_sub_kegiatan' => $data['nm_sub_kegiatan'],
+    //                     'no_spd' => $data['nomor_spd'],
+    //                     'kd_bidang' => $data['bidang'],
+    //                     'sumber' => $value['sumber'],
+    //                     'volume' => $value['volume_output'],
+    //                     'satuan' => $value['satuan_output'],
+    //                 ];
+    //             }, $data['rincian_rekening']));
+    //         }
+    //         DB::table('tb_transaksi')->where(['kd_skpd' => $kd_skpd, 'no_transaksi' => $data['no_spp'], 'username' => $nama])->delete();
+    //         DB::table('trhspp')->where(['kd_skpd' => $kd_skpd, 'no_spp' => $data['no_spp']])->whereNull('username')->update([
+    //             'username'  => $nama,
+    //             'last_update' => date('Y-m-d H:i:s')
+    //         ]);
+    //         DB::commit();
+    //         return response()->json([
+    //             'message' => '1'
+    //         ]);
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'message' => '0'
+    //         ]);
+    //     }
+    // }
 
     public function tampilSppLs($no_spp)
     {
@@ -1189,8 +1225,34 @@ class SppLsController extends Controller
 
         DB::beginTransaction();
         try {
-            DB::table('trhspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
-            DB::table('trdspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
+            $cek = DB::table('trhspm')
+                ->where([
+                    'no_spp' => $no_spp,
+                    'kd_skpd' => $kd_skpd
+                ])
+                ->where(function ($query) {
+                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
+                })
+                ->count();
+
+            if ($cek > 0) {
+                return response()->json([
+                    'message' => '2'
+                ]);
+            }
+
+            DB::table('trhspp')
+                ->where([
+                    'no_spp' => $no_spp,
+                    'kd_skpd' => $kd_skpd
+                ])
+                ->delete();
+            DB::table('trdspp')
+                ->where([
+                    'no_spp' => $no_spp,
+                    'kd_skpd' => $kd_skpd
+                ])
+                ->delete();
             DB::commit();
             return response()->json([
                 'message' => '1'

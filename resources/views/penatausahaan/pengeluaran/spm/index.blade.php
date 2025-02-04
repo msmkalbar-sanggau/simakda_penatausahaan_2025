@@ -8,6 +8,8 @@
                     <button class="btn btn-md btn-success">Hijau : SP2D Sudah Dibuat</button>
                     <button class="btn btn-md btn-warning">Kuning : SPM Sudah Diverifikasi Perbend</button>
                     <button class="btn btn-md btn-danger">Merah : SPP-SPM DIbatalkan</button>
+                    <p style="float: left; color: red;" {{ $kunci === '0' ? 'hidden' : '' }}>Saat ini inputan SPM sedang
+                        dikunci. Untuk info lebih lanjut silahkan hubungi Perben.</p>
                     <a href="{{ route('spm.create') }}" id="tambah_spp_ls" class="btn btn-primary" style="float: right;"
                         {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a>
                     <a href="javascript:void(0);" class="btn btn-success" style="float: right;" data-bs-toggle="tooltip"
@@ -60,7 +62,7 @@
         </div> <!-- end col -->
     </div>
 
-    {{-- modal batal spm spp --}}
+    {{-- modal batal spm --}}
     <div id="spm_batal" class="modal" role="dialog" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -104,7 +106,7 @@
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-md btn-danger" id="input_batal"><i
-                                    class="uil-ban"></i>Batal SPM - SPP</button>
+                                    class="uil-ban"></i>Batal SPM </button>
                             <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i
                                     class="fa fa-undo"></i>Keluar</button>
                         </div>

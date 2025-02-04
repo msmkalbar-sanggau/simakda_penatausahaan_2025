@@ -27,7 +27,8 @@ class SppGuController extends Controller
             'bendahara' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['KPA', 'BPP', 'BK'])->get(),
             'pptk' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['PPTK', 'KPA'])->get(),
             'pa_kpa' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['PA', 'KPA'])->get(),
-            'ppkd' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', '5.02.0.00.0.00.02.0000')->whereIn('kode', ['BUD', 'KPA'])->get(),
+            'ppkd' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->whereIn('kode', ['BUD'])->get(),
+            'ppk' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['PPK'])->get(),
             'kunci' => $kuncian,
         ];
 
@@ -43,16 +44,20 @@ class SppGuController extends Controller
             ->orderBy('a.no_spp')
             ->orderBy('a.kd_skpd')
             ->get();
-            return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
-                $btn = '<a href="' . route("spp_gu.edit", ['no_spp' => Crypt::encrypt($row->no_spp), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-warning btn-sm"  style="margin-right:4px"><i class="uil-edit"></i></a>';
-                // if ($row->status == 1) {
-                //     $btn .= "";
-                // } else {
-                //     $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_spp . '\',\'' . $row->no_lpj . '\',\'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-trash"></i></a>';
-                // }
-                $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_spp . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak LPJ" style="margin-right:4px"><i class="uil-print"></i></a>';
-                return $btn;
-            })->rawColumns(['aksi'])->make(true);
+        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
+            $btn = '<a href="' . route("spp_gu.edit", ['no_spp' => Crypt::encrypt($row->no_spp), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-warning btn-sm"  style="margin-right:4px"><i class="uil-edit"></i></a>';
+
+            $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_spp . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak LPJ" style="margin-right:4px"><i class="uil-print"></i></a>';
+
+            if ($row->status == 1) {
+                $btn .= "";
+            } else {
+                // $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_spp . '\',\'' . $row->no_lpj . '\',\'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-trash"></i></a>';
+                $btn .= '<a href="javascript:void(0);" onclick="batal_spp(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-ban"></i></a>';
+            }
+
+            return $btn;
+        })->rawColumns(['aksi'])->make(true);
     }
 
     public function tambah()
@@ -153,7 +158,8 @@ class SppGuController extends Controller
 
         DB::beginTransaction();
         try {
-            $cek = DB::table('trhspp')->where(['no_spp' => $data['no_spp']])->count();
+            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban']);
+            $cek = DB::table('trhspp')->where(['no_spp' => $nomorSppBaru])->count();
             if ($cek > 0) {
                 return response()->json([
                     'message' => '2'
@@ -162,7 +168,7 @@ class SppGuController extends Controller
 
             DB::table('trhspp')
                 ->insert([
-                    'no_spp' => $data['no_spp'],
+                    'no_spp' => $nomorSppBaru,
                     'kd_skpd' => $data['kd_skpd'],
                     'keperluan' => $data['keterangan'],
                     'bulan' => '',
@@ -179,16 +185,16 @@ class SppGuController extends Controller
                     'last_update' => date('Y-m-d H:i:s'),
                     'nilai' => $data['total'],
                     'no_lpj' => $data['no_lpj'],
-                    'urut' => $data['no_urut'],
+                    'urut' => $data['no_spp'],
                 ]);
 
             DB::table('trdspp')
-                ->where(['no_spp' => $data['no_spp'], 'kd_skpd' => $data['kd_skpd']])
+                ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
                 ->delete();
 
             $cek = collect(DB::select("SELECT count(*)jml FROM [dbo].[trlpj] where no_lpj=?", [$data['no_lpj']]))->first();
 
-            $no_spp = $data['no_spp'];
+            $no_spp = $nomorSppBaru;
             $spd = $data['no_spd'];
 
             // if ($cek->jml >= 1000) {
@@ -311,6 +317,22 @@ class SppGuController extends Controller
 
         DB::beginTransaction();
         try {
+            $cek = DB::table('trhspm')
+                ->where([
+                    'no_spp' => $no_spp,
+                    'kd_skpd' => $kd_skpd
+                ])
+                ->where(function ($query) {
+                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
+                })
+                ->count();
+
+            if ($cek > 0) {
+                return response()->json([
+                    'message' => '2'
+                ]);
+            }
+
             DB::table('trdspp')
                 ->where([
                     'no_spp' => $no_spp,
@@ -327,6 +349,61 @@ class SppGuController extends Controller
 
             DB::table('trhlpj')
                 ->where(['no_lpj' => $no_lpj, 'kd_skpd' => $kd_skpd])
+                ->update([
+                    'status' => '1'
+                ]);
+
+            DB::commit();
+            return response()->json([
+                'message' => '1'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => '0'
+            ]);
+        }
+    }
+
+    public function batal(Request $request)
+    {
+        $no_spp = $request->no_spp;
+        $keterangan = $request->keterangan;
+        $nama = Auth::user()->nama;
+        $waktu_ubah = date('Y-m-d H:i:s');
+
+        DB::beginTransaction();
+        try {
+            $cek = DB::table('trhspm')
+                ->where([
+                    'no_spp' => $no_spp,
+                ])
+                ->where(function ($query) {
+                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
+                })
+                ->count();
+
+            if ($cek > 0) {
+                return response()->json([
+                    'message' => '2'
+                ]);
+            }
+
+            DB::table('trhspp')
+                ->where(['no_spp' => $no_spp])
+                ->update([
+                    'sp2d_batal' => '1',
+                    'ket_batal' => $keterangan,
+                    'user_batal' => $nama,
+                    'tgl_batal' => $waktu_ubah
+                ]);
+
+            $dataSpp = DB::table('trhspp')
+                ->where(['no_spp' => $no_spp])
+                ->first();
+
+            DB::table('trhlpj')
+                ->where(['no_lpj' => $dataSpp->no_lpj, 'kd_skpd' => $dataSpp->kd_skpd])
                 ->update([
                     'status' => '1'
                 ]);

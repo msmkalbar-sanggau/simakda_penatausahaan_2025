@@ -14,10 +14,11 @@
                     <div class="mb-3 row">
                         <label for="no_spp" class="col-md-2 col-form-label">No SPP</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="no_spp" name="no_spp" required
-                                readonly>
+                            {{-- <input class="form-control" type="text" id="no_spp" name="no_spp" required readonly>
                             <input class="form-control @error('no_urut') is-invalid @enderror" type="text" id="no_urut"
-                                name="no_urut" required readonly hidden value="{{ $no_up }}">
+                                name="no_urut" required readonly hidden value="{{ $no_up }}"> --}}
+                            <input type="number" name="no_spp" id="no_spp" min="1" class="form-control"
+                                oninput="this.value = Math.abs(this.value)" pattern="/^-?\d+\.?\d*$/">
                             @error('no_spp')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -26,8 +27,8 @@
                         <div class="col-md-4">
                             <input type="date" class="form-control @error('tgl_spp') is-invalid @enderror" id="tgl_spp"
                                 name="tgl_spp">
-                            <input class="form-control" type="text" id="bulan" name="bulan" required
-                                readonly hidden>
+                            <input class="form-control" type="text" id="bulan" name="bulan" required readonly
+                                hidden>
                             @error('tgl_spp')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

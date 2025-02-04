@@ -49,12 +49,14 @@
                         <label for="no_spm" class="col-md-2 col-form-label">No. SPM</label>
                         <div class="col-md-4">
                             <div class="md-form input-group mt-md-0 mb-0">
-                                <input type="text" class="form-control" id="no_spm" name="no_spm" readonly>
+                                {{-- <input type="text" class="form-control" id="no_spm" name="no_spm" readonly>
                                 <input type="text" class="form-control" id="urut" name="urut" hidden readonly>
                                 <span class="input-group-btn">
                                     <button type="button" id="cari_nospm" class="btn btn-primary"><i
                                             class="uil-refresh"></i></button>
-                                </span>
+                                </span> --}}
+                                <input type="number" name="no_spm" id="no_spm" min="1" class="form-control"
+                                    oninput="this.value = Math.abs(this.value)" pattern="/^-?\d+\.?\d*$/">
                                 @error('no_spm')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -64,8 +66,8 @@
                         <div class="col-md-4">
                             <input type="date" class="form-control @error('tgl_spm') is-invalid @enderror" id="tgl_spm"
                                 name="tgl_spm">
-                            <input type="text" class="form-control @error('bulan_spm') is-invalid @enderror" id="bulan_spm"
-                                name="bulan_spm" hidden readonly>
+                            <input type="text" class="form-control @error('bulan_spm') is-invalid @enderror"
+                                id="bulan_spm" name="bulan_spm" hidden readonly>
                             <input type="date" class="form-control @error('tgl_spm_lalu') is-invalid @enderror"
                                 id="tgl_spm_lalu" name="tgl_spm_lalu" hidden>
                             @error('tgl_spm')

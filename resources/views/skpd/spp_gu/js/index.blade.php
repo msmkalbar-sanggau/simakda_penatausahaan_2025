@@ -53,12 +53,9 @@
                     name: 'nm_skpd',
                 },
                 {
-                    data: null,
+                    data: 'keperluan',
                     name: 'keperluan',
                     className: 'text-right',
-                    render: function(data, type, row, meta) {
-                        return data.keperluan.substr(0, 10) + '.....';
-                    }
                 },
                 {
                     data: null,
@@ -77,31 +74,6 @@
                     className: "text-center",
                 },
             ],
-        });
-
-        $('.select2-multiple').select2({
-            dropdownParent: $('#modal_cetak .modal-content'),
-            theme: 'bootstrap-5'
-        });
-
-        $('#bendahara').on('select2:select', function() {
-            let nama = $(this).find(':selected').data('nama');
-            $('#nama_bendahara').val(nama);
-        });
-
-        $('#pptk').on('select2:select', function() {
-            let nama = $(this).find(':selected').data('nama');
-            $('#nama_pptk').val(nama);
-        });
-
-        $('#pa_kpa').on('select2:select', function() {
-            let nama = $(this).find(':selected').data('nama');
-            $('#nama_pa_kpa').val(nama);
-        });
-
-        $('#ppkd').on('select2:select', function() {
-            let nama = $(this).find(':selected').data('nama');
-            $('#nama_ppkd').val(nama);
         });
 
         // cetak pengantar layar
@@ -291,6 +263,7 @@
             let pptk = document.getElementById('pptk').value;
             let pa_kpa = document.getElementById('pa_kpa').value;
             let ppkd = document.getElementById('ppkd').value;
+            let ppk = document.getElementById('ppk').value;
             let kd_skpd = document.getElementById('kd_skpd').value;
             let tanpa_tanggal = document.getElementById('tanpa_tanggal').checked;
             let jenis_print = $(this).data("jenis");
@@ -321,6 +294,7 @@
             searchParams.append("pptk", pptk);
             searchParams.append("pa_kpa", pa_kpa);
             searchParams.append("ppkd", ppkd);
+            searchParams.append("ppk", ppk);
             searchParams.append("kd_skpd", kd_skpd);
             searchParams.append("tanpa", tanpa);
             searchParams.append("jenis_print", jenis_print);
@@ -458,6 +432,42 @@
             searchParams.append("jenis_print", jenis_print);
             window.open(url.toString(), "_blank");
         });
+
+        $('#batal_sppls').on('click', function() {
+            let no_spp = document.getElementById('no_spp_batal').value;
+            let keterangan = document.getElementById('keterangan_batal').value;
+            let beban = document.getElementById('beban_batal').value;
+            let tanya = confirm('Anda yakin akan Membatalkan SPP: ' + no_spp + '  ?');
+            if (tanya == true) {
+                if (!keterangan) {
+                    alert('Keterangan harus diisi!');
+                    return;
+                }
+                $.ajax({
+                    url: "{{ route('spp_gu.batal') }}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        no_spp: no_spp,
+                        keterangan: keterangan,
+                        beban: beban,
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(data) {
+                        if (data.message == '1') {
+                            alert('SPP Berhasil Dibatalkan');
+                            window.location.href = "{{ route('spp_gu.index') }}";
+                        } else if (data.message == '2') {
+                            alert('SPP telah jadi SPM!Tidak dapat dihapus!');
+                            return;
+                        } else {
+                            alert('SPP Berhasil Dibatalkan');
+                            return;
+                        }
+                    }
+                })
+            }
+        });
     });
 
     function cetak(no_spp, jenis, kd_skpd) {
@@ -465,6 +475,12 @@
         $('#jenis').val(jenis);
         $('#kd_skpd').val(kd_skpd);
         $('#modal_cetak').modal('show');
+    }
+
+    function batal_spp(no_spp, beban, kd_skpd) {
+        $('#no_spp_batal').val(no_spp);
+        $('#beban_batal').val(beban);
+        $('#batal_spp').modal('show');
     }
 
     function hapus(no_spp, no_lpj, kd_skpd) {
@@ -483,8 +499,12 @@
                     if (data.message == '1') {
                         alert('Proses Hapus Berhasil');
                         window.location.reload();
+                    } else if (data.message == '2') {
+                        alert('SPP telah jadi SPM!Tidak dapat dihapus!');
+                        return;
                     } else {
                         alert('Proses Hapus Gagal...!!!');
+                        return;
                     }
                 }
             })

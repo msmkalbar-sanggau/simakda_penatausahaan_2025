@@ -5,9 +5,14 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <a href="{{ route('sppls.create') }}" id="tambah_spp_ls"
+                    <p>List SPP LS</p>
+                    <p style="float: left; color: red;" {{ $kunci === '0' ? 'hidden' : '' }}>Saat ini inputan SPP LS
+                        sedang dikunci. Untuk info lebih lanjut silahkan hubungi Perben.</p>
+                    <a href="{{ route('sppls.create') }}" id="tambah_spp_ls" class="btn btn-primary" style="float: right;"
+                        {{ $kunci === '1' ? 'hidden' : '' }}>Tambah</a>
+                    {{-- <a href="{{ route('sppls.create') }}" id="tambah_spp_ls"
                         class="btn btn-primary {{ $cek['selisih_angkas'] > 0 ? 'disabled' : '' }} {{ $cek['status_angkas'] == '0' ? 'disabled' : '' }}"
-                        style="float: right;" {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a>
+                        style="float: right;" {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a> --}}
                     <input type="text" id="selisih_angkas" hidden readonly value="{{ $cek['selisih_angkas'] }}">
                     <input type="text" id="status_ang" hidden readonly value="{{ $cek['status_ang'] }}">
                 </div>
@@ -805,6 +810,35 @@
                         } else {
                             alert('Data gagal dihapus!');
                             location.reload();
+                        }
+                    }
+                })
+            } else {
+                return false;
+            }
+        }
+
+        function hapus(no_spp, kd_skpd) {
+            let tanya = confirm('Apakah anda yakin untuk menghapus data dengan Nomor SPP : ' + no_spp);
+            if (tanya == true) {
+                $.ajax({
+                    url: "{{ route('sppls.hapus_sppls') }}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        no_spp: no_spp,
+                        kd_skpd: kd_skpd,
+                    },
+                    success: function(data) {
+                        if (data.message == '1') {
+                            alert('Proses Hapus Berhasil');
+                            window.location.reload();
+                        } else if (data.message == '2') {
+                            alert('SPP telah jadi SPM!Tidak dapat dihapus!');
+                            return;
+                        } else {
+                            alert('Proses Hapus Gagal...!!!');
+                            return;
                         }
                     }
                 })

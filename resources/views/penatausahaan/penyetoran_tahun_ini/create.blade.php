@@ -15,7 +15,7 @@
                         <label for="no_sts" class="col-md-2 col-form-label">No. STS</label>
                         <div class="col-md-4">
                             <input class="form-control" type="text" id="no_sts" name="no_sts"
-                                placeholder="Silahkan Diisi" required>
+                                placeholder="Tidak perlu diisi! Otomatis!" required readonly>
                         </div>
                         <label for="tgl_sts" class="col-md-2 col-form-label">Tanggal STS</label>
                         <div class="col-md-4">
@@ -104,15 +104,14 @@
                     <table id="detail_sts" class="table" style="width: 100%">
                         <thead>
                             <tr>
-                                <th>No Setor</th>
-                                <th>Rekening</th>
+                                <th>No Terima</th>
+                                <th>Nomor Rekening</th>
                                 <th>Nama Rekening</th>
-                                <th>Nilai</th>
-                                {{-- <th>Rupiah</th> --}}
+                                <th>Rupiah</th>
                                 <th>Sumber</th>
-                                {{-- <th>Kanal</th>
-                                <th>Nama Kanal</th>
-                                <th>Nama Lokasi</th> --}}
+                                {{-- <th>Kanal</th> --}}
+                                {{-- <th>Nama Kanal</th> --}}
+                                <th>Nama Lokasi</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>

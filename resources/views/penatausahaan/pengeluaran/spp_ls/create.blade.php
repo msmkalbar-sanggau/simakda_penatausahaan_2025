@@ -84,11 +84,13 @@
                         <label for="no_spp" class="col-md-2 col-form-label">No. SPP</label>
                         <div class="col-md-4">
                             <div class="md-form input-group mt-md-0 mb-0">
-                                <input type="text" class="form-control" id="no_spp" name="no_spp" readonly>
+                                {{-- <input type="text" class="form-control" id="no_spp" name="no_spp" readonly>
                                 <span class="input-group-btn">
                                     <button type="button" id="cari_nospp" class="btn btn-primary"><i
                                             class="uil-refresh"></i></button>
-                                </span>
+                                </span> --}}
+                                <input type="number" name="no_spp" id="no_spp" min="1" class="form-control"
+                                    oninput="this.value = Math.abs(this.value)" pattern="/^-?\d+\.?\d*$/">
                             </div>
                         </div>
                         <label for="bulan" class="col-md-2 col-form-label">Bulan</label>
@@ -319,8 +321,8 @@
                                 <th>Nilai</th>
                                 <th>Kode Sumber</th> {{-- hidden --}}
                                 <th>Sumber</th> {{-- hidden --}}
-                                <th>Volume</th>
-                                <th>Satuan</th>
+                                {{-- <th>Volume</th>
+                                <th>Satuan</th> --}}
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -476,19 +478,19 @@
                         </div>
                     </div>
                     {{-- Volume Output --}}
-                    <div class="mb-3 row">
+                    {{-- <div class="mb-3 row">
                         <label for="volume_output" class="col-md-2 col-form-label">Volume Output</label>
                         <div class="col-md-10">
                             <input type="text" disabled class="form-control" name="volume_output" id="volume_output">
                         </div>
-                    </div>
+                    </div> --}}
                     {{-- Satuan Output --}}
-                    <div class="mb-3 row">
+                    {{-- <div class="mb-3 row">
                         <label for="satuan_output" class="col-md-2 col-form-label">Satuan Output</label>
                         <div class="col-md-10">
                             <input type="text" disabled class="form-control" name="satuan_output" id="satuan_output">
                         </div>
-                    </div>
+                    </div> --}}
                     <!-- Nilai -->
                     <div class="mb-3 row">
                         <label for="nilai_rincian" class="col-md-2 col-form-label">Nilai</label>

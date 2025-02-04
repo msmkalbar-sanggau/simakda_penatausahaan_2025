@@ -15,11 +15,13 @@
                         <label for="no_spp" class="col-md-2 col-form-label">No. SPP</label>
                         <div class="col-md-4">
                             <div class="md-form input-group mt-md-0 mb-0">
-                                <input type="text" class="form-control" id="no_spp" name="no_spp" readonly>
+                                {{-- <input type="text" class="form-control" id="no_spp" name="no_spp" readonly>
                                 <span class="input-group-btn">
                                     <button type="button" id="cari" class="btn btn-primary"><i
                                             class="uil-refresh"></i></button>
-                                </span>
+                                </span> --}}
+                                <input type="number" name="no_spp" id="no_spp" min="1" class="form-control"
+                                    oninput="this.value = Math.abs(this.value)" pattern="/^-?\d+\.?\d*$/">
                             </div>
                         </div>
                         <label for="tgl_spp" class="col-md-2 col-form-label">Tanggal SPP</label>
@@ -29,8 +31,8 @@
                                 hidden value="{{ $tanggal_lalu->tgl_spp }}">
                             <input class="form-control" type="text" id="bulan" name="bulan" required readonly
                                 hidden>
-                            <input class="form-control" type="text" id="no_urut" name="no_urut" required readonly
-                                hidden>
+                            {{-- <input class="form-control" type="text" id="no_urut" name="no_urut" required readonly
+                                hidden> --}}
                         </div>
                     </div>
                     {{-- SKPD dan Nama SKPD --}}

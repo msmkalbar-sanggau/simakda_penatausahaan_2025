@@ -191,22 +191,22 @@
                 success: function(data) {
                     $('#nomor_urut').val(data.nomor);
                     if (beban == '1') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/UP/' + kd_skpd +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/UP/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '2') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU/' + kd_skpd +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '3') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/TU/' + kd_skpd +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/TU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '4') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '5' || beban == '6') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '7') {
-                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU-NIHIL/' +
+                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU-NIHIL/' +
                             kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     }
@@ -432,6 +432,16 @@
                 alert('No SP2D tidak boleh kosong, silahkan refresh kembali!');
                 return;
             }
+
+            if (!no_sp2d) {
+                alert('Nomor tidak boleh kosong');
+                return;
+            }
+
+            if (no_sp2d == 0) {
+                alert('Nomor SP2D tidak boleh NULL!');
+                return;
+            }
             // simpan sp2d
             $('#simpan_sp2d').prop('disabled', true);
             $.ajax({
@@ -444,7 +454,7 @@
                     no_spm: no_spm,
                     no_spp: no_spp,
                     ckd_skpd: kd_skpd,
-                    cno_sp2d: document.getElementById('no_sp2d').value,
+                    no_sp2d: no_sp2d,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
@@ -454,6 +464,11 @@
                         window.location.href = "{{ route('sp2d.index') }}";
                     } else if (data.message == '2') {
                         alert('Nomor SP2D Sudah Terpakai...!!!,  Ganti Nomor SP2D...!!!');
+                        $('#simpan_sp2d').prop('disabled', false);
+                    } else if (data.message == '3') {
+                        alert(
+                            'Nomor SPM Sudah Terpakai...!!!,  Pilih Nomor SPM Lainnya...!!!'
+                        );
                         $('#simpan_sp2d').prop('disabled', false);
                     } else {
                         alert('Data tidak berhasil ditambahkan!');

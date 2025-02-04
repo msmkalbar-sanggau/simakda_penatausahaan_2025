@@ -29,14 +29,14 @@
                 {
                     data: 'nm_sumber'
                 },
-                {
-                    visible: false,
-                    data: 'volume_output'
-                },
-                {
-                    visible: false,
-                    data: 'satuan_output'
-                },
+                // {
+                //     visible: false,
+                //     data: 'volume_output'
+                // },
+                // {
+                //     visible: false,
+                //     data: 'satuan_output'
+                // },
                 {
                     data: 'hapus'
                 }
@@ -512,27 +512,27 @@
                 }
             })
             // kondisi untuk kode rekening tertentu
-            if (kode_rekening.substr(0, 2) == '52') {
-                document.getElementById('volume_output').removeAttribute("disabled");
-                document.getElementById('satuan_output').removeAttribute("disabled");
-            } else if (kode_rekening.substr(0, 4) == '5105') {
-                document.getElementById('volume_output').removeAttribute("disabled");
-                document.getElementById('satuan_output').removeAttribute("disabled");
-            } else if (kode_rekening.substr(0, 4) == '5106') {
-                document.getElementById('volume_output').removeAttribute("disabled");
-                document.getElementById('satuan_output').removeAttribute("disabled");
-            } else if (kode_rekening.substr(0, 4) == '5402') {
-                document.getElementById('volume_output').removeAttribute("disabled");
-                document.getElementById('satuan_output').removeAttribute("disabled");
-            } else if (kode_rekening.substr(0, 6) == '510203') {
-                document.getElementById('volume_output').removeAttribute("disabled");
-                document.getElementById('satuan_output').removeAttribute("disabled");
-            } else if (kode_rekening == '510101080001' && kode_rekening == '5110105') {
-                // document.getElementById('minus').removeAttribute("disabled");
-            } else {
-                // document.getElementById('minus').setAttribute("disabled", "disabled");
-                // document.getElementById('minus').checked = false;
-            }
+            // if (kode_rekening.substr(0, 2) == '52') {
+            //     document.getElementById('volume_output').removeAttribute("disabled");
+            //     document.getElementById('satuan_output').removeAttribute("disabled");
+            // } else if (kode_rekening.substr(0, 4) == '5105') {
+            //     document.getElementById('volume_output').removeAttribute("disabled");
+            //     document.getElementById('satuan_output').removeAttribute("disabled");
+            // } else if (kode_rekening.substr(0, 4) == '5106') {
+            //     document.getElementById('volume_output').removeAttribute("disabled");
+            //     document.getElementById('satuan_output').removeAttribute("disabled");
+            // } else if (kode_rekening.substr(0, 4) == '5402') {
+            //     document.getElementById('volume_output').removeAttribute("disabled");
+            //     document.getElementById('satuan_output').removeAttribute("disabled");
+            // } else if (kode_rekening.substr(0, 6) == '510203') {
+            //     document.getElementById('volume_output').removeAttribute("disabled");
+            //     document.getElementById('satuan_output').removeAttribute("disabled");
+            // } else if (kode_rekening == '510101080001' && kode_rekening == '5110105') {
+            //     // document.getElementById('minus').removeAttribute("disabled");
+            // } else {
+            //     // document.getElementById('minus').setAttribute("disabled", "disabled");
+            //     // document.getElementById('minus').checked = false;
+            // }
             // anggaran penyusunan
             $.ajax({
                 url: "{{ route('sppls.jumlah_anggaran_penyusunan') }}",
@@ -737,8 +737,8 @@
                             }).format(data.nilai),
                             'sumber': data.sumber,
                             'nm_sumber': data.nm_sumber_dana1,
-                            'volume_output': null,
-                            'satuan_output': null,
+                            // 'volume_output': null,
+                            // 'satuan_output': null,
                             'hapus': `<a href="javascript:void(0);" onclick="deleteData('${data.kd_sub_kegiatan}','${data.kd_rek}','${data.nm_rek6}','${data.sumber}','${data.nilai}')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>`,
                         }).draw();
                     })
@@ -851,23 +851,16 @@
             let sumber_dana = document.getElementById('sumber_dana').value;
             let nm_sumber = document.getElementById('nm_sumber').value;
             let nilai_rincian = nilai(document.getElementById('nilai_rincian').value);
-            // let sisa_spd = rupiah(document.getElementById('sisa_spd').value);
-            let sisa_spd = rupiah(document.getElementById('total_spd').value) - rupiah(document
-                .getElementById('realisasi_spd').value);
-            // let sisa_angkas = rupiah(document.getElementById('sisa_angkas').value);
-            let sisa_angkas = rupiah(document.getElementById('total_angkas').value) - rupiah(document
-                .getElementById('realisasi_angkas').value);
-            // let sisa_penyusunan = rupiah(document.getElementById('sisa_penyusunan').value);
-            let sisa_penyusunan = rupiah(document.getElementById('total_penyusunan').value) - rupiah(
-                document.getElementById('realisasi_penyusunan').value);
+            let sisa_spd = rupiah(document.getElementById('sisa_spd').value);
+            let sisa_angkas = rupiah(document.getElementById('sisa_angkas').value);
+            let sisa_penyusunan = rupiah(document.getElementById('sisa_penyusunan').value);
             let sisa_sumber = rupiah(document.getElementById('sisa_sumber').value);
             let status_anggaran = document.getElementById('status_anggaran').value;
             let beban = document.getElementById('beban').value;
             let total = rupiah(document.getElementById('total').value);
             let akumulasi = nilai_rincian + total;
-            let volume_output = document.getElementById('volume_output').value;
-            let satuan_output = document.getElementById('satuan_output').value;
             let nm_rekening = document.getElementById('nm_rekening').value;
+
             // let minus = document.getElementById('minus').checked;
 
             if (!sumber_dana) {
@@ -875,41 +868,9 @@
                 return;
             }
 
-            if (sumber_dana == '221020101') {
-                alert(
-                    'Silahkan konfirmasi ke perbendaharaan jika ingin transaksi sumber dana DID, jika tidak maka transaksi tidak bisa di approve oleh perbendahaaraan, terima kasih'
-                );
-            }
-
             // if (minus == true) {
             //     nilai_rincian = (-1 * nilai_rincian);
             // }
-
-            if (kode_rekening.substr(0, 2) == '52' && (volume_output == '' || satuan_output == '')) {
-                alert('Volume atau satuan output harus diisi!');
-                return;
-            }
-
-            if (kode_rekening.substr(0, 4) == '5105' && (volume_output == '' || satuan_output == '')) {
-                alert('Volume atau satuan output harus diisi!');
-                return;
-            }
-
-            if (kode_rekening.substr(0, 4) == '5106' && (volume_output == '' || satuan_output == '')) {
-                alert('Volume atau satuan output harus diisi!');
-                return;
-            }
-
-            if (kode_rekening.substr(0, 4) == '5402' && (volume_output == '' || satuan_output == '')) {
-                alert('Volume atau satuan output harus diisi!');
-                return;
-            }
-
-            if (kode_rekening.substr(0, 6) == '510203' && (volume_output == '' || satuan_output ==
-                    '')) {
-                alert('Volume atau satuan output harus diisi!');
-                return;
-            }
 
             if (!status_anggaran && beban != '4') {
                 alert('Anggaran belum disahkan!');
@@ -956,6 +917,10 @@
                 return;
             }
 
+            //if (Number.isInteger(nilai_rincian) == false) {
+            //    alert('Nilai Rincian tidak boleh ada koma');
+            //    return;
+            //};
             // cek data di detail spp dan inputan
             let tampungan = tabel.rows().data().toArray().map((value) => {
                 let result = {
@@ -966,10 +931,11 @@
                 return result;
             });
             let kondisi = tampungan.map(function(data) {
-                if (data.kd_rek6 == kode_rekening && data.sumber == sumber_dana) {
+                if (data.kd_sub_kegiatan.trim() == kd_sub_kegiatan.trim() && data.kd_rek6
+                    .trim() == kode_rekening.trim() && data.sumber.trim() == sumber_dana.trim()
+                ) {
                     return '2';
-                }
-                if (data.kd_sub_kegiatan != kd_sub_kegiatan) {
+                } else if (data.kd_sub_kegiatan.trim() != kd_sub_kegiatan.trim()) {
                     return '3';
                 }
             });
@@ -992,9 +958,7 @@
                 }).format(nilai_rincian),
                 'sumber': sumber_dana,
                 'nm_sumber': nm_sumber,
-                'volume_output': volume_output,
-                'satuan_output': satuan_output,
-                'hapus': `<a href="javascript:void(0);" onclick="deleteData('${kd_sub_kegiatan}','${kode_rekening}','${nm_rekening}','${sumber_dana}','${nilai_rincian}')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>`,
+                'hapus': `<a href="javascript:void(0);" onclick="deleteData('${kd_sub_kegiatan}','${kode_rekening}','${nm_rekening}','${sumber_dana}','${nilai_rincian}')" class="btn btn-danger btn-sm"><i class="uil-trash"></i></a>`,
             }).draw();
             kosong_input_detail();
             $("#total").val(new Intl.NumberFormat('id-ID', {
@@ -1083,6 +1047,7 @@
             let kd_program = document.getElementById('kd_program').value;
             let nm_program = document.getElementById('nm_program').value;
             let bidang = document.getElementById('bidang').value;
+
             let rincian_rekening = tabel.rows().data().toArray().map((value) => {
                 let data = {
                     kd_sub_kegiatan: value.kd_sub_kegiatan,
@@ -1090,8 +1055,8 @@
                     nm_rek6: value.nm_rek6,
                     nilai: rupiah(value.nilai),
                     sumber: value.sumber,
-                    volume_output: value.volume_output,
-                    satuan_output: value.satuan_output,
+                    // volume_output: value.volume_output,
+                    // satuan_output: value.satuan_output,
                 };
                 return data;
             });
@@ -1121,35 +1086,42 @@
                 return;
             }
 
-            if (!no_spp) {
-                alert("Isi Nomor SPP Terlebih Dahulu...!!!");
-                return;
-            }
+            // if (!no_spp) {
+            //     alert("Isi Nomor SPP Terlebih Dahulu...!!!");
+            //     return;
+            // }
+
+            // if (no_spp == 0) {
+            //     alert('Nomor SPP tidak boleh NULL!');
+            //     return;
+            // }
+
             if (!nomor_spd) {
                 alert("Isi Nomor SPD Terlebih Dahulu...!!!");
+                return;
+            }
+            if (!jenis) {
+                alert("Isi Beban Terlebih Dahulu...!!!");
+                return;
+            }
+            if ((beban == '5' && jenis == '1') || (beban == '5' && jenis == '3') || (beban == '5' &&
+                    jenis == '5')) {} else {
+                if (!npwp) {
+                    alert("Isi NPWP Terlebih Dahulu...!!!");
+                    return;
+                }
+            }
+            if (!rekening) {
+                alert("Isi Rekening Terlebih Dahulu...!!!");
                 return;
             }
             if (!keperluan) {
                 alert("Isi Keperluan Terlebih Dahulu...!!!");
                 return;
             }
-            if (!nm_penerima) {
-                alert("Isi Nama Penerima Terlebih Dahulu...!!!");
-                return;
-            }
             if (!bank) {
                 alert("Isi Bank Terlebih Dahulu...!!!");
                 return;
-            }
-            if (!rekening) {
-                alert("Isi Rekening Terlebih Dahulu...!!!");
-                return;
-            }
-            if ((beban == '5' && jenis == '3') || (beban == '5' && jenis == '5')) {} else {
-                if (!npwp) {
-                    alert("Isi NPWP Terlebih Dahulu...!!!");
-                    return;
-                }
             }
             if (!tgl_spp) {
                 alert("Isi Tanggal Terlebih Dahulu...!!!");
@@ -1209,6 +1181,7 @@
                 alert("Nomor Penagihan Tidak Boleh Kosong...!!!");
                 return;
             }
+
             if (beban == '6' && jenis == '3' && !tgl_awal) {
                 alert("Tanggal Awal Tidak Boleh Kosong...!!!");
                 return;
@@ -1218,6 +1191,7 @@
                 alert("Tanggal Akhir Tidak Boleh Kosong...!!!");
                 return;
             }
+
             if (keperluan.length > 1000) {
                 alert('Keterangan Tidak boleh lebih dari 1000 karakter');
                 return;
@@ -1266,28 +1240,9 @@
                 bidang,
                 rincian_rekening
             };
+
             // proses simpan
             $('#simpan_penagihan').prop('disabled', true);
-            $.ajax({
-                url: "{{ route('sppls.cek_simpan') }}",
-                type: "POST",
-                dataType: 'json',
-                data: {
-                    no_spp: no_spp,
-                },
-                success: function(response) {
-                    if (response == 1) {
-                        alert("Nomor Telah Dipakai!");
-                        $('#simpan_penagihan').prop('disabled', false);
-                    } else {
-                        alert("Nomor Bisa dipakai");
-                        simpan_spp(data);
-                    }
-                }
-            })
-        });
-
-        function simpan_spp(data) {
             $.ajax({
                 url: "{{ route('sppls.simpan_sppls') }}",
                 type: "POST",
@@ -1295,40 +1250,69 @@
                 data: {
                     data: data,
                 },
-                success: function(response) {
-                    if (response.message == '0') {
-                        alert('Gagal Simpan..!!');
-                        $('#simpan_penagihan').prop('disabled', false);
-                    }
-                    if (response.message == '2') {
-                        alert('Data Sudah Ada..!!');
-                        $('#simpan_penagihan').prop('disabled', false);
-                    } else {
-                        simpan_detail_spp(data);
-                    }
-                }
-            })
-        }
-
-        function simpan_detail_spp(data) {
-            $.ajax({
-                url: "{{ route('sppls.simpan_detail_sppls') }}",
-                type: "POST",
-                dataType: 'json',
-                data: {
-                    data: data,
+                beforeSend: function() {
+                    $("#overlay").fadeIn(100);
                 },
                 success: function(response) {
                     if (response.message == '1') {
                         alert('Data Berhasil Tersimpan...!!!');
                         window.location.href = "{{ route('sppls.index') }}";
+                    } else if (response.message == '2') {
+                        alert('Nomor telah dipakai...!!!');
+                        $('#simpan_penagihan').prop('disabled', false);
                     } else {
-                        alert('Detail Gagal Tersimpan...!!!');
+                        alert('Data Gagal Tersimpan...!!!');
                         $('#simpan_penagihan').prop('disabled', false);
                     }
+                },
+                complete: function(data) {
+                    $("#overlay").fadeOut(100);
                 }
             })
-        }
+        });
+
+        // function simpan_spp(data) {
+        //     $.ajax({
+        //         url: "{{ route('sppls.simpan_sppls') }}",
+        //         type: "POST",
+        //         dataType: 'json',
+        //         data: {
+        //             data: data,
+        //         },
+        //         success: function(response) {
+        //             if (response.message == '0') {
+        //                 alert('Gagal Simpan..!!');
+        //                 $('#simpan_penagihan').prop('disabled', false);
+        //             }
+        //             if (response.message == '2') {
+        //                 alert('Data Sudah Ada..!!');
+        //                 $('#simpan_penagihan').prop('disabled', false);
+        //             } else {
+        //                 simpan_detail_spp(data);
+        //             }
+        //         }
+        //     })
+        // }
+
+        // function simpan_detail_spp(data) {
+        //     $.ajax({
+        //         url: "{{ route('sppls.simpan_detail_sppls') }}",
+        //         type: "POST",
+        //         dataType: 'json',
+        //         data: {
+        //             data: data,
+        //         },
+        //         success: function(response) {
+        //             if (response.message == '1') {
+        //                 alert('Data Berhasil Tersimpan...!!!');
+        //                 window.location.href = "{{ route('sppls.index') }}";
+        //             } else {
+        //                 alert('Detail Gagal Tersimpan...!!!');
+        //                 $('#simpan_penagihan').prop('disabled', false);
+        //             }
+        //         }
+        //     })
+        // }
         // kosongin data ketika ganti beban
         function kosong() {
             $('#nm_penerima').val(null).change();
@@ -1366,9 +1350,9 @@
             document.getElementById('realisasi_sumber').value = '';
             document.getElementById('sisa_sumber').value = '';
             // volume output, satuan output, nilai
-            document.getElementById('volume_output').value = '';
-            document.getElementById('satuan_output').value = '';
-            document.getElementById('nilai_rincian').value = '';
+            // document.getElementById('volume_output').value = '';
+            // document.getElementById('satuan_output').value = '';
+            // document.getElementById('nilai_rincian').value = '';
         }
 
         function kosong_input_detail() {
@@ -1393,9 +1377,9 @@
             $('#realisasi_sumber').val(null);
             $('#sisa_sumber').val(null);
             // volume output, satuan output, nilai
-            $('#volume_output').val(null);
-            $('#satuan_output').val(null);
-            $('#nilai_rincian').val(null);
+            // $('#volume_output').val(null);
+            // $('#satuan_output').val(null);
+            // $('#nilai_rincian').val(null);
         }
 
         function formatNumber(n) {

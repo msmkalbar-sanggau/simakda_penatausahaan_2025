@@ -21,7 +21,7 @@ class SetorSisaController extends Controller
         $kd_skpd    = Auth::user()->kd_skpd;
         $skpd       = collect(DB::select('SELECT kd_skpd, nm_skpd FROM ms_skpd WHERE kd_skpd = ?', [$kd_skpd]))->first();
         $ttdbd      = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kd_skpd,'BK']);
-        $ttdpag     = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kd_skpd, 'PA']);
+        $ttdpag     = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kd_skpd, 'KPA']);
 
         $data = [
             'skpd1'    => $skpd,
@@ -560,7 +560,7 @@ class SetorSisaController extends Controller
         $tgl2       = $request->tgl2;
         $tglttd     = $request->tgl_ttd;
         $ttdbend    = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kdskpd,'BK']))->first();
-        $ttdpa      = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kdskpd, 'PA']))->first();
+        $ttdpa      = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kdskpd, 'KPA']))->first();
         $jns_print  = $request->jenis_print;
 
         $query      = DB::select('SELECT a.tgl_sts,b.no_sts, a.no_sp2d, keterangan,

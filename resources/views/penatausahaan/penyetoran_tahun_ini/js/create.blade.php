@@ -103,10 +103,10 @@
                 return;
             }
 
-            if (!no_sts) {
-                alert('No STS Tidak Boleh Kosong');
-                return;
-            }
+            // if (!no_sts) {
+            //     alert('No STS Tidak Boleh Kosong');
+            //     return;
+            // }
 
             if (!kd_skpd) {
                 alert('Kode SKPD Tidak Boleh Kosong');
@@ -123,7 +123,7 @@
                 return;
             }
 
-            let detail_sts = detail.rows().data().toArray().map((value) => {
+            let detail_sts1 = detail.rows().data().toArray().map((value) => {
                 let data = {
                     no_sts: value.no_sts,
                     kd_rek6: value.kd_rek6,
@@ -133,7 +133,9 @@
                 return data;
             });
 
-            if (detail_sts.length == 0) {
+            let detail_sts = JSON.stringify(detail_sts1);
+
+            if (detail_sts1.length == 0) {
                 alert('Detail STS tidak boleh kosong!');
                 return;
             }
@@ -149,7 +151,7 @@
                 detail_sts
             };
 
-            $('#simpan').prop('disabled', false);
+            $('#simpan').prop('disabled', true);
             $.ajax({
                 url: "{{ route('penyetoran_ini.simpan') }}",
                 type: "POST",
@@ -162,7 +164,8 @@
                 },
                 success: function(response) {
                     if (response.message == '1') {
-                        alert('Data berhasil disimpan!');
+                        alert('Data berhasil disimpan!' + '\n' + 'Nomor Setor : ' +
+                            response.nomorSetor);
                         window.location.href =
                             "{{ route('penyetoran_ini.index') }}";
                     } else if (response.message == '2') {
@@ -256,7 +259,9 @@
                     `<option value="" disabled selected>Silahkan Pilih</option>`);
                 $.each(data, function(index, data) {
                     $('#no_terima').append(
-                        `<option value="${data.no_terima}" data-tgl_terima="${data.tgl_terima}" data-kd_rek6="${data.kd_rek6}" data-nm_rek6="${data.nm_rek6}" data-nilai="${data.nilai}" data-sumber="${data.sumber}" data-nm_pengirim="${data.nm_pengirim}">${data.no_terima} | ${data.kd_rek6} | ${data.nilai}</option>`
+                        `<option value="${data.no_terima}" data-tgl_terima="${data.tgl_terima}" data-kd_rek6="${data.kd_rek6}" data-nm_rek6="${data.nm_rek6}" data-nilai="${data.nilai}" data-sumber="${data.sumber}" data-nm_pengirim="${data.nm_pengirim}">${data.no_terima} | ${data.kd_rek6} | ${new Intl.NumberFormat('id-ID', {
+                            minimumFractionDigits: 2
+                        }).format(data.nilai)} | ${data.nm_pengirim} </option>`
                     );
                 })
             }
@@ -356,7 +361,7 @@
         let tanggal = document.getElementById('tgl_terima').value;
         if (hapus == true) {
             tabel.rows(function(idx, data, node) {
-                return data.kd_rek6 == kd_rek6 & data.no_sts == no_sts
+                return data.kd_rek6 == kd_rek6 && rupiah(data.nilai) == angka(nilai)
             }).remove().draw();
             $('#total').val(new Intl.NumberFormat('id-ID', {
                 minimumFractionDigits: 2

@@ -5,9 +5,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    List SPP GU
+                    <p>List SPP GU</p>
+                    <p style="float: left; color: red;" {{ $kunci === '0' ? 'hidden' : '' }}>Saat ini inputan SPP GU
+                        sedang dikunci. Untuk info lebih lanjut silahkan hubungi Perben.</p>
                     <a href="{{ route('spp_gu.tambah') }}" class="btn btn-primary" style="float: right;"
-                        {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a>
+                        {{ $kunci === '1' ? 'hidden' : '' }}>Tambah</a>
                 </div>
                 <div class="card-body">
                     <div class="table-rep-plugin">
@@ -59,7 +61,7 @@
                     {{-- Bendahara --}}
                     <div class="mb-3 row">
                         <label for="bendahara" class="col-md-2 col-form-label">Bendahara</label>
-                        <div class="col-md-6">
+                        <div class="col-md-10">
                             <select name="bendahara" class="form-control select-modal" id="bendahara">
                                 <option value="" selected disabled>Silahkan Pilih</option>
                                 @foreach ($bendahara as $ttd)
@@ -68,14 +70,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" name="nama_bendahara" id="nama_bendahara" class="form-control" readonly>
-                        </div>
                     </div>
                     {{-- PPTK --}}
                     <div class="mb-3 row">
                         <label for="pptk" class="col-md-2 col-form-label">PPTK</label>
-                        <div class="col-md-6">
+                        <div class="col-md-10">
                             <select name="pptk" class="form-control select-modal" id="pptk">
                                 <option value="" selected disabled>Silahkan Pilih</option>
                                 @foreach ($pptk as $ttd)
@@ -84,14 +83,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" name="nama_pptk" id="nama_pptk" class="form-control" readonly>
-                        </div>
                     </div>
                     {{-- PA/KPA --}}
                     <div class="mb-3 row">
                         <label for="pa_kpa" class="col-md-2 col-form-label">PA/KPA</label>
-                        <div class="col-md-6">
+                        <div class="col-md-10">
                             <select name="pa_kpa" class="form-control select-modal" id="pa_kpa">
                                 <option value="" selected disabled>Silahkan Pilih</option>
                                 @foreach ($pa_kpa as $ttd)
@@ -100,14 +96,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" name="nama_pa_kpa" id="nama_pa_kpa" class="form-control" readonly>
-                        </div>
                     </div>
                     {{-- PPKD --}}
                     <div class="mb-3 row">
                         <label for="ppkd" class="col-md-2 col-form-label">PPKD</label>
-                        <div class="col-md-6">
+                        <div class="col-md-10">
                             <select name="ppkd" class="form-control select-modal" id="ppkd">
                                 <option value="" selected disabled>Silahkan Pilih</option>
                                 @foreach ($ppkd as $ttd)
@@ -116,8 +109,18 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <input type="text" name="nama_ppkd" id="nama_ppkd" class="form-control" readonly>
+                    </div>
+                    {{-- PPK --}}
+                    <div class="mb-3 row">
+                        <label for="ppk" class="col-md-2 col-form-label">PPK</label>
+                        <div class="col-md-10">
+                            <select name="ppk" class="form-control select-modal" id="ppk">
+                                <option value="" selected disabled>Silahkan Pilih</option>
+                                @foreach ($ppk as $ttd)
+                                    <option value="{{ $ttd->nip }}" data-nama="{{ $ttd->nama }}">
+                                        {{ $ttd->nip }} | {{ $ttd->nama }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     {{-- Spasi --}}
@@ -199,6 +202,42 @@
                         <div class="col-md-12 text-center">
                             <button type="button" class="btn btn-md btn-secondary"
                                 data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="batal_spp" class="modal" role="dialog" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">KETERANGAN PEMBATALAN SPP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{-- No SPP --}}
+                    <div class="mb-3 row">
+                        <label for="no_spp_batal" class="col-md-2 col-form-label">No SPP</label>
+                        <div class="col-md-12">
+                            <input type="text" readonly class="form-control" id="no_spp_batal" name="no_spp_batal">
+                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal"
+                                hidden>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="keterangan_batal" class="col-md-2 col-form-label">Keterangan</label>
+                        <div class="col-md-12">
+                            <textarea type="text" class="form-control" id="keterangan_batal" name="keterangan_batal"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i
+                                    class="uil-ban"></i>Batal SPP</button>
+                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i
+                                    class="fa fa-undo"></i>Keluar</button>
                         </div>
                     </div>
                 </div>

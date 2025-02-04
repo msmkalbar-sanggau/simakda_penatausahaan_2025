@@ -34,7 +34,7 @@
                 if (data.status_bud == '1') {
                     $(row).css("background-color", "#4bbe68");
                     $(row).css("color", "white");
-                } else if (data.sp2d_batal == '1') {
+                } else if (data.sp2d_batal == '1' || data.sp2dBatal == '1') {
                     $(row).css("background-color", "#ff0000");
                     $(row).css("color", "white");
                 } else if (data.status_bud == '1' && data.status_uji == '4') {
@@ -316,6 +316,9 @@
                         if (data.message == '1') {
                             alert('SP2D Berhasil Dibatalkan');
                             window.location.href = "{{ route('sp2d.index') }}";
+                        } else if (data.message == '2') {
+                            alert('SP2D Tidak Dapat Dibatalkan!Silahkan refresh!');
+                            return;
                         } else {
                             alert('SP2D Tidak Berhasil Dibatalkan');
                             return;

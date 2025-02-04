@@ -104,19 +104,26 @@ class SppUpController extends Controller
         $nama_penerima = $request->nama_penerima;
         $nm_skpd = $request->nm_skpd;
         $kode_akun = $request->kode_akun;
+        $nama_akun = $request->nama_akun;
         $nilai_up = $request->nilai_up;
-        $no_urut = $request->no_urut;
+        // $no_urut = $request->no_urut;
         $kd_skpd = $request->kd_skpd;
         DB::beginTransaction();
         try {
-            $cek = DB::table('trhspp')->select('no_spp')->where(['no_spp' => $no_spp])->count();
+            $nomorSppBaru = nomorSppBaru("spp", $no_spp, $tgl_spp, $beban);
+            $cek = DB::table('trhspp')
+            ->select('no_spp')
+            ->where(['no_spp' => $nomorSppBaru])
+            ->count();
+
             if ($cek > 0) {
                 return response()->json([
                     'message' => '2'
                 ]);
             } else {
-                DB::table('trhspp')->insert([
-                    'no_spp' => $no_spp,
+                DB::table('trhspp')
+                ->insert([
+                    'no_spp' => $nomorSppBaru,
                     'kd_skpd' => $kd_skpd,
                     'keperluan' => $keperluan,
                     'no_spd' => $no_spd,
@@ -127,14 +134,26 @@ class SppUpController extends Controller
                     'no_rek' => $rekening,
                     'npwp' => $npwp,
                     'nm_skpd' => $nm_skpd,
-                    'bulan' => $bulan,
                     'tgl_spp' => $tgl_spp,
                     'status' => '0',
                     'nilai' => $nilai_up,
-                    'urut' => $no_urut,
+                    'urut' => $no_spp,
                     'username' => Auth::user()->nama,
                     'last_update' => date('Y-m-d H:i:s')
                 ]);
+
+                DB::table('trdspp')
+                    ->where(['no_spp' => $nomorSppBaru, 'kd_rek6' => $kode_akun])
+                    ->delete();
+
+                DB::table('trdspp')
+                    ->insert([
+                        'no_spp' => $nomorSppBaru,
+                        'kd_skpd' => $kd_skpd,
+                        'kd_rek6' => $kode_akun,
+                        'nm_rek6' => $nama_akun,
+                        'nilai' => $nilai_up,
+                    ]);
 
                 DB::commit();
                 return response()->json([
@@ -144,40 +163,42 @@ class SppUpController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => '0'
+                'message' => '0',
+                'error' => $e->getMessage()
             ]);
         }
     }
 
-    public function simpanDetailSpp(Request $request)
-    {
-        $no_spp = $request->no_spp;
-        $kode_akun = $request->kode_akun;
-        $nama_akun = $request->nama_akun;
-        $nilai_up = $request->nilai_up;
-        $kd_skpd = $request->kd_skpd;
+    // public function simpanDetailSpp(Request $request)
+    // {
+    //     $no_spp = $request->no_spp;
+    //     $kode_akun = $request->kode_akun;
+    //     $nama_akun = $request->nama_akun;
+    //     $nilai_up = $request->nilai_up;
+    //     $kd_skpd = $request->kd_skpd;
 
-        DB::beginTransaction();
-        try {
-            DB::table('trdspp')->where(['no_spp' => $no_spp, 'kd_rek6' => $kode_akun])->delete();
-            DB::table('trdspp')->insert([
-                'no_spp' => $no_spp,
-                'kd_skpd' => $kd_skpd,
-                'kd_rek6' => $kode_akun,
-                'nm_rek6' => $nama_akun,
-                'nilai' => $nilai_up,
-            ]);
-            DB::commit();
-            return response()->json([
-                'message' => '1'
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => '0'
-            ]);
-        }
-    }
+    //     DB::beginTransaction();
+    //     try {
+    //         DB::table('trdspp') ->where(['no_spp' => $nomorSppBaru, 'kd_rek6' => $kode_akun])->delete();
+    //         DB::table('trdspp')->insert([
+    //             'no_spp' => $nomorSppBaru,
+    //             'kd_skpd' => $kd_skpd,
+    //             'kd_rek6' => $kode_akun,
+    //             'nm_rek6' => $nama_akun,
+    //             'nilai' => $nilai_up,
+    //         ]);
+    //         DB::commit();
+    //         return response()->json([
+    //             'message' => '1'
+    //         ]);
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'message' => '0',
+    //             'error' => $e->getMessage()
+    //         ]);
+    //     }
+    // }
 
     public function edit($no_spp)
     {
@@ -257,12 +278,40 @@ class SppUpController extends Controller
     public function hapus(Request $request)
     {
         $no_spp = $request->no_spp;
-        $kd_skpd = Auth::user()->kd_skpd;
+        $kd_skpd = $request->kd_skpd;
 
         DB::beginTransaction();
         try {
-            DB::table('trdspp')->where(['kd_skpd' => $kd_skpd, 'no_spp' => $no_spp])->delete();
-            DB::table('trhspp')->where(['kd_skpd' => $kd_skpd, 'no_spp' => $no_spp])->delete();
+            $cek = DB::table('trhspm')
+                ->where([
+                    'no_spp' => $no_spp,
+                    'kd_skpd' => $kd_skpd
+                ])
+                ->where(function ($query) {
+                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
+                })
+                ->count();
+
+            if ($cek > 0) {
+                return response()->json([
+                    'message' => '2'
+                ]);
+            }
+
+            DB::table('trdspp')
+                ->where([
+                    'kd_skpd' => $kd_skpd,
+                    'no_spp' => $no_spp
+                ])
+                ->delete();
+
+            DB::table('trhspp')
+                ->where([
+                    'kd_skpd' => $kd_skpd,
+                    'no_spp' => $no_spp
+                ])
+                ->delete();
+
             DB::commit();
             return response()->json([
                 'message' => '1'
@@ -588,4 +637,50 @@ class SppUpController extends Controller
             return $view;
         }
     }
+
+    public function batalSpp(Request $request)
+    {
+        $no_spp = $request->no_spp;
+        $keterangan = $request->keterangan;
+        $nama = Auth::user()->nama;
+        $waktu_ubah = date('Y-m-d H:i:s');
+
+        DB::beginTransaction();
+        try {
+            $cek = DB::table('trhspm')
+                ->where([
+                    'no_spp' => $no_spp
+                ])
+                ->where(function ($query) {
+                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
+                })
+                ->count();
+
+            if ($cek > 0) {
+                return response()->json([
+                    'message' => '2'
+                ]);
+            }
+
+            DB::table('trhspp')
+                ->where(['no_spp' => $no_spp])
+                ->update([
+                    'sp2d_batal' => '1',
+                    'ket_batal' => $keterangan,
+                    'user_batal' => $nama,
+                    'tgl_batal' => $waktu_ubah
+                ]);
+
+            DB::commit();
+            return response()->json([
+                'message' => '1'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => '0'
+            ]);
+        }
+    }
 }
+

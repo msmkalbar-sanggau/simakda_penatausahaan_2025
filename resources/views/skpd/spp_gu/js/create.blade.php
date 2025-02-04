@@ -143,7 +143,7 @@
 
         $('#simpan').on('click', function() {
             let no_spp = document.getElementById('no_spp').value;
-            let no_urut = document.getElementById('no_urut').value;
+            // let no_urut = document.getElementById('no_urut').value;
             let tgl_spp = document.getElementById('tgl_spp').value;
             let tgl_lalu = document.getElementById('tgl_lalu').value;
             let kd_skpd = document.getElementById('kd_skpd').value;
@@ -173,6 +173,11 @@
                 };
                 return data;
             });
+
+            if (no_spp == 0) {
+                alert('Nomor SPP tidak boleh NULL!');
+                return;
+            }
 
             if (!no_spp) {
                 alert('Nomor tidak boleh kosong');
@@ -241,7 +246,7 @@
 
             let data = {
                 no_spp,
-                no_urut,
+                // no_urut,
                 tgl_spp,
                 kd_skpd,
                 nm_skpd,
