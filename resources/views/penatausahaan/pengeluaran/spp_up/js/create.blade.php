@@ -166,7 +166,7 @@
                     jenis_beban: jenis_beban,
                 },
                 success: function(data) {
-                    let no_spp = "13.07/02.0/" + data.nilai + "/" + "UP" + "/" + kd_skpd + "/M/" +
+                    let no_spp = "61.03/02.0/" + data.nilai + "/" + "UP" + "/" + kd_skpd + "/M/" +
                         bulan + "/" +
                         tahun_anggaran;
                     $('#no_urut').val(data.nilai);

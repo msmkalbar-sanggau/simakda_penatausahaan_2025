@@ -136,22 +136,22 @@
                 success: function(data) {
                     $('#nomor_urut').val(data.nomor);
                     if (beban == '1') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/UP/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/UP/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '2') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '3') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/TU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/TU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '4') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '5' || beban == '6') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '7') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU-NIHIL/' +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU-NIHIL/' +
                             kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     }
@@ -191,22 +191,22 @@
                 success: function(data) {
                     $('#nomor_urut').val(data.nomor);
                     if (beban == '1') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/UP/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/UP/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '2') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '3') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/TU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/TU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '4') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '5' || beban == '6') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '7') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU-NIHIL/' +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU-NIHIL/' +
                             kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     }
@@ -254,9 +254,9 @@
             //         } else if (beban == '3') {
             //             $('#no_sp2d').val(data.nomor + '/TU/' + thn_anggaran);
             //         } else if (beban == '4') {
-            //             $('#no_sp2d').val('13.07/04.0/'+data.nomor + '/LS/' +'/'+thn_anggaran);
+            //             $('#no_sp2d').val('61.03/04.0/'+data.nomor + '/LS/' +'/'+thn_anggaran);
             //         } else if (beban == '5' || beban == '6') {
-            //             $('#no_sp2d').val('13.07/04.0/'+data.nomor + '/LS/' +'/'+thn_anggaran);
+            //             $('#no_sp2d').val('61.03/04.0/'+data.nomor + '/LS/' +'/'+thn_anggaran);
             //         }
             //     }
             // })
@@ -310,22 +310,22 @@
                     // alert(kd_skpd);
                     $('#nomor_urut').val(data.nomor);
                     if (beban == '1') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/UP/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/UP/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '2') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '3') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/TU/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/TU/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '4') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '5' || beban == '6') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/LS/' + kd_skpd +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/LS/' + kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     } else if (beban == '7') {
-                        $('#no_sp2d').val('13.07/04.0/' + data.nomor + '/GU-NIHIL/' +
+                        $('#no_sp2d').val('61.03/04.0/' + data.nomor + '/GU-NIHIL/' +
                             kd_skpd +
                             '/M/' + bulan + '/' + thn_anggaran);
                     }

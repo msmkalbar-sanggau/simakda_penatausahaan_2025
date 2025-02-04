@@ -218,7 +218,7 @@
                 $('#nm_skpd').val(skpd.nm_skpd)
                 $('#nip').prop('disabled', false)
                 $('#nomor').prop('disabled', false)
-                $("#nomor").val('13.07/01.0//' + skpd.kd_skpd + '/' + jenis_anggaran + '/' +
+                $("#nomor").val('61.03/01.0//' + skpd.kd_skpd + '/' + jenis_anggaran + '/' +
                     bulanspd() + '/' + tahun)
                 $('#jenis_anggaran').prop('disabled', false)
             } else {
@@ -235,7 +235,7 @@
             let tahun = "{{ tahun_anggaran() }}";
             let skpd = document.getElementById('kd_skpd').value;
             let jenis_anggaran = document.getElementById('jenis_anggaran').value;
-            $("#nomor").val('13.07/01.0//' + skpd + '/' + jenis_anggaran + '/' + bulanspd() + '/' +
+            $("#nomor").val('61.03/01.0//' + skpd + '/' + jenis_anggaran + '/' + bulanspd() + '/' +
                 tahun)
         }).trigger('select2:select');
 
@@ -245,7 +245,7 @@
             let tahun = "{{ tahun_anggaran() }}";
             let skpd = document.getElementById('kd_skpd').value;
             let jenis_anggaran = document.getElementById('jenis_anggaran').value;
-            $("#nomor").val('13.07/01.0//' + skpd + '/' + jenis_anggaran + '/' + bulanspd() + '/' +
+            $("#nomor").val('61.03/01.0//' + skpd + '/' + jenis_anggaran + '/' + bulanspd() + '/' +
                 tahun)
         }).trigger('select2:select');
 
