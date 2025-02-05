@@ -20,6 +20,7 @@ class SPDBelanjaController extends Controller
     {
         $data = [
             'ppkd' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where(['kode' => 'PPKD'])->get(),
+            'daftar_anggaran' => DB::select("SELECT * from tb_status_anggaran where status_aktif=?", ['1'])
         ];
         return view('penatausahaan.spd.spd_belanja.index')->with($data);
     }
@@ -77,7 +78,7 @@ class SPDBelanjaController extends Controller
 
         $results = DB::table('ms_skpd')
             ->select('kd_skpd as id', 'nm_skpd as text', 'kd_skpd', 'nm_skpd')
-            //->whereRaw("right(kd_skpd, 5) = '.0000'")
+            ->whereRaw("right(kd_skpd, 5) = '.0000'")
             ->when($term, function ($query, $term) {
                 $query->where(function ($query) use ($term) {
                     $query->orWhere('kd_skpd', 'like', '%' . $term . '%')
@@ -138,7 +139,7 @@ class SPDBelanjaController extends Controller
 
     public function getSpdBelanja(Request $request)
     {
-        $kd_skpd = left($request->kd_skpd, 22);
+        $kd_skpd = left($request->kd_skpd, 17);
         $skpd = $request->kd_skpd;
         $jns_ang = $request->jns_ang;
         $tgl = $request->tanggal;
@@ -158,31 +159,31 @@ class SPDBelanjaController extends Controller
                             a.kd_rek6 , a.nm_rek6, isnull(a.total_ubah, 0) AS anggaran, isnull(nilai,0) AS nilai, isnull(lalu, 0) as lalu
                         FROM
                         (
-                            SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program, b.kd_rek6 , b.nm_rek6 , SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 22) kd_skpd
+                            SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program, b.kd_rek6 , b.nm_rek6 , SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 17) kd_skpd
                                 FROM trskpd a
                                 INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                                 INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                            WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang= ?
-                            GROUP BY LEFT(a.kd_skpd, 22), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan, a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
+                            WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang= ?
+                            GROUP BY LEFT(a.kd_skpd, 17), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan, a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
                         ) a LEFT JOIN
                         (
-                            SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 22) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
+                            SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 17) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
                                 FROM trdskpd_ro b
-                            WHERE (b.bulan BETWEEN ? AND ?) AND LEFT(kd_skpd, 22) = ?
-                            GROUP BY LEFT(kd_skpd, 22), kd_skpd, kd_sub_kegiatan, kd_rek6
+                            WHERE (b.bulan BETWEEN ? AND ?) AND LEFT(kd_skpd, 17) = ?
+                            GROUP BY LEFT(kd_skpd, 17), kd_skpd, kd_sub_kegiatan, kd_rek6
                         ) b ON a.kd_unit= b.kd_unit AND a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_rek6= b.kd_rek6 LEFT JOIN
                         (
                             SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu
                                 FROM trdspd a
                                 LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                            WHERE LEFT(b.kd_skpd, 22) = ?  AND a.no_spd != ? AND b.tgl_spd < ?
+                            WHERE LEFT(b.kd_skpd, 17) = ?  AND a.no_spd != ? AND b.tgl_spd < ?
                             GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                         ) c ON a.kd_unit= c.kd_skpd AND a.kd_sub_kegiatan= c.kd_sub_kegiatan AND a.kd_rek6= c.kd_rek6
                     WHERE a.kd_sub_kegiatan NOT IN(SELECT TOP 0 x.kd_sub_kegiatan FROM trskpd x INNER JOIN ms_sub_kegiatan y ON x.kd_sub_kegiatan= y.kd_sub_kegiatan
-                            WHERE LEFT (x.kd_skpd, 22) = ? AND y.jns_sub_kegiatan IN ('61', '62', '4'))
+                            WHERE LEFT (x.kd_skpd, 17) = ? AND y.jns_sub_kegiatan IN ('61', '62', '4'))
                         AND NOT EXISTS (
                             SELECT * FROM spd_temp where
-                            left(a.kd_unit, 22) = left(spd_temp.kd_skpd, 22)
+                            left(a.kd_unit, 17) = left(spd_temp.kd_skpd, 17)
                             AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                             AND a.kd_rek6 = spd_temp.kd_rek6 AND spd_temp.bulan_awal = ?
                             AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
@@ -201,32 +202,32 @@ class SPDBelanjaController extends Controller
                         FROM
                         (
                             SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program,
-                                    b.kd_rek6, b.nm_rek6, SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 22) kd_skpd
+                                    b.kd_rek6, b.nm_rek6, SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 17) kd_skpd
                                 FROM trskpd a
                                 INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                                 INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                            WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang = ?
-                            GROUP BY LEFT(a.kd_skpd, 22), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan,
+                            WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang = ?
+                            GROUP BY LEFT(a.kd_skpd, 17), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan,
                                     a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
                         ) a LEFT JOIN
                         (
-                            SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 22) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
+                            SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 17) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
                                 FROM trdskpd_ro b
-                            WHERE b.bulan >= ? AND b.bulan <= ? AND LEFT(kd_skpd, 22) = ?
-                            GROUP BY LEFT(kd_skpd, 22), kd_skpd, kd_sub_kegiatan, kd_rek6
+                            WHERE b.bulan >= ? AND b.bulan <= ? AND LEFT(kd_skpd, 17) = ?
+                            GROUP BY LEFT(kd_skpd, 17), kd_skpd, kd_sub_kegiatan, kd_rek6
                         ) b ON a.kd_unit= b.kd_unit AND a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_rek6= b.kd_rek6 LEFT JOIN
                         (
                             SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu
                                 FROM trdspd a
                                 LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                            WHERE LEFT(b.kd_skpd, 22) = ? AND a.no_spd != ? AND b.tgl_spd < ?
+                            WHERE LEFT(b.kd_skpd, 17) = ? AND a.no_spd != ? AND b.tgl_spd < ?
                             GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                         ) c ON a.kd_unit= c.kd_skpd AND a.kd_sub_kegiatan= c.kd_sub_kegiatan AND a.kd_rek6= c.kd_rek6 LEFT JOIN
                         (
                             SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu_tw
                                 FROM trdspd a
                                 LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                            WHERE LEFT(b.kd_skpd, 22) = ? AND b.bulan_awal= ? AND b.bulan_akhir= ? AND a.no_spd != ? AND b.tgl_spd < ?
+                            WHERE LEFT(b.kd_skpd, 17) = ? AND b.bulan_awal= ? AND b.bulan_akhir= ? AND a.no_spd != ? AND b.tgl_spd < ?
                             GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                         ) d ON a.kd_unit= d.kd_skpd AND a.kd_sub_kegiatan= d.kd_sub_kegiatan AND a.kd_rek6= d.kd_rek6
                     WHERE a.kd_unit + a.kd_sub_kegiatan + a.kd_rek6 NOT IN
@@ -234,12 +235,13 @@ class SPDBelanjaController extends Controller
                             FROM trskpd a
                             INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                             INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                            WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '6'
+                            WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '6'
                             GROUP BY b.kd_skpd, b.kd_sub_kegiatan, b.kd_rek6
                         )
                         AND NOT EXISTS (
                             SELECT * FROM spd_temp where
-                            left(a.kd_unit, 22) = left(spd_temp.kd_skpd, 22)
+                            left(a.kd_unit, 17) = left(spd_temp.kd_skpd, 17)
+                            -- a.kd_unit = spd_temp.kd_skpd
                             AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                             AND a.kd_rek6 = spd_temp.kd_rek6
                             AND spd_temp.bulan_awal = ? AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
@@ -294,7 +296,7 @@ class SPDBelanjaController extends Controller
                             WHERE a.kd_skpd = ? AND b.jns_sub_kegiatan = '5'
                         ) AND NOT EXISTS (
                             SELECT * FROM spd_temp where
-                            left(a.kd_skpd, 22) = left(spd_temp.kd_skpd, 22)
+                            left(a.kd_skpd, 17) = left(spd_temp.kd_skpd, 17)
                             AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                             AND a.kd_rek6 = spd_temp.kd_rek6
                             AND spd_temp.bulan_awal = ? AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
@@ -348,7 +350,7 @@ class SPDBelanjaController extends Controller
 
     public function getSpdBelanjaTemp(Request $request)
     {
-        $kd_skpd = left($request->kd_skpd, 22);
+        $kd_skpd = left($request->kd_skpd, 17);
         $jns_ang = $request->jns_ang;
         $bulanAwal = $request->bln_awal;
         $bulanAkhir = $request->bln_akhir;
@@ -359,7 +361,7 @@ class SPDBelanjaController extends Controller
 
         $data = DB::select(
             "SELECT * FROM spd_temp where
-                left(kd_skpd, 22) = ? AND bulan_awal = ?
+                left(kd_skpd, 17) = ? AND bulan_awal = ?
                 AND bulan_akhir = ? AND jns_ang = ?
                 AND jns_angkas = ? AND jns_beban = ? and revisi = ? and page_id = ?",
             [
@@ -407,7 +409,7 @@ class SPDBelanjaController extends Controller
     public function getInsertAllSpdTemp(Request $request)
     {
         $data = $request->data;
-        $kd_skpd = left($data['kd_skpd'], 22);
+        $kd_skpd = left($data['kd_skpd'], 17);
         $skpd = $data['kd_skpd'];
         $jns_ang = $data['jns_ang'];
         $tgl = $data['tanggal'];
@@ -431,31 +433,31 @@ class SPDBelanjaController extends Controller
                             ?, ?, ?, ?, isnull(lalu,0) as lalu, isnull(a.total_ubah,0) AS anggaran, ?, ?, ?
                             FROM
                             (
-                                SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program, b.kd_rek6 , b.nm_rek6 , SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 22) kd_skpd
+                                SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program, b.kd_rek6 , b.nm_rek6 , SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 17) kd_skpd
                                     FROM trskpd a
                                     INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                                     INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                                WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang= ?
-                                GROUP BY LEFT(a.kd_skpd, 22), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan, a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
+                                WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang= ?
+                                GROUP BY LEFT(a.kd_skpd, 17), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan, a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
                             ) a LEFT JOIN
                             (
-                                SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 22) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
+                                SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 17) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
                                     FROM trdskpd_ro b
-                                WHERE (b.bulan BETWEEN ? AND ?) AND LEFT(kd_skpd, 22) = ?
-                                GROUP BY LEFT(kd_skpd, 22), kd_skpd, kd_sub_kegiatan, kd_rek6
+                                WHERE (b.bulan BETWEEN ? AND ?) AND LEFT(kd_skpd, 17) = ?
+                                GROUP BY LEFT(kd_skpd, 17), kd_skpd, kd_sub_kegiatan, kd_rek6
                             ) b ON a.kd_unit= b.kd_unit AND a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_rek6= b.kd_rek6 LEFT JOIN
                             (
                                 SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu
                                     FROM trdspd a
                                     LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                                WHERE LEFT(b.kd_skpd, 22) = ?  AND a.no_spd != ? AND b.tgl_spd < ?
+                                WHERE LEFT(b.kd_skpd, 17) = ?  AND a.no_spd != ? AND b.tgl_spd < ?
                                 GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                             ) c ON a.kd_unit= c.kd_skpd AND a.kd_sub_kegiatan= c.kd_sub_kegiatan AND a.kd_rek6= c.kd_rek6
                         WHERE a.kd_sub_kegiatan NOT IN(SELECT TOP 0 x.kd_sub_kegiatan FROM trskpd x INNER JOIN ms_sub_kegiatan y ON x.kd_sub_kegiatan= y.kd_sub_kegiatan
-                                WHERE LEFT (x.kd_skpd, 22) = ? AND y.jns_sub_kegiatan IN ('61', '62', '4'))
+                                WHERE LEFT (x.kd_skpd, 17) = ? AND y.jns_sub_kegiatan IN ('61', '62', '4'))
                             AND NOT EXISTS (
                                 SELECT 1 FROM spd_temp where
-                                left(a.kd_unit, 22) = left(spd_temp.kd_skpd, 22) AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
+                                left(a.kd_unit, 17) = left(spd_temp.kd_skpd, 17) AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                                 AND a.kd_rek6 = spd_temp.kd_rek6 AND spd_temp.bulan_awal = ?
                                 AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
                                 AND spd_temp.jns_angkas = ? AND spd_temp.jns_beban = ? and spd_temp.page_id = ?
@@ -477,32 +479,32 @@ class SPDBelanjaController extends Controller
                             FROM
                             (
                                 SELECT a.kd_skpd AS kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program,
-                                        b.kd_rek6, b.nm_rek6, SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 22) kd_skpd
+                                        b.kd_rek6, b.nm_rek6, SUM(b.nilai) AS total_ubah, LEFT(a.kd_skpd, 17) kd_skpd
                                     FROM trskpd a
                                     INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                                     INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                                WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang = ?
-                                GROUP BY LEFT(a.kd_skpd, 22), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan,
+                                WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '5' AND b.jns_ang = ?
+                                GROUP BY LEFT(a.kd_skpd, 17), a.kd_skpd, a.kd_program, a.nm_program, b.kd_sub_kegiatan,
                                         a.nm_sub_kegiatan, b.kd_rek6, b.nm_rek6
                             ) a LEFT JOIN
                             (
-                                SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 22) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
+                                SELECT kd_sub_kegiatan, b.kd_rek6, LEFT(kd_skpd, 17) kd_skpd, kd_skpd AS kd_unit, SUM($sts_ang) AS nilai
                                     FROM trdskpd_ro b
-                                WHERE b.bulan >= ? AND b.bulan <= ? AND LEFT(kd_skpd, 22) = ?
-                                GROUP BY LEFT(kd_skpd, 22), kd_skpd, kd_sub_kegiatan, kd_rek6
+                                WHERE b.bulan >= ? AND b.bulan <= ? AND LEFT(kd_skpd, 17) = ?
+                                GROUP BY LEFT(kd_skpd, 17), kd_skpd, kd_sub_kegiatan, kd_rek6
                             ) b ON a.kd_unit= b.kd_unit AND a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_rek6= b.kd_rek6 LEFT JOIN
                             (
                                 SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu
                                     FROM trdspd a
                                     LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                                WHERE LEFT(b.kd_skpd, 22) = ? AND a.no_spd != ? AND b.tgl_spd < ?
+                                WHERE LEFT(b.kd_skpd, 17) = ? AND a.no_spd != ? AND b.tgl_spd < ?
                                 GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                             ) c ON a.kd_unit= c.kd_skpd AND a.kd_sub_kegiatan= c.kd_sub_kegiatan AND a.kd_rek6= c.kd_rek6 LEFT JOIN
                             (
                                 SELECT kd_unit AS kd_skpd, kd_sub_kegiatan, kd_rek6, isnull(SUM(a.nilai), 0) AS lalu_tw
                                     FROM trdspd a
                                     LEFT JOIN trhspd b ON a.no_spd= b.no_spd
-                                WHERE LEFT(b.kd_skpd, 22) = ? AND b.bulan_awal= ? AND b.bulan_akhir= ? AND a.no_spd != ? AND b.tgl_spd < ?
+                                WHERE LEFT(b.kd_skpd, 17) = ? AND b.bulan_awal= ? AND b.bulan_akhir= ? AND a.no_spd != ? AND b.tgl_spd < ?
                                 GROUP BY kd_unit, kd_sub_kegiatan, kd_rek6
                             ) d ON a.kd_unit= d.kd_skpd AND a.kd_sub_kegiatan= d.kd_sub_kegiatan AND a.kd_rek6= d.kd_rek6
                         WHERE a.kd_unit + a.kd_sub_kegiatan + a.kd_rek6 NOT IN
@@ -510,12 +512,12 @@ class SPDBelanjaController extends Controller
                                 FROM trskpd a
                                 INNER JOIN trdrka b ON a.kd_sub_kegiatan= b.kd_sub_kegiatan AND a.kd_skpd= b.kd_skpd
                                 INNER JOIN ms_sub_kegiatan c ON a.kd_sub_kegiatan= c.kd_sub_kegiatan
-                                WHERE LEFT(b.kd_skpd, 22) = ? AND c.jns_sub_kegiatan= '6'
+                                WHERE LEFT(b.kd_skpd, 17) = ? AND c.jns_sub_kegiatan= '6'
                                 GROUP BY b.kd_skpd, b.kd_sub_kegiatan, b.kd_rek6
                             )
                             AND NOT EXISTS (
                                 SELECT 1 FROM spd_temp where
-                                left(a.kd_unit, 22) = left(spd_temp.kd_skpd, 22) AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
+                                left(a.kd_unit, 17) = left(spd_temp.kd_skpd, 17) AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                                 AND a.kd_rek6 = spd_temp.kd_rek6 AND spd_temp.bulan_awal = ?
                                 AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
                                 AND spd_temp.jns_angkas = ? AND spd_temp.jns_beban = ? and spd_temp.page_id = ?
@@ -572,7 +574,7 @@ class SPDBelanjaController extends Controller
                                 WHERE a.kd_skpd = ? AND b.jns_sub_kegiatan = '5'
                             ) AND NOT EXISTS (
                                 SELECT * FROM spd_temp where
-                                left(a.kd_skpd, 22) = left(spd_temp.kd_skpd, 22)
+                                left(a.kd_skpd, 17) = left(spd_temp.kd_skpd, 17)
                                 AND a.kd_sub_kegiatan = spd_temp.kd_sub_kegiatan
                                 AND a.kd_rek6 = spd_temp.kd_rek6
                                 AND spd_temp.bulan_awal = ? AND spd_temp.bulan_akhir = ? AND spd_temp.jns_ang = ?
@@ -687,7 +689,7 @@ class SPDBelanjaController extends Controller
                         'jns_angkas' => $data['status_angkas'],
                     ]);
 
-                    if ($data['jenis'] == '6') {
+                    if ($data['jenis'] == '6' || $data['pilihan'] != 1) {
                         if (isset($rincian_data)) {
                             // DB::table('trdspd')->insert(array_map(function ($value) use ($data) {
                             //     return [
@@ -731,17 +733,17 @@ class SPDBelanjaController extends Controller
                                     b.nilai,c.lalu FROM(
 
                                      SELECT a.kd_skpd as kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program,b.kd_rek6 , b.nm_rek6 ,
-                                        sum(b.nilai) as total_ubah, left(a.kd_skpd,22) kd_skpd FROM trskpd a
+                                        sum(b.nilai) as total_ubah, left(a.kd_skpd,17) kd_skpd FROM trskpd a
                                      inner join trdrka b on a.kd_sub_kegiatan=b.kd_sub_kegiatan and a.kd_skpd=b.kd_skpd
                                      inner join ms_sub_kegiatan c on a.kd_sub_kegiatan=c.kd_sub_kegiatan
-                                     WHERE left(b.kd_skpd,22)=left(?,22) and c.jns_sub_kegiatan='5' and a.jns_ang=?
-                                    group by left(a.kd_skpd,22), a.kd_skpd,a.kd_program, a.nm_program,b.kd_sub_kegiatan,a.nm_sub_kegiatan,b.kd_rek6,b.nm_rek6
+                                     WHERE left(b.kd_skpd,17)=left(?,17) and c.jns_sub_kegiatan='5' and a.jns_ang=?
+                                    group by left(a.kd_skpd,17), a.kd_skpd,a.kd_program, a.nm_program,b.kd_sub_kegiatan,a.nm_sub_kegiatan,b.kd_rek6,b.nm_rek6
 
                                      ) a LEFT JOIN (
 
-                                        SELECT kd_sub_kegiatan, b.kd_rek6, left(kd_skpd,22) kd_skpd, kd_skpd as kd_unit, SUM($field_angkas) as nilai FROM trdskpd_ro b
-                                        WHERE b.bulan>=? AND b.bulan<=? AND left(kd_skpd,22)=left(?,22)
-                                        GROUP BY left(kd_skpd,22),kd_skpd,kd_sub_kegiatan,kd_rek6
+                                        SELECT kd_sub_kegiatan, b.kd_rek6, left(kd_skpd,17) kd_skpd, kd_skpd as kd_unit, SUM($field_angkas) as nilai FROM trdskpd_ro b
+                                        WHERE b.bulan>=? AND b.bulan<=? AND left(kd_skpd,17)=left(?,17)
+                                        GROUP BY left(kd_skpd,17),kd_skpd,kd_sub_kegiatan,kd_rek6
 
                                         )b ON a.kd_unit=b.kd_unit and a.kd_sub_kegiatan=b.kd_sub_kegiatan and a.kd_rek6=b.kd_rek6
 
@@ -749,7 +751,7 @@ class SPDBelanjaController extends Controller
 
                                      SELECT kd_unit as kd_skpd,kd_sub_kegiatan,kd_rek6,isnull(SUM(a.nilai),0) as lalu FROM trdspd a LEFT JOIN trhspd b
                                     ON a.no_spd=b.no_spd
-                                    WHERE left(b.kd_skpd,22)=left(?,22) and a.no_spd != ?
+                                    WHERE left(b.kd_skpd,17)=left(?,17) and a.no_spd != ?
                                     and b.tgl_spd<?
                                     GROUP BY kd_unit,kd_sub_kegiatan,kd_rek6
                                      ) c
@@ -786,7 +788,7 @@ class SPDBelanjaController extends Controller
 
                     $nomor1 = $data['nomor'];
 
-                    if ($data['jenis'] == '6') {
+                    if ($data['jenis'] == '6' || $data['pilihan'] != 1) {
                         if (isset($rincian_data)) {
                             // DB::table('trdspd')->insert(array_map(function ($value) use ($data) {
                             //     return [
@@ -830,17 +832,17 @@ class SPDBelanjaController extends Controller
                                             b.nilai-isnull(lalu_tw,0) as nilai,c.lalu FROM(
 
                                              SELECT a.kd_skpd as kd_unit, b.kd_sub_kegiatan, a.nm_sub_kegiatan, a.kd_program, a.nm_program,b.kd_rek6 , b.nm_rek6 ,
-                                                sum(b.nilai) as total_ubah, left(a.kd_skpd,22) kd_skpd FROM trskpd a
+                                                sum(b.nilai) as total_ubah, left(a.kd_skpd,17) kd_skpd FROM trskpd a
                                              inner join trdrka b on a.kd_sub_kegiatan=b.kd_sub_kegiatan and a.kd_skpd=b.kd_skpd
                                              inner join ms_sub_kegiatan c on a.kd_sub_kegiatan=c.kd_sub_kegiatan
-                                             WHERE left(b.kd_skpd,22)=left(?,22) and c.jns_sub_kegiatan='5' and a.jns_ang=?
-                                            group by left(a.kd_skpd,22), a.kd_skpd,a.kd_program, a.nm_program,b.kd_sub_kegiatan,a.nm_sub_kegiatan,b.kd_rek6,b.nm_rek6
+                                             WHERE left(b.kd_skpd,17)=left(?,17) and c.jns_sub_kegiatan='5' and a.jns_ang=?
+                                            group by left(a.kd_skpd,17), a.kd_skpd,a.kd_program, a.nm_program,b.kd_sub_kegiatan,a.nm_sub_kegiatan,b.kd_rek6,b.nm_rek6
 
                                              ) a LEFT JOIN (
 
-                                                SELECT kd_sub_kegiatan, b.kd_rek6, left(kd_skpd,22) kd_skpd, kd_skpd as kd_unit, SUM($field_angkas) as nilai FROM trdskpd_ro b
-                                                WHERE b.bulan>=? AND b.bulan<=? AND left(kd_skpd,22)=left(?,22)
-                                                GROUP BY left(kd_skpd,22),kd_skpd,kd_sub_kegiatan,kd_rek6
+                                                SELECT kd_sub_kegiatan, b.kd_rek6, left(kd_skpd,17) kd_skpd, kd_skpd as kd_unit, SUM($field_angkas) as nilai FROM trdskpd_ro b
+                                                WHERE b.bulan>=? AND b.bulan<=? AND left(kd_skpd,17)=left(?,17)
+                                                GROUP BY left(kd_skpd,17),kd_skpd,kd_sub_kegiatan,kd_rek6
 
                                                 )b ON a.kd_unit=b.kd_unit and a.kd_sub_kegiatan=b.kd_sub_kegiatan and a.kd_rek6=b.kd_rek6
 
@@ -848,7 +850,7 @@ class SPDBelanjaController extends Controller
 
                                              SELECT kd_unit as kd_skpd,kd_sub_kegiatan,kd_rek6,isnull(SUM(a.nilai),0) as lalu FROM trdspd a LEFT JOIN trhspd b
                                             ON a.no_spd=b.no_spd
-                                            WHERE left(b.kd_skpd,22)=left(?,22) and a.no_spd != ?
+                                            WHERE left(b.kd_skpd,17)=left(?,17) and a.no_spd != ?
                                             and b.tgl_spd<?
                                             GROUP BY kd_unit,kd_sub_kegiatan,kd_rek6
                                              ) c
@@ -858,7 +860,7 @@ class SPDBelanjaController extends Controller
                                             LEFT JOIN (
 
                                              SELECT kd_unit as kd_skpd,kd_sub_kegiatan,kd_rek6,isnull(SUM(a.nilai),0) as lalu_tw FROM trdspd a LEFT JOIN trhspd b ON a.no_spd=b.no_spd
-                                            WHERE left(b.kd_skpd,22)=left(?,22) and b.bulan_awal=? AND b.bulan_akhir=? and a.no_spd != ? and b.tgl_spd<?
+                                            WHERE left(b.kd_skpd,17)=left(?,17) and b.bulan_awal=? AND b.bulan_akhir=? and a.no_spd != ? and b.tgl_spd<?
                                             GROUP BY kd_unit,kd_sub_kegiatan,kd_rek6
                                              ) d
 
@@ -919,7 +921,7 @@ class SPDBelanjaController extends Controller
             ->where(['a.no_spd' => $nospd])->first();
         $no_dpa = DB::table('trhrka')->where(['kd_skpd' => $jenis->kd_skpd, 'jns_ang' => $jenis->jns_ang])->first();
         // $total_anggaran = DB::table('trdrka')
-        //     ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
+        //     ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
         //     ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
 
         $ttd = DB::table('ms_ttd')->where(['nip' => $nip])->first();
@@ -950,8 +952,8 @@ class SPDBelanjaController extends Controller
         // 			WHERE h.no_spd IN ('$arr')
         // 			GROUP BY h.kd_skpd, d.kd_sub_kegiatan, d.kd_rek6
         // 		) spd_lalu
-        // 		ON left(spd.kd_skpd, 22) = left(spd_lalu.kd_skpd, 22) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
-        // 		JOIN trdrka ON left(trdrka.kd_skpd, 22) = left(spd.kd_skpd, 22) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
+        // 		ON left(spd.kd_skpd, 17) = left(spd_lalu.kd_skpd, 17) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
+        // 		JOIN trdrka ON left(trdrka.kd_skpd, 17) = left(spd.kd_skpd, 17) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
         // 		GROUP BY spd.kd_program, spd.nm_program, spd.kd_skpd
 
         // 		UNION ALL
@@ -969,8 +971,8 @@ class SPDBelanjaController extends Controller
         // 			WHERE h.no_spd in ('$arr')
         // 			GROUP BY h.kd_skpd, d.kd_sub_kegiatan, d.kd_rek6
         // 		) spd_lalu
-        // 		ON left(spd.kd_skpd, 22) = left(spd_lalu.kd_skpd, 22) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
-        // 		JOIN trdrka ON left(trdrka.kd_skpd, 22) = left(spd.kd_skpd, 22) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
+        // 		ON left(spd.kd_skpd, 17) = left(spd_lalu.kd_skpd, 17) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
+        // 		JOIN trdrka ON left(trdrka.kd_skpd, 17) = left(spd.kd_skpd, 17) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
         // 		GROUP BY spd.kd_kegiatan, spd.nm_kegiatan, spd.kd_skpd, spd.kd_program
 
         // 		UNION ALL
@@ -988,8 +990,8 @@ class SPDBelanjaController extends Controller
         // 			WHERE h.no_spd in ('$arr')
         // 			GROUP BY h.kd_skpd, d.kd_sub_kegiatan, d.kd_rek6
         // 		) spd_lalu
-        // 		ON left(spd.kd_skpd, 22) = left(spd_lalu.kd_skpd, 22) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
-        // 		JOIN trdrka ON left(trdrka.kd_skpd, 22) = left(spd.kd_skpd,22) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
+        // 		ON left(spd.kd_skpd, 17) = left(spd_lalu.kd_skpd, 17) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
+        // 		JOIN trdrka ON left(trdrka.kd_skpd, 17) = left(spd.kd_skpd,17) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
         // 		GROUP BY spd.kd_sub_kegiatan, spd.nm_sub_kegiatan, spd.kd_skpd, spd.kd_program, spd.kd_kegiatan
 
         // 		UNION ALL
@@ -1007,8 +1009,8 @@ class SPDBelanjaController extends Controller
         // 			WHERE h.no_spd in ('$arr')
         // 			GROUP BY h.kd_skpd, d.kd_sub_kegiatan, d.kd_rek6
         // 		) spd_lalu
-        // 		ON left(spd.kd_skpd, 22) = left(spd_lalu.kd_skpd, 22) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
-        // 		JOIN trdrka ON left(trdrka.kd_skpd, 22) = left(spd.kd_skpd, 22) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
+        // 		ON left(spd.kd_skpd, 17) = left(spd_lalu.kd_skpd, 17) AND spd.kd_sub_kegiatan = spd_lalu.kd_sub_kegiatan AND spd.kd_rek6 = spd_lalu.kd_rek6
+        // 		JOIN trdrka ON left(trdrka.kd_skpd, 17) = left(spd.kd_skpd, 17) AND trdrka.kd_sub_kegiatan = spd.kd_sub_kegiatan AND trdrka.kd_rek6 = spd.kd_rek6 AND trdrka.jns_ang = spd.jns_ang
         // 		GROUP BY spd.kd_sub_kegiatan, spd.nm_sub_kegiatan, spd.kd_skpd, spd.kd_rek6, spd.nm_rek6, spd.kd_program, spd.kd_kegiatan
         // 	) spd ORDER BY urutan"
         // );
@@ -1047,7 +1049,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1064,7 +1066,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1082,7 +1084,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and b.status = '1'
@@ -1099,7 +1101,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='5'
         and b.status = '1'
@@ -1117,7 +1119,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and b.status = '1'
@@ -1134,7 +1136,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and b.status = '1'
@@ -1151,7 +1153,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1169,7 +1171,7 @@ class SPDBelanjaController extends Controller
             trdspd a
             JOIN trhspd b ON a.no_spd = b.no_spd
             WHERE
-            left(a.kd_unit,22) = left('$kd_skpd',22)
+            left(a.kd_unit,17) = left('$kd_skpd',17)
             AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
             AND a.kd_rek6=z.kd_rek6
             AND b.jns_beban='6'
@@ -1188,7 +1190,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1204,7 +1206,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1221,7 +1223,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1237,7 +1239,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1254,7 +1256,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1270,7 +1272,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1287,7 +1289,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1303,7 +1305,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1320,7 +1322,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1336,7 +1338,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1353,7 +1355,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1369,7 +1371,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1386,7 +1388,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1403,7 +1405,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1421,7 +1423,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='6'
@@ -1438,7 +1440,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='6'
@@ -1457,7 +1459,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1473,7 +1475,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1489,7 +1491,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1506,7 +1508,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1522,7 +1524,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1538,7 +1540,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1555,7 +1557,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1571,7 +1573,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1587,7 +1589,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1604,7 +1606,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1620,7 +1622,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1636,7 +1638,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1653,7 +1655,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1669,7 +1671,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1685,7 +1687,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1702,7 +1704,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1718,7 +1720,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1734,7 +1736,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,17)=left(z.kd_sub_kegiatan,17)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1751,7 +1753,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1768,7 +1770,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1785,7 +1787,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -1803,7 +1805,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -1820,7 +1822,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -1837,7 +1839,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -1856,7 +1858,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1872,7 +1874,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1888,7 +1890,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1904,7 +1906,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -1921,7 +1923,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1937,7 +1939,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1953,7 +1955,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1969,7 +1971,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,7)=left(z.kd_sub_kegiatan,7)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -1986,7 +1988,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2002,7 +2004,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2018,7 +2020,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2034,7 +2036,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2051,7 +2053,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2067,7 +2069,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2083,7 +2085,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2099,7 +2101,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND left(a.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2116,7 +2118,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2132,7 +2134,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2148,7 +2150,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2164,7 +2166,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND b.jns_beban='5'
                     and bulan_akhir<='$bulan_akhir'
@@ -2181,7 +2183,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2197,7 +2199,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2213,7 +2215,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2229,7 +2231,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND b.jns_beban='6'
         and bulan_akhir<='$bulan_akhir'
@@ -2246,7 +2248,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -2263,7 +2265,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -2280,7 +2282,7 @@ class SPDBelanjaController extends Controller
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left('$kd_skpd',22)
+                    left(a.kd_unit,17) = left('$kd_skpd',17)
                     AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     AND a.kd_rek6=z.kd_rek6
                     AND b.jns_beban='5'
@@ -2297,7 +2299,7 @@ class SPDBelanjaController extends Controller
                     -- trdspd a
                     -- JOIN trhspd b ON a.no_spd = b.no_spd
                     -- WHERE
-                    -- left(a.kd_unit,22) = left('$kd_skpd',22)
+                    -- left(a.kd_unit,17) = left('$kd_skpd',17)
                     -- AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
                     -- AND a.kd_rek6=z.kd_rek6
                     -- AND b.jns_beban='5'
@@ -2315,7 +2317,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -2332,7 +2334,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -2349,7 +2351,7 @@ class SPDBelanjaController extends Controller
         trdspd a
         JOIN trhspd b ON a.no_spd = b.no_spd
         WHERE
-        left(a.kd_unit,22) = left('$kd_skpd',22)
+        left(a.kd_unit,17) = left('$kd_skpd',17)
         AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         AND a.kd_rek6=z.kd_rek6
         AND b.jns_beban='6'
@@ -2366,7 +2368,7 @@ class SPDBelanjaController extends Controller
         -- trdspd a
         -- JOIN trhspd b ON a.no_spd = b.no_spd
         -- WHERE
-        -- left(a.kd_unit,22) = left('$kd_skpd',22)
+        -- left(a.kd_unit,17) = left('$kd_skpd',17)
         -- AND a.kd_sub_kegiatan=z.kd_sub_kegiatan
         -- AND a.kd_rek6=z.kd_rek6
         -- AND b.jns_beban='5'
@@ -2381,8 +2383,8 @@ class SPDBelanjaController extends Controller
 
         if ($jns_beban == '5') {
             $datalamp = DB::select("SELECT
-left(kd_skpd,22)+left(kd_sub_kegiatan,7) as no_urut,
-left(kd_skpd,22) kd_skpd,
+left(kd_skpd,17)+left(kd_sub_kegiatan,7) as no_urut,
+left(kd_skpd,17) kd_skpd,
 left(kd_sub_kegiatan,7)as kode,
 left(kd_sub_kegiatan,7)as kode1,
 (select nm_program from ms_program a where a.kd_program= left(z.kd_sub_kegiatan,7))as uraian,
@@ -2397,17 +2399,17 @@ isnull(sum(nilai),0)as anggaran,
 
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and e.kd_program=left(z.kd_sub_kegiatan,7)
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='5')as nilai
-from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='5')as nilai
+from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
 
 
-group by left(kd_skpd,22),left(kd_sub_kegiatan,7)
+group by left(kd_skpd,17),left(kd_sub_kegiatan,7)
 
 UNION ALL
 
 select
-left(kd_skpd,22)+left(kd_sub_kegiatan,12) as no_urut,
-left(kd_skpd,22),
+left(kd_skpd,17)+left(kd_sub_kegiatan,12) as no_urut,
+left(kd_skpd,17),
 left(kd_sub_kegiatan,12)as kd_kegiatan,
 left(kd_sub_kegiatan,12)as kode1,
 (select nm_kegiatan from ms_kegiatan a where a.kd_kegiatan= left(z.kd_sub_kegiatan,12))as uraian,
@@ -2420,16 +2422,16 @@ isnull(sum(nilai),0)as anggaran,
 )as spd_lalu,
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and left(e.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='5')as nilai
-from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),left(kd_sub_kegiatan,12)
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='5')as nilai
+from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),left(kd_sub_kegiatan,12)
 
 
 UNION ALL
 
 select
-left(kd_skpd,22)+kd_sub_kegiatan as no_urut,
-left(kd_skpd,22) kd_skpd,
+left(kd_skpd,17)+kd_sub_kegiatan as no_urut,
+left(kd_skpd,17) kd_skpd,
 kd_sub_kegiatan as kd_kegiatan,
 kd_sub_kegiatan as kode1,
 nm_sub_kegiatan as uraian,
@@ -2442,15 +2444,15 @@ isnull(sum(nilai),0)as anggaran,
 )as spd_lalu,
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and e.kd_sub_kegiatan=z.kd_sub_kegiatan
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='5')as nilai
-from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),kd_sub_kegiatan,nm_sub_kegiatan
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='5')as nilai
+from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),kd_sub_kegiatan,nm_sub_kegiatan
 
 UNION ALL
 
 select
-left(kd_skpd,22)+kd_sub_kegiatan+kd_rek6 as no_urut,
-left(kd_skpd,22),
+left(kd_skpd,17)+kd_sub_kegiatan+kd_rek6 as no_urut,
+left(kd_skpd,17),
 kd_rek6 as kd_kegiatan,
 kd_sub_kegiatan as kode ,
 nm_rek6 as uraian,
@@ -2465,17 +2467,17 @@ $spdlalu4
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd'
 and e.kd_sub_kegiatan=z.kd_sub_kegiatan and e.kd_rek6=z.kd_rek6
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='5')as nilai
-from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),kd_sub_kegiatan,kd_rek6,nm_rek6
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='5')as nilai
+from trdrka z where left(kd_rek6,1)='5' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),kd_sub_kegiatan,kd_rek6,nm_rek6
 
 
 
 order by no_urut");
         } else {
             $datalamp = DB::select("SELECT
-left(kd_skpd,22)+left(kd_sub_kegiatan,7) as no_urut,
-left(kd_skpd,22) kd_skpd,
+left(kd_skpd,17)+left(kd_sub_kegiatan,7) as no_urut,
+left(kd_skpd,17) kd_skpd,
 left(kd_sub_kegiatan,7)as kode,
 left(kd_sub_kegiatan,7)as kode1,
 (select nm_program from ms_program a where a.kd_program= left(z.kd_sub_kegiatan,7))as uraian,
@@ -2490,15 +2492,15 @@ isnull(sum(nilai),0)as anggaran,
 
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and e.kd_program=left(z.kd_sub_kegiatan,7)
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='6')as nilai
-from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),left(kd_sub_kegiatan,7)
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='6')as nilai
+from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),left(kd_sub_kegiatan,7)
 
 UNION ALL
 
 select
-left(kd_skpd,22)+left(kd_sub_kegiatan,12) as no_urut,
-left(kd_skpd,22),
+left(kd_skpd,17)+left(kd_sub_kegiatan,12) as no_urut,
+left(kd_skpd,17),
 left(kd_sub_kegiatan,12)as kd_kegiatan,
 left(kd_sub_kegiatan,12)as kode1,
 (select nm_kegiatan from ms_kegiatan a where a.kd_kegiatan= left(z.kd_sub_kegiatan,12))as uraian,
@@ -2511,16 +2513,16 @@ isnull(sum(nilai),0)as anggaran,
 )as spd_lalu,
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and left(e.kd_sub_kegiatan,12)=left(z.kd_sub_kegiatan,12)
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='6')as nilai
-from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),left(kd_sub_kegiatan,12)
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='6')as nilai
+from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),left(kd_sub_kegiatan,12)
 
 
 UNION ALL
 
 select
-left(kd_skpd,22)+kd_sub_kegiatan as no_urut,
-left(kd_skpd,22) kd_skpd,
+left(kd_skpd,17)+kd_sub_kegiatan as no_urut,
+left(kd_skpd,17) kd_skpd,
 kd_sub_kegiatan as kd_kegiatan,
 kd_sub_kegiatan as kode1,
 nm_sub_kegiatan as uraian,
@@ -2533,15 +2535,15 @@ isnull(sum(nilai),0)as anggaran,
 )as spd_lalu,
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd' and e.kd_sub_kegiatan=z.kd_sub_kegiatan
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='6')as nilai
-from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),kd_sub_kegiatan,nm_sub_kegiatan
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='6')as nilai
+from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),kd_sub_kegiatan,nm_sub_kegiatan
 
 UNION ALL
 
 select
-left(kd_skpd,22)+kd_sub_kegiatan+kd_rek6 as no_urut,
-left(kd_skpd,22),
+left(kd_skpd,17)+kd_sub_kegiatan+kd_rek6 as no_urut,
+left(kd_skpd,17),
 kd_rek6 as kd_kegiatan,
 kd_sub_kegiatan as kode ,
 nm_rek6 as uraian,
@@ -2556,9 +2558,9 @@ $spdlalu46
 (select isnull(sum(e.nilai),0) from trhspd d inner join trdspd e on d.no_spd=e.no_spd where
 d.no_spd='$nospd'
 and e.kd_sub_kegiatan=z.kd_sub_kegiatan and e.kd_rek6=z.kd_rek6
-and left(e.kd_unit,22)=left(z.kd_skpd,22) and jns_beban='6')as nilai
-from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,22)=left('$kd_skpd',22) and jns_ang='$jns_ang'
-group by left(kd_skpd,22),kd_sub_kegiatan,kd_rek6,nm_rek6
+and left(e.kd_unit,17)=left(z.kd_skpd,17) and jns_beban='6')as nilai
+from trdrka z where left(kd_rek6,2)='62' and  left(kd_skpd,17)=left('$kd_skpd',17) and jns_ang='$jns_ang'
+group by left(kd_skpd,17),kd_sub_kegiatan,kd_rek6,nm_rek6
 
 
 
@@ -2566,7 +2568,7 @@ order by no_urut");
         }
 
         //elvara
-        // karena kd_skpd lenght nya 22 itu total anggarannya pakai query ini
+        // karena kd_skpd lenght nya 17 itu total anggarannya pakai query ini
         // klo pakai dari datalamp itu kd_skpdnya harus 17
         // cuman ketika pakai kd_skpd 17 itu lamp spd rsud dan dinkes tergabung
 
@@ -2577,16 +2579,16 @@ order by no_urut");
 
         if ($jenis->jns_beban == '5') {
             $total_anggaran = DB::table('trdrka')
-            ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
+            ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
             ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
         } else {
             if (substr($jenis->kd_rek6, 0, 2) == '62') {
                 $total_anggaran = DB::table('trdrka')
-                    ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '62'])
+                    ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '62'])
                     ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
             } else {
                 $total_anggaran = DB::table('trdrka')
-                    ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '61'])
+                    ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '61'])
                     ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
             }
         }
@@ -2624,7 +2626,7 @@ order by no_urut");
                         trdspd a
                         JOIN trhspd b ON a.no_spd = b.no_spd
                         WHERE
-                        left(a.kd_unit,22) = left(?,22)
+                        left(a.kd_unit,17) = left(?,17)
                         AND b.jns_beban=?
                         AND b.status = ?
                         and bulan_akhir=?
@@ -2641,7 +2643,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2655,7 +2657,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status =?
                     and bulan_akhir=?
@@ -2672,7 +2674,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2686,7 +2688,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2700,7 +2702,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2718,7 +2720,7 @@ order by no_urut");
                     JOIN trhspd b ON a.no_spd = b.no_spd
 
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -2733,7 +2735,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -2748,7 +2750,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -2763,7 +2765,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -2844,16 +2846,16 @@ order by no_urut");
 
         if ($jenis->jns_beban == '5') {
             $total_anggaran = DB::table('trdrka')
-                ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
+                ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 1) = ?", [$jenis->kd_skpd, $jenis->jns_beban])
                 ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
         } else {
             if (substr($jenis->kd_rek6, 0, 2) == '62') {
                 $total_anggaran = DB::table('trdrka')
-                    ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '62'])
+                    ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '62'])
                     ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
             } else {
                 $total_anggaran = DB::table('trdrka')
-                    ->whereRaw("left(kd_skpd, 22) = left(?, 22) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '61'])
+                    ->whereRaw("left(kd_skpd, 17) = left(?, 17) and left(kd_rek6, 2) = ?", [$jenis->kd_skpd, '61'])
                     ->where(['jns_ang' => $jenis->jns_ang])->sum('nilai');
             }
         }
@@ -2906,7 +2908,7 @@ order by no_urut");
                         trdspd a
                         JOIN trhspd b ON a.no_spd = b.no_spd
                         WHERE
-                        left(a.kd_unit,22) = left(?,22)
+                        left(a.kd_unit,17) = left(?,17)
                         AND b.jns_beban=?
                         AND b.status = ?
                         and bulan_akhir=?
@@ -2923,7 +2925,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2937,7 +2939,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status =?
                     and bulan_akhir=?
@@ -2954,7 +2956,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2968,7 +2970,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -2982,7 +2984,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
                     and bulan_akhir=?
@@ -3000,7 +3002,7 @@ order by no_urut");
                     JOIN trhspd b ON a.no_spd = b.no_spd
 
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -3015,7 +3017,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -3030,7 +3032,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -3045,7 +3047,7 @@ order by no_urut");
                     trdspd a
                     JOIN trhspd b ON a.no_spd = b.no_spd
                     WHERE
-                    left(a.kd_unit,22) = left(?,22)
+                    left(a.kd_unit,17) = left(?,17)
                     AND b.jns_beban=?
                     AND b.status = ?
 
@@ -3116,7 +3118,6 @@ order by no_urut");
             return $view;
         }
     }
-
     public function tampilspdBP($no_spd)
     {
         $no_spd = Crypt::decryptString($no_spd);
@@ -3142,9 +3143,9 @@ order by no_urut");
         $kd_skpd = $request->kd_skpd;
         $jns_ang = $request->jns_ang;
 
-        $total_skpd = collect(DB::select("SELECT COUNT(*) as total FROM ms_skpd where left(kd_skpd,22)=left(?,22)", [$kd_skpd]))->first();
+        $total_skpd = collect(DB::select("SELECT COUNT(*) as total FROM ms_skpd where left(kd_skpd,17)=left(?,17)", [$kd_skpd]))->first();
 
-        $total_angkas = collect(DB::select("SELECT count(*) as total FROM  (SELECT kd_skpd FROM trdrka where jns_ang=? and left(kd_skpd,22)=left(?,22) GROUP BY kd_skpd)z", [$jns_ang, $kd_skpd]))->first();
+        $total_angkas = collect(DB::select("SELECT count(*) as total FROM  (SELECT kd_skpd FROM trdrka where jns_ang=? and left(kd_skpd,17)=left(?,17) GROUP BY kd_skpd)z", [$jns_ang, $kd_skpd]))->first();
 
         $nama_anggaran = DB::table('tb_status_anggaran')
             ->select('nama')

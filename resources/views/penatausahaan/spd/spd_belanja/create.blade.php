@@ -53,7 +53,7 @@
                             <div class="mb-3">
                                 <label class="form-label" for="no_spd">No SPD
                                     <small style="color: red;">*Format nomor SPD : 61.03/01.0/XXXXXX/KODE
-                                        SKPD/M/1/2024</small>
+                                        SKPD/M/1/2025</small>
                                 </label>
                                 <input type="text" class="form-control" id="nomor" name="nomor">
                             </div>

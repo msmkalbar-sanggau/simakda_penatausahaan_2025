@@ -6,6 +6,8 @@
             }
         });
 
+        let pilihan = 0;
+
         let tabelBelanja = $('#spd_belanja').DataTable({
             responsive: true,
             processing: true,
@@ -16,6 +18,9 @@
             ajax: {
                 url: "{{ route('spd.spd_belanja.load_spd_belanja') }}",
                 "type": "POST",
+                "headers": {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 data: function(data) {
                     data.kd_skpd = document.getElementById('kd_skpd').value;
                     data.jns_ang = document.getElementById('jenis_anggaran').value;
@@ -92,6 +97,9 @@
             ajax: {
                 "url": "{{ route('spd.spd_belanja.load_spd_belanja_temp') }}",
                 "type": "POST",
+                "headers": {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 "data": function(d) {
                     d.kd_skpd = document.getElementById('kd_skpd').value;
                     d.jns_ang = document.getElementById('jenis_anggaran').value;
@@ -324,21 +332,31 @@
                 data: {
                     kd_skpd: kd_skpd,
                     jns_ang: jns_ang,
+                    "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
                     if (kd_skpd && jns_ang) {
-                        if (data.message == '0') {
-                            alert('SKPD Belum Lengkap Di Anggaran ' + data.nama);
-                            return;
+                        // if (data.message == '0') {
+                        //     alert('SKPD Belum Lengkap Di Anggaran ' + data.nama);
+                        //     return;
+                        // } else {
+                        //     var jenis_anggaran = $(this).select2('data')[0];
+                        //     $('#status_angkas').val(null).trigger('change').trigger(
+                        //         'select2:select');
+                        //     if (jenis_anggaran) {
+                        //         $('#status_angkas').prop('disabled', false)
+                        //     } else {
+                        //         $('#status_angkas').prop('disabled', true)
+                        //     }
+                        // }
+
+                        var jenis_anggaran = $(this).select2('data')[0];
+                        $('#status_angkas').val(null).trigger('change').trigger(
+                            'select2:select');
+                        if (jenis_anggaran) {
+                            $('#status_angkas').prop('disabled', false)
                         } else {
-                            var jenis_anggaran = $(this).select2('data')[0];
-                            $('#status_angkas').val(null).trigger('change').trigger(
-                                'select2:select');
-                            if (jenis_anggaran) {
-                                $('#status_angkas').prop('disabled', false)
-                            } else {
-                                $('#status_angkas').prop('disabled', true)
-                            }
+                            $('#status_angkas').prop('disabled', true)
                         }
                     }
                 }
@@ -451,7 +469,8 @@
         $('#spd_belanja tbody').on('click', 'tr', function() {
             let tabel = tabelBelanja.row(this).data();
             if (!tabel) return
-            let kd_skpd = document.getElementById('kd_skpd').value;
+            // let kd_skpd = document.getElementById('kd_skpd').value;
+            let kd_skpd = tabel.kd_unit;
             let tanggal = document.getElementById('tanggal').value;
             let bln_awal = document.getElementById('bulan_awal').value;
             let bln_akhir = document.getElementById('bulan_akhir').value;
@@ -486,7 +505,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: data
+                    data: data,
+                    "_token": "{{ csrf_token() }}",
                 },
 
                 success: function(data) {
@@ -542,7 +562,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: data
+                    data: data,
+                    "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
                     if (data.message == '1') {
@@ -573,6 +594,8 @@
                 revisi = '0';
             }
 
+            pilihan = 1;
+
             let data = {
                 page: page,
                 kd_skpd: kd_skpd,
@@ -591,10 +614,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: data
-                },
-                beforeSend: function() {
-                    $("#overlay").fadeIn(100);
+                    data: data,
+                    "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
                     if (data.message == '1') {
@@ -606,9 +627,6 @@
                         toastr.error('Sub Kegiatan dan Rekening gagal ditambahkan');
                         tabelBelanja.clear().draw();
                     }
-                },
-                complete: function(data) {
-                    $("#overlay").fadeOut(100);
                 }
             })
         })
@@ -627,6 +645,8 @@
                 revisi = '0';
             }
 
+            pilihan = 0;
+
             let data = {
                 page: page,
                 kd_skpd: kd_skpd,
@@ -643,7 +663,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: data
+                    data: data,
+                    "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
                     if (data.message == '1') {
@@ -760,7 +781,7 @@
                     return;
                 }
             } else {
-                if (nomor.length != 51) {
+                if (nomor.length != 50) {
                     alert('Format Nomor SPD Belum Lengkap');
                     return;
                 }
@@ -779,7 +800,8 @@
                 status_angkas,
                 keterangan,
                 totalNilai,
-                daftar_spd
+                daftar_spd,
+                pilihan
             };
 
             $('#simpan_spd').prop('disabled', true);
@@ -788,7 +810,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: response
+                    data: response,
+                    "_token": "{{ csrf_token() }}",
                 },
                 beforeSend: function() {
                     // Show image container
