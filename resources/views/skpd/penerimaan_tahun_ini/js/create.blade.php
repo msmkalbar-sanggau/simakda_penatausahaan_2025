@@ -25,37 +25,37 @@
             theme: 'bootstrap-5'
         })
 
-        if (kd_skpd == '5.02.0.00.0.00.03.0000') {
-            $('.jns_penerimaan').show();
+        // if (kd_skpd == '5.02.0.00.0.00.03.0000') {
+        //     $('.jns_penerimaan').show();
 
-            $('#jns_penerimaan').on('select2:select', function() {
-                let nomor = this.value;
-                let jenis;
+        //     $('#jns_penerimaan').on('select2:select', function() {
+        //         let nomor = this.value;
+        //         let jenis;
 
-                if (nomor == 1) {
-                    jenis = "/SKP BAPENDA/2024";
-                }
-                if (nomor == 2) {
-                    jenis = "/STS KASDA/2024";
-                }
-                if (nomor == 3) {
-                    jenis = "/BPHTB BAPENDA/2024";
-                }
-                if (nomor == 4) {
-                    jenis = "/PBB BAPENDA/2024";
-                }
-                if (nomor == 5) {
-                    jenis = "/PBB KASDA/2024";
-                }
+        //         if (nomor == 1) {
+        //             jenis = "/SKP BAPENDA/2024";
+        //         }
+        //         if (nomor == 2) {
+        //             jenis = "/STS KASDA/2024";
+        //         }
+        //         if (nomor == 3) {
+        //             jenis = "/BPHTB BAPENDA/2024";
+        //         }
+        //         if (nomor == 4) {
+        //             jenis = "/PBB BAPENDA/2024";
+        //         }
+        //         if (nomor == 5) {
+        //             jenis = "/PBB KASDA/2024";
+        //         }
 
 
-                let nomor1 = jenis;
-                $('#no_terima').val(nomor1);
+        //         let nomor1 = jenis;
+        //         $('#no_terima').val(nomor1);
 
-            });
-        } else {
-            $('.jns_penerimaan').hide();
-        }
+        //     });
+        // } else {
+        //     $('.jns_penerimaan').hide();
+        // }
 
         let data = false;
         $('#pilihan').on('change', function() {
