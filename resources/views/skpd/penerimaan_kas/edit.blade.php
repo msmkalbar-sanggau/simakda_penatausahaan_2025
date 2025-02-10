@@ -16,17 +16,10 @@
                     {{-- No dan Tanggal Kas --}}
                     <div class="mb-3 row">
                         <label for="no_kas" class="col-md-2 col-form-label">No. Kas</label>
-                        @if ($terima->status == 1)
-                            <div class="col-md-4">
-                                <input class="form-control" type="text" id="no_kas" maxlength="7" name="no_kas"
-                                    value="{{ $terima->no_kas }}" required disabled>
-                            </div>
-                        @else
-                            <div class="col-md-4">
-                                <input class="form-control" type="text" id="no_kas" maxlength="8" name="no_kas"
-                                    value="PB{{ $terima->no_kas }}" required>
-                            </div>
-                        @endif
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" id="no_kas" name="no_kas"
+                                value="{{ $terima->no_kas }}" required readonly>
+                        </div>
 
                         <label for="tgl_kas" class="col-md-2 col-form-label">Tanggal</label>
                         <div class="col-md-4">
@@ -83,8 +76,7 @@
                     <div class="mb-3 row">
                         <label for="jenis" class="col-md-2 col-form-label">Jenis Transaksi</label>
                         <div class="col-md-4">
-                            <select class="form-control select2-multiple" style="width: 100%" id="jenis"
-                                name="jenis">
+                            <select class="form-control select2-multiple" style="width: 100%" id="jenis" name="jenis">
                                 <option value="" disabled selected>Silahkan Pilih</option>
                                 <option value="4" {{ Str::of($terima->jns_trans)->trim() == '4' ? 'selected' : '' }}>
                                     Pendapatan

@@ -180,10 +180,10 @@
                 return;
             }
 
-            if (!no_kas) {
-                alert('No Tidak Boleh Kosong');
-                return;
-            }
+            // if (!no_kas) {
+            //     alert('No Tidak Boleh Kosong');
+            //     return;
+            // }
 
             if (!tgl_kas) {
                 alert('Tanggal Tidak Boleh Kosong');
@@ -238,6 +238,7 @@
                     if (response.message == '1') {
                         alert('Data Berhasil divalidasi, Nomor Kas yang tersimpan adalah: ' +
                             response.nomor);
+                        window.location.reload();
                         // window.location.href =
                         //     "{{ route('penerimaan_kas.index') }}";
                         location.reload();
@@ -287,7 +288,7 @@
                         if (data.message == '1') {
                             alert('Data Berhasil Batal Validasi..!!');
                             // window.location.href = "{{ route('penerimaan_kas.index') }}";
-                            location.reload();
+                            window.location.reload();
                         } else {
                             alert('Gagal Validasi..!!');
                             return;

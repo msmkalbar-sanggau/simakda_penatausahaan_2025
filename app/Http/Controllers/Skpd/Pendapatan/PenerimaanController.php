@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 
 class PenerimaanController extends Controller
 {
@@ -88,7 +89,6 @@ class PenerimaanController extends Controller
                     'jns_pajak' => $data['pajakk'],
                     'user_name' => Auth::user()->nama,
                 ]);
-
             }
             if ($jns_pembayaran == 'BANK') {
                 DB::table('tr_terima')->insert([
@@ -295,7 +295,7 @@ class PenerimaanController extends Controller
                             (SELECT no_tetap as tetap,ISNULL(SUM(nilai),0) as nilai_terima from tr_terima WHERE kd_skpd = ? GROUP BY no_tetap)b
                             ON a.no_tetap=b.tetap
                             WHERE nilai !=nilai_terima
-                            order by no_tetap", [$kd_skpd,$kd_skpd,$kd_skpd]);
+                            order by no_tetap", [$kd_skpd, $kd_skpd, $kd_skpd]);
 
         $data = [
             'skpd' => DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
@@ -364,7 +364,6 @@ class PenerimaanController extends Controller
                     'jns_pajak' => $data['pajakk'],
                     'user_name' => Auth::user()->nama,
                 ]);
-
             }
             if ($jns_pembayaran == 'BANK') {
                 DB::table('tr_terima')->insert([
@@ -454,7 +453,7 @@ class PenerimaanController extends Controller
                             (SELECT no_tetap as tetap,ISNULL(SUM(nilai),0) as nilai_terima from tr_terima WHERE kd_skpd = ? GROUP BY no_tetap)b
                             ON a.no_tetap=b.tetap
                             WHERE nilai !=nilai_terima
-                            order by no_tetap", [$kd_skpd,$kd_skpd,$kd_skpd]);
+                            order by no_tetap", [$kd_skpd, $kd_skpd, $kd_skpd]);
 
         $data = [
             'terima' => DB::table('tr_terima')
@@ -500,81 +499,80 @@ class PenerimaanController extends Controller
         try {
             if ($jns_pembayaran == 'TUNAI') {
                 DB::table('tr_terima')
-                ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd']])
-                ->update([
-                    'no_terima' => $data['no_terima'],
-                    'tgl_terima' => $data['tgl_terima'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'kd_rek6' => $data['kode_akun'],
-                    'kd_rek_lo' => $data['kode_rek'],
-                    'nilai' => $data['nilai'],
-                    'keterangan' => $data['keterangan'],
-                    'jenis' => '1',
-                    'sumber' => '-',
-                    'status_setor' => $data['statusSetor'],
-                    'jns_pembayaran' => $data['jns_pembayaran'],
-                    'jns_pajak' => $data['pajakk'],
-                    'user_name' => Auth::user()->nama,
-                ]);
-
+                    ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd']])
+                    ->update([
+                        'no_terima' => $data['no_terima'],
+                        'tgl_terima' => $data['tgl_terima'],
+                        'kd_skpd' => $data['kd_skpd'],
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'kd_rek6' => $data['kode_akun'],
+                        'kd_rek_lo' => $data['kode_rek'],
+                        'nilai' => $data['nilai'],
+                        'keterangan' => $data['keterangan'],
+                        'jenis' => '1',
+                        'sumber' => '-',
+                        'status_setor' => $data['statusSetor'],
+                        'jns_pembayaran' => $data['jns_pembayaran'],
+                        'jns_pajak' => $data['pajakk'],
+                        'user_name' => Auth::user()->nama,
+                    ]);
             }
             if ($jns_pembayaran == 'BANK') {
                 DB::table('tr_terima')
-                ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd']])
-                ->update([
-                    'no_terima' => $data['no_terima'],
-                    'tgl_terima' => $data['tgl_terima'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'kd_rek6' => $data['kode_akun'],
-                    'kd_rek_lo' => $data['kode_rek'],
-                    'nilai' => $data['nilai'],
-                    'keterangan' => $data['keterangan'],
-                    'jenis' => '1',
-                    'sumber' => '-',
-                    'kunci' => '1',
-                    'status_setor' => $data['statusSetor'],
-                    'jns_pembayaran' => $data['jns_pembayaran'],
-                    'jns_pajak' => $data['pajakk'],
-                    'user_name' => Auth::user()->nama,
-                ]);
+                    ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd']])
+                    ->update([
+                        'no_terima' => $data['no_terima'],
+                        'tgl_terima' => $data['tgl_terima'],
+                        'kd_skpd' => $data['kd_skpd'],
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'kd_rek6' => $data['kode_akun'],
+                        'kd_rek_lo' => $data['kode_rek'],
+                        'nilai' => $data['nilai'],
+                        'keterangan' => $data['keterangan'],
+                        'jenis' => '1',
+                        'sumber' => '-',
+                        'kunci' => '1',
+                        'status_setor' => $data['statusSetor'],
+                        'jns_pembayaran' => $data['jns_pembayaran'],
+                        'jns_pajak' => $data['pajakk'],
+                        'user_name' => Auth::user()->nama,
+                    ]);
 
                 DB::table('trhkasin_pkd')
-                ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
-                ->update([
-                    'no_sts' => $data['no_terima'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'tgl_sts' => $data['tgl_terima'],
-                    'keterangan' => $data['keterangan'],
-                    'total' => $data['nilai'],
-                    'kd_bank' => '',
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'jns_trans' => '4',
-                    // 'rek_bank' => '',
-                    // 'no_kas' => '',
-                    // 'no_cek' => '',
-                    // 'status' => '',
-                    // 'jns_cp' => '',
-                    'pot_khusus' => '0',
-                    // 'no_sp2d' => '',
-                    'no_terima' => $data['no_terima'],
-                    // 'sumber' => '',
-                    'user_name' => Auth::user()->nama,
-                    'bank' => ''
-                ]);
+                    ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
+                    ->update([
+                        'no_sts' => $data['no_terima'],
+                        'kd_skpd' => $data['kd_skpd'],
+                        'tgl_sts' => $data['tgl_terima'],
+                        'keterangan' => $data['keterangan'],
+                        'total' => $data['nilai'],
+                        'kd_bank' => '',
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'jns_trans' => '4',
+                        // 'rek_bank' => '',
+                        // 'no_kas' => '',
+                        // 'no_cek' => '',
+                        // 'status' => '',
+                        // 'jns_cp' => '',
+                        'pot_khusus' => '0',
+                        // 'no_sp2d' => '',
+                        'no_terima' => $data['no_terima'],
+                        // 'sumber' => '',
+                        'user_name' => Auth::user()->nama,
+                        'bank' => ''
+                    ]);
 
                 DB::table('trdkasin_pkd')
-                ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
-                ->update([
-                    'kd_skpd' => $data['kd_skpd'],
-                    'no_sts' => $data['no_terima'],
-                    'kd_rek6' => $data['kode_akun'],
-                    'rupiah' => $data['nilai'],
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'no_terima' => $data['no_terima'],
-                    'sumber' => '-'
-                ]);
+                    ->where(['no_terima' => $data['no_simpan'], 'kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
+                    ->update([
+                        'kd_skpd' => $data['kd_skpd'],
+                        'no_sts' => $data['no_terima'],
+                        'kd_rek6' => $data['kode_akun'],
+                        'rupiah' => $data['nilai'],
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'no_terima' => $data['no_terima'],
+                        'sumber' => '-'
+                    ]);
             }
 
 
@@ -925,9 +923,10 @@ class PenerimaanController extends Controller
         return view('skpd.penerimaan_kas.index');
     }
 
-        //created by calvin
-        public function cekDataValidasi(){
-            $data =
+    //created by calvin
+    public function cekDataValidasi()
+    {
+        $data =
             [
                 'header' => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
                 'detail' => DB::select("SELECT*FROM (
@@ -935,11 +934,11 @@ class PenerimaanController extends Controller
                     SELECT no_bukti AS no_sts,TGL_BUKTI AS tgl_sts,nilai AS total,kd_skpd FROM TRHOUTLAIN WHERE jns_beban='1') a WHERE a.no_sts NOT IN (
                     SELECT no_sts FROM trhkasin_ppkd WHERE kd_skpd=a.kd_skpd) ORDER BY tgl_sts")
             ];
-            //dd($data['detail']);
+        //dd($data['detail']);
 
-            return view('skpd.penerimaan_kas.cek')->with($data)->with('_blank');;
-        }
-        //end
+        return view('skpd.penerimaan_kas.cek')->with($data)->with('_blank');;
+    }
+    //end
 
     public function loadDataPenerimaanKas(Request $request)
     {
@@ -953,8 +952,8 @@ class PenerimaanController extends Controller
             $ambil = "WHERE a.no_sts NOT IN (SELECT no_sts FROM trhkasin_ppkd WHERE kd_skpd=a.kd_skpd)";
             $ambil1 = "WHERE a.no_bukti NOT IN (SELECT no_sts FROM trhkasin_ppkd WHERE kd_skpd=a.kd_skpd)";
         } else {
-            $ambil ="";
-            $ambil1 ="";
+            $ambil = "";
+            $ambil1 = "";
         }
 
 
@@ -1012,12 +1011,12 @@ class PenerimaanController extends Controller
 
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
             $btn = '<a href="' . route("penerimaan_kas.edit", [Crypt::encrypt($row->no_sts), Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-warning btn-sm"  style="margin-right:4px"><i class="uil-edit"></i></a>';
-            if ($row->status != 1){
-                $btn .='';
-            }else{
+            if ($row->status != 1) {
+                $btn .= '';
+            } else {
                 $btn .= '<a href="javascript:void(0);" onclick="batal(\'' . $row->no_sts . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_kas . '\');" class="btn btn-danger btn-sm" id="delete" style="margin-right:4px"><i class="uil-ban"></i></a>';
             }
-              // $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_kas . '\',\'' . $row->no_sts . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" style="margin-right:4px"><i class="uil-print"></i></a>';
+            // $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_kas . '\',\'' . $row->no_sts . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" style="margin-right:4px"><i class="uil-print"></i></a>';
             return $btn;
         })->rawColumns(['aksi'])->make(true);
     }
@@ -1179,7 +1178,7 @@ class PenerimaanController extends Controller
 
         // $data2 = DB::table('TRHOUTLAIN')
         //     ->selectRaw("KD_SKPD, NO_BUKTI no_sts, '' kd_rek6, nilai as rupiah, '' kd_sub_kegiatan, '' no_terima,  (CASE WHEN thnlalu='1' THEN 'y' ELSE 'n' END) sumber,''kanal,
-		// '' nm_rek, '' nm_pengirim, '' nm_rek5")
+        // '' nm_rek, '' nm_pengirim, '' nm_rek5")
         //     ->whereRaw("KD_SKPD=? AND jns_beban<>? AND NO_BUKTI=?", [$kd_skpd, '7', $no_bukti])
         //     ->unionAll($data1);
 
@@ -1213,7 +1212,7 @@ class PenerimaanController extends Controller
                 TRHOUTLAIN a ) a
             WHERE
             a.no_sts = ?
-            AND a.kd_skpd= ?",[$no_bukti, $kd_skpd]);
+            AND a.kd_skpd= ?", [$no_bukti, $kd_skpd]);
 
         return DataTables::of($data)->addIndexColumn()->make(true);
     }
@@ -1229,10 +1228,38 @@ class PenerimaanController extends Controller
     {
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
-        // dd($data);
+
+        $nomor = DB::table('trhkasin_ppkd')
+            ->select(DB::raw("CASE WHEN MAX(urut+1) is null THEN 1 else MAX(urut+1) END as nomor"))
+            ->first();
+
+        $no_bukti = $nomor->nomor;
+
+        if (Str::length($no_bukti) == '1') {
+            $nomor = "00000" . $no_bukti;
+        } elseif (Str::length($no_bukti) == '2') {
+            $nomor = "0000" . $no_bukti;
+        } elseif (Str::length($no_bukti) == '3') {
+            $nomor = "000" . $no_bukti;
+        } elseif (Str::length($no_bukti) == '4') {
+            $nomor = "00" . $no_bukti;
+        } elseif (Str::length($no_bukti) == '5') {
+            $nomor = "0" . $no_bukti;
+        } elseif (Str::length($no_bukti) == '6') {
+            $nomor = $no_bukti;
+        }
+
+        $nomorKas = "PB" . $nomor;
+
         DB::beginTransaction();
         try {
-            $cek = DB::table('trhkasin_ppkd')->where(['no_kas' => $data['no_kas'], 'kd_skpd' => $data['kd_skpd']])->count();
+            $cek = DB::table('trhkasin_ppkd')
+                ->where([
+                    'no_kas' => $nomorKas,
+                    'kd_skpd' => $data['kd_skpd']
+                ])
+                ->count();
+
             if ($cek > 0) {
                 return response()->json([
                     'message' => '2'
@@ -1246,15 +1273,15 @@ class PenerimaanController extends Controller
                 $skpd = $data['kd_skpd'];
                 $giat = $data['kd_sub_kegiatan'];
             }
-            $kas  = $data['no_kas'];
+            $kas  = $nomorKas;
 
             DB::table('trhkasin_ppkd')
-                ->where(['kd_skpd' => $data['kd_skpd'], 'no_kas' => $data['no_kas']])
+                ->where(['kd_skpd' => $data['kd_skpd'], 'no_kas' => $nomorKas])
                 ->delete();
 
             DB::table('trhkasin_ppkd')
                 ->insert([
-                    'no_kas' => $data['no_kas'],
+                    'no_kas' => $nomorKas,
                     'tgl_kas' => $data['tgl_kas'],
                     'no_sts' => $data['no_bukti'],
                     'tgl_sts' => $data['tgl_bukti'],
@@ -1268,15 +1295,15 @@ class PenerimaanController extends Controller
                     'kd_bank' => '',
                 ]);
 
-                // DB::table('trhkasin_pkd')
-                // ->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $skpd, 'kd_sub_kegiatan' => $giat, 'jns_trans' => $data['jenis']])
-                // ->update([
-                //     'no_cek' => '1',
-                //     'status' => '1'
-                // ]);
+            // DB::table('trhkasin_pkd')
+            // ->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $skpd, 'kd_sub_kegiatan' => $giat, 'jns_trans' => $data['jenis']])
+            // ->update([
+            //     'no_cek' => '1',
+            //     'status' => '1'
+            // ]);
 
-            DB::table('trhkasin_pkd')->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $data['kd_skpd']])->update(['no_cek' => '1','status' => '1']);
-             DB::table('TRHOUTLAIN')
+            DB::table('trhkasin_pkd')->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $data['kd_skpd']])->update(['no_cek' => '1', 'status' => '1']);
+            DB::table('TRHOUTLAIN')
                 ->where(['no_bukti' => $data['no_bukti'], 'kd_skpd' => $data['kd_skpd']])
                 ->update([
                     'status' => '1',
@@ -1284,7 +1311,7 @@ class PenerimaanController extends Controller
 
             if ($data['sumber'] == 'y') {
                 DB::table('trhkasin_ppkd')
-                    ->where(['no_kas' => $no_kas, 'kd_skpd' => $data['kd_skpd']])
+                    ->where(['no_kas' => $nomorKas, 'kd_skpd' => $data['kd_skpd']])
                     ->update([
                         'kd_skpd' => $data['kd_skpd'],
                         'kd_sub_kegiatan' => DB::raw("LEFT('$kd_skpd',4)+'.00.0.00.04'")
@@ -1292,26 +1319,26 @@ class PenerimaanController extends Controller
             }
 
             DB::table('trdkasin_ppkd')
-                ->where(['kd_skpd' => $data['kd_skpd'], 'no_kas' => $data['no_kas']])
+                ->where(['kd_skpd' => $data['kd_skpd'], 'no_kas' => $nomorKas])
                 ->delete();
 
-                if (isset($data['detail_sts'])) {
-                    DB::table('trdkasin_ppkd')->insert(array_map(function ($value) use ($data, $kas, $skpd, $giat) {
-                        return [
-                            'kd_skpd' => $skpd,
-                            'no_sts' => $value['no_sts'],
-                            'kd_rek6' => $value['kd_rek6'],
-                            'rupiah' => $value['rupiah'],
-                            'no_kas' => $kas,
-                            'kd_sub_kegiatan' => $giat,
-                            'sumber' => $value['sumber'],
-                        ];
-                    }, $data['detail_sts']));
+            if (isset($data['detail_sts'])) {
+                DB::table('trdkasin_ppkd')->insert(array_map(function ($value) use ($data, $kas, $skpd, $giat) {
+                    return [
+                        'kd_skpd' => $skpd,
+                        'no_sts' => $value['no_sts'],
+                        'kd_rek6' => $value['kd_rek6'],
+                        'rupiah' => $value['rupiah'],
+                        'no_kas' => $kas,
+                        'kd_sub_kegiatan' => $giat,
+                        'sumber' => $value['sumber'],
+                    ];
+                }, $data['detail_sts']));
             }
 
             if ($data['sumber'] == 'n') {
                 DB::table('trdkasin_ppkd')
-                    ->where(['no_kas' => $data['no_kas'], 'kd_skpd' => $data['kd_skpd']])
+                    ->where(['no_kas' => $nomorKas, 'kd_skpd' => $data['kd_skpd']])
                     ->update([
                         'kd_rek6' => '1110301',
                     ]);
@@ -1319,7 +1346,7 @@ class PenerimaanController extends Controller
 
             if ($data['sumber'] == 'y') {
                 DB::table('trdkasin_ppkd')
-                    ->where(['no_kas' => $data['no_kas'], 'kd_skpd' => $data['kd_skpd']])
+                    ->where(['no_kas' => $nomorKas, 'kd_skpd' => $data['kd_skpd']])
                     ->update([
                         'kd_rek6' => '410409010001',
                         'kd_skpd' => $skpd,
@@ -1330,7 +1357,7 @@ class PenerimaanController extends Controller
             DB::commit();
             return response()->json([
                 'message' => '1',
-                'nomor' => $data['no_kas']
+                'nomor' => $nomorKas
             ]);
         } catch (Exception $e) {
             DB::rollBack();
@@ -1340,14 +1367,14 @@ class PenerimaanController extends Controller
         }
     }
 
-    public function batalPenerimaanKas(Request $request){
+    public function batalPenerimaanKas(Request $request)
+    {
         $data = $request->data;
-       // dd($data);
 
         DB::beginTransaction();
         try {
 
-            DB::table('trhkasin_pkd')->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $data['kd_skpd']])->update(['no_cek' => '0','status' => '0']);
+            DB::table('trhkasin_pkd')->where(['no_sts' => $data['no_bukti'], 'kd_skpd' => $data['kd_skpd']])->update(['no_cek' => '0', 'status' => '0']);
 
             DB::table('trhkasin_ppkd')->where(['no_kas' => $data['no_kas'], 'kd_skpd' => $data['kd_skpd']])->delete();
 
@@ -1368,7 +1395,7 @@ class PenerimaanController extends Controller
     }
 
     public function editPenerimaanKas($no_sts, $kd_skpd)
-{
+    {
         $no_sts = Crypt::decrypt($no_sts);
         $skpd = Crypt::decrypt($kd_skpd);
         $kd_skpd = Auth::user()->kd_skpd;
@@ -1432,7 +1459,7 @@ class PenerimaanController extends Controller
             LEFT JOIN trhkasin_ppkd b ON b.kd_skpd= a.kd_skpd
             AND a.KET = b.keterangan
             AND a.no_bukti= b.no_sts
-            WHERE a.no_bukti = ? and a.kd_skpd = ?",[$no_sts, $skpd, $no_sts, $skpd]))->first(),
+            WHERE a.no_bukti = ? and a.kd_skpd = ?", [$no_sts, $skpd, $no_sts, $skpd]))->first(),
         ];
         // dd($data['terima']);
         return view('skpd.penerimaan_kas.edit')->with($data);
