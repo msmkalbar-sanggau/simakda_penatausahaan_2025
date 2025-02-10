@@ -1403,10 +1403,10 @@
                 }
             });
 
-            if (kondisi.includes("2")) {
-                alert('Potongan MPN wajib memiliki id billing!');
-                return;
-            }
+            // if (kondisi.includes("2")) {
+            //     alert('Potongan MPN wajib memiliki id billing!');
+            //     return;
+            // }
 
             $.ajax({
                 type: "POST",
@@ -1532,7 +1532,8 @@
             input[0].setSelectionRange(caret_pos, caret_pos);
         }
 
-        function tambah_list_potongan(rekening_transaksi, rekening_potongan, map_pot, nm_rek_pot,jns_pot1, id_billing,
+        function tambah_list_potongan(rekening_transaksi, rekening_potongan, map_pot, nm_rek_pot, jns_pot1,
+            id_billing,
             nilai_pot, no_spm, kd_skpd, total_pot) {
             $.ajax({
                 type: "POST",
