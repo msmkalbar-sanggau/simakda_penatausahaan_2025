@@ -1293,6 +1293,7 @@ class PenerimaanController extends Controller
                     'sumber' => '',
                     'rek_bank' => $data['rek_bank'],
                     'kd_bank' => '',
+                    'urut' => $no_bukti
                 ]);
 
             // DB::table('trhkasin_pkd')

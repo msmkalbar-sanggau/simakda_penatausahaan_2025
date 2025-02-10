@@ -234,6 +234,9 @@
                 data: {
                     data: data
                 },
+                beforeSend: function() {
+                    $("#overlay").fadeIn(100);
+                },
                 success: function(response) {
                     if (response.message == '1') {
                         alert('Data Berhasil divalidasi, Nomor Kas yang tersimpan adalah: ' +
@@ -249,6 +252,9 @@
                         alert('Data gagal disimpan!');
                         $('#simpan').prop('disabled', false);
                     }
+                },
+                complete: function(data) {
+                    $("#overlay").fadeOut(100);
                 }
             })
         });
@@ -284,6 +290,9 @@
                     data: {
                         data: data
                     },
+                    beforeSend: function() {
+                        $("#overlay").fadeIn(100);
+                    },
                     success: function(data) {
                         if (data.message == '1') {
                             alert('Data Berhasil Batal Validasi..!!');
@@ -293,6 +302,9 @@
                             alert('Gagal Validasi..!!');
                             return;
                         }
+                    },
+                    complete: function(data) {
+                        $("#overlay").fadeOut(100);
                     }
                 })
             }
