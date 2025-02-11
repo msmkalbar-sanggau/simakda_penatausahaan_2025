@@ -502,7 +502,7 @@ function nomorSppBaru($tipe, $nomorUrut, $tanggal, $beban)
         $nomor = $nomorUrut;
     }
 
-    $formatNomor = "14.07/" . $tipe . "/" . $nomor . "/" . $tipe  . "/" . Auth::user()->kd_skpd . "/" . status_anggaran() . "/" . $bulan . "/" . tahun_anggaran();
+    $formatNomor = "61.03/" . $tipe . "/" . $nomor . "/" . $tipe  . "/" . Auth::user()->kd_skpd . "/" . status_anggaran() . "/" . $bulan . "/" . tahun_anggaran();
 
     $newString =  explode("/", $formatNomor);
 
