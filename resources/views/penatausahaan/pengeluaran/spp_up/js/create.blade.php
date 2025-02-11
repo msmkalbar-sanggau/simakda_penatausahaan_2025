@@ -164,11 +164,11 @@
             return parseFloat(rupiah) || 0;
         }
 
-        // function get_spp() {
-        //     let jenis_beban = document.getElementById('beban').value;
-        //     let kd_skpd = document.getElementById('kd_skpd').value;
-        //     let bulan = document.getElementById('bulan').value;
-        //     let tahun_anggaran = "{{ tahun_anggaran() }}";
+        function get_spp() {
+            let jenis_beban = document.getElementById('beban').value;
+            let kd_skpd = document.getElementById('kd_skpd').value;
+            let bulan = document.getElementById('bulan').value;
+            let tahun_anggaran = "{{ tahun_anggaran() }}";
 
             // no spp
             $.ajax({
