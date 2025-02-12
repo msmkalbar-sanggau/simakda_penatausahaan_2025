@@ -23,10 +23,26 @@ class SppLsController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $data = [
             'data_spp' => DB::table('trhspp')->where('kd_skpd', $kd_skpd)->whereNotIn('jns_spp', ['1', '2', '3'])->orderByRaw("tgl_spp ASC, no_spp ASC,CAST(urut AS INT) ASC")->get(),
-            'bendahara' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['KPA', 'BPP', 'BK'])->get(),
-            'pptk' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['PPTK', 'KPA'])->get(),
-            'pa_kpa' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', $kd_skpd)->whereIn('kode', ['PA', 'KPA'])->get(),
-            'ppkd' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan')->where('kd_skpd', '5.02.0.00.0.00.02.0000')->whereIn('kode', ['BUD', 'KPA'])->get(),
+            'bendahara' => DB::table('ms_ttd')
+                ->select('nip', 'nama', 'jabatan')
+                ->where('kd_skpd', $kd_skpd)
+                ->whereIn('kode', ['KPA', 'BPP', 'BK'])
+                ->get(),
+            'pptk' => DB::table('ms_ttd')
+                ->select('nip', 'nama', 'jabatan')
+                ->where('kd_skpd', $kd_skpd)
+                ->whereIn('kode', ['PPTK', 'KPA'])
+                ->get(),
+            'pa_kpa' => DB::table('ms_ttd')
+                ->select('nip', 'nama', 'jabatan')
+                ->where('kd_skpd', $kd_skpd)
+                ->whereIn('kode', ['PA', 'KPA'])
+                ->get(),
+            'ppkd' => DB::table('ms_ttd')
+                ->select('nip', 'nama', 'jabatan')
+                ->where('kd_skpd', '5.02.0.00.0.00.02.0000')
+                ->whereIn('kode', ['BUD', 'KPA'])
+                ->get(),
             'cek' => selisih_angkas(),
             'kd_skpd' => $kd_skpd,
             'kunci' => $kuncian,
@@ -78,10 +94,10 @@ class SppLsController extends Controller
             'data_skpd' => DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd', 'bank', 'rekening', 'npwp')->where('kd_skpd', $skpd)->first(),
             'daftar_rekanan' => $result,
             'daftar_penerima' => DB::table('ms_rekening_bank_online')
-            ->select('rekening', 'nm_rekening', 'npwp', 'nmrekan', 'pimpinan', 'alamat', 'bank', 'nm_bank')
-            ->where(['kd_skpd' => $skpd, 'keperluan' => '2'])
-            ->orderBy('rekening')
-            ->get(),
+                ->select('rekening', 'nm_rekening', 'npwp', 'nmrekan', 'pimpinan', 'alamat', 'bank', 'nm_bank')
+                ->where(['kd_skpd' => $skpd, 'keperluan' => '2'])
+                ->orderBy('rekening')
+                ->get(),
             'daftar_bank' => DB::table('ms_bank')->select('kode', 'nama')->orderBy('kode')->get(),
             'daftar_penagihan' => DB::table('trhtagih as a')->select('a.kd_skpd', 'a.no_bukti', 'tgl_bukti', 'a.ket', 'a.kontrak', 'kd_sub_kegiatan', DB::raw('SUM(b.nilai) as total'))->join('trdtagih as b', function ($join) {
                 $join->on('a.no_bukti', '=', 'b.no_bukti');
@@ -238,7 +254,7 @@ class SppLsController extends Controller
             $beban = ['5'];
         }
 
-        $data = DB::table('trhspd')->select('no_spd', 'tgl_spd', 'bulan_awal','total')->whereRaw('LEFT(kd_skpd,22) = ?', [$skpd])->where('status', '1')->where('tgl_spd', '<=', $tgl_spp)->whereIn('jns_beban', $beban)->orderBy('bulan_awal', 'DESC')->get();
+        $data = DB::table('trhspd')->select('no_spd', 'tgl_spd', 'bulan_awal', 'total')->whereRaw('LEFT(kd_skpd,22) = ?', [$skpd])->where('status', '1')->where('tgl_spd', '<=', $tgl_spp)->whereIn('jns_beban', $beban)->orderBy('bulan_awal', 'DESC')->get();
         return response()->json($data);
     }
 
@@ -291,9 +307,11 @@ class SppLsController extends Controller
         //kenapa dikasih status aktif di trdrka???
         $kd_sub_kegiatan = $request->kd_sub_kegiatan;
         $kd_skpd = Auth::user()->kd_skpd;
-        $data = DB::table('trdrka')->select('kd_rek6', 'nm_rek6')->distinct()->where(['kd_sub_kegiatan' => $kd_sub_kegiatan, 'kd_skpd' => $kd_skpd
-        , 'status_aktif' => '1'
-         ])->orderBy('kd_rek6')->get();
+        $data = DB::table('trdrka')->select('kd_rek6', 'nm_rek6')->distinct()->where([
+            'kd_sub_kegiatan' => $kd_sub_kegiatan,
+            'kd_skpd' => $kd_skpd,
+            'status_aktif' => '1'
+        ])->orderBy('kd_rek6')->get();
         return response()->json($data);
     }
 
@@ -993,7 +1011,7 @@ class SppLsController extends Controller
         $jenis_beban2 = $request->jenis_beban2;
         $kd_skpd = Auth::user()->kd_skpd;
         $nomor = DB::table('trhspp')->select(DB::raw("ISNULL(MAX(urut),0)+1 as nilai"))->where(['kd_skpd' => $kd_skpd])->first();
-        $data = str::padLeft($nomor -> nilai, 6, '0');
+        $data = str::padLeft($nomor->nilai, 6, '0');
         return response()->json([
             'nilai' => $data
         ]);
@@ -1020,9 +1038,9 @@ class SppLsController extends Controller
 
             $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban']);
             $cek = DB::table('trhspp')
-            ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
-            ->count();
-            if ($cek > 0 ) {
+                ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
+                ->count();
+            if ($cek > 0) {
                 return response()->json([
                     'message' => '2'
                 ]);
@@ -1361,21 +1379,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "Gaji & Tunjangan";
                     break;
@@ -1385,9 +1403,9 @@ class SppLsController extends Controller
                 case '9': //TU
                     $lcbeban = "Tunjangan Lainnya";
                     break;
-                // case '10': //TU
-                //     $lcbeban = "Gaji Anggota DPRD";
-                //     break;
+                    // case '10': //TU
+                    //     $lcbeban = "Gaji Anggota DPRD";
+                    //     break;
                 default:
                     $lcbeban = "LS";
             }
@@ -1589,18 +1607,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = "Pihak Ketiga";
                     break;
-                // case '4': //TU
-                //     $lcbeban = " Honor Kontrak";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = " Pihak ketiga";
-                //     break;
-                // case '7': //TU
-                //     $lcbeban = " PNS";
-                //     break;
+                    // case '4': //TU
+                    //     $lcbeban = " Honor Kontrak";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = " Pihak ketiga";
+                    //     break;
+                    // case '7': //TU
+                    //     $lcbeban = " PNS";
+                    //     break;
                 default:
                     $lcbeban = "LS";
             }
@@ -1663,21 +1681,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "Gaji & Tunjangan";
                     break;
@@ -1886,18 +1904,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = "Pihak Ketiga";
                     break;
-                // case '4': //TU
-                //     $lcbeban = "  Honor Kontrak";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = " Pihak ketiga";
-                //     break;
-                // case '7': //TU
-                //     $lcbeban = " PNS";
-                //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "  Honor Kontrak";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = " Pihak ketiga";
+                    //     break;
+                    // case '7': //TU
+                    //     $lcbeban = " PNS";
+                    //     break;
             }
 
             $spp1 = DB::table('trhspp as b')->join('trdspp as c', function ($join) {
@@ -2007,21 +2025,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "LS - Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "LS - Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "LS - Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "LS - Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "LS - Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "LS - Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "LS - Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "LS - Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "LS - Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "LS - Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "LS - Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "LS - Tambah / Kekurangan Gaji Tunjangan";
                     break;
@@ -2077,18 +2095,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = "Pihak Ketiga";
                     break;
-                // case '4': //TU
-                //     $lcbeban = "  Honor Kontrak";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = " Pihak ketiga";
-                //     break;
-                // case '7': //TU
-                //     $lcbeban = " PNS";
-                //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "  Honor Kontrak";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = " Pihak ketiga";
+                    //     break;
+                    // case '7': //TU
+                    //     $lcbeban = " PNS";
+                    //     break;
             }
         }
         $cari_spp = DB::table('trhspp')->select('tgl_spp')->where('no_spp', $no_spp)->first();
@@ -2191,21 +2209,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
@@ -2409,18 +2427,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = "Pihak Ketiga";
                     break;
-                // case '4': //TU
-                //     $lcbeban = " Honor Kontrak";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = " Pihak ketiga";
-                //     break;
-                // case '7': //TU
-                //     $lcbeban = " PNS";
-                //     break;
+                    // case '4': //TU
+                    //     $lcbeban = " Honor Kontrak";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = " Pihak ketiga";
+                    //     break;
+                    // case '7': //TU
+                    //     $lcbeban = " PNS";
+                    //     break;
             }
             $cari_spp = DB::table('trhspp')->select('tgl_spp', 'no_spd')->where('no_spp', $no_spp)->first();
             $tanggal = $cari_spp->tgl_spp;
@@ -2433,9 +2451,9 @@ class SppLsController extends Controller
 
 
             $data_nilai = DB::table('trdrka')
-                    ->selectRaw("sum(nilai) as nilai")
-                    ->where(['kd_skpd' => $kd_skpd, 'kd_sub_kegiatan' => $sub_kegiatan, 'jns_ang' => $status_anggaran])
-                    ->first();
+                ->selectRaw("sum(nilai) as nilai")
+                ->where(['kd_skpd' => $kd_skpd, 'kd_sub_kegiatan' => $sub_kegiatan, 'jns_ang' => $status_anggaran])
+                ->first();
 
             $daerah = DB::table('sclient')->select('daerah')->where(['kd_skpd' => $kd_skpd])->first();
             $tglspd = $cari_spp->tgl_spp;
@@ -2552,21 +2570,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
@@ -2592,18 +2610,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = " Pihak ketiga";
                     break;
-                // case '4': //TU
-                //     $lcbeban = "  Honor Kontrak";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = " Pihak ketiga";
-                //     break;
-                // case '7': //TU
-                //     $lcbeban = " PNS";
-                //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "  Honor Kontrak";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = " Pihak ketiga";
+                    //     break;
+                    // case '7': //TU
+                    //     $lcbeban = " PNS";
+                    //     break;
             }
         }
         $header =  DB::table('config_app')
@@ -2651,21 +2669,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                // case '2': //GU
-                //     $lcbeban = "Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $lcbeban = "Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $lcbeban = "Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $lcbeban = "Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+                    // case '2': //GU
+                    //     $lcbeban = "Uang Kespeg";
+                    //     break;
+                    // case '3': //TU
+                    //     $lcbeban = "Uang Makan";
+                    //     break;
+                    // case '4': //TU
+                    //     $lcbeban = "Upah Pungut";
+                    //     break;
+                    // case '5': //TU
+                    //     $lcbeban = "Upah Pungut PBB";
+                    //     break;
+                    // case '6': //TU
+                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                    //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
@@ -2733,10 +2751,21 @@ class SppLsController extends Controller
         $cari_bendahara = DB::table('ms_ttd')
             ->select('nama', 'nip', 'jabatan', 'pangkat')
             ->where(['nip' => $bendahara, 'kd_skpd' => $kd_skpd])
-            ->whereIn('kode', ['BK', 'BPP'])
+            ->whereIn('kode', ['BK', 'BPP', 'KPA'])
             ->first();
-        $cari_pptk = DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pptk, 'kd_skpd' => $kd_skpd, 'kode' => 'PPTK'])->first();
-        $cari_pa = DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PA', 'KPA'])->first();
+        $cari_pptk = DB::table('ms_ttd')
+            ->select('nama', 'nip', 'jabatan', 'pangkat')
+            ->where([
+                'nip' => $pptk,
+                'kd_skpd' => $kd_skpd,
+            ])
+            ->whereIn('kode', ['PPTK', 'KPA'])
+            ->first();
+        $cari_pa = DB::table('ms_ttd')
+            ->select('nama', 'nip', 'jabatan', 'pangkat')
+            ->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])
+            ->whereIn('kode', ['PA', 'KPA'])
+            ->first();
         $kd_sub_kegiatan = DB::table('trdspp')->select('kd_sub_kegiatan')->where(['no_spp' => $no_spp])->groupBy('kd_sub_kegiatan')->first();
         $sub_kegiatan = $kd_sub_kegiatan->kd_sub_kegiatan;
         if ($beban == 1) {
@@ -2773,8 +2802,8 @@ class SppLsController extends Controller
             $kd_sub_kegiatan1 = $data->kd_sub_kegiatan;
             $nm_sub_kegiatan1 = $data->nm_sub_kegiatan;
         }
-        $dataspd = DB::table('trhspd')->select('no_spd', 'tgl_spd', 'total','bulan_awal')->whereRaw("LEFT(kd_skpd,22) = LEFT('$kd_skpd',22)")->orderBy('bulan_awal', 'asc')->get();
-        $datasp2d = DB::table('trhsp2d')->select('no_sp2d', 'tgl_sp2d', 'nilai as total')->where(['kd_skpd' => $kd_skpd, 'jns_spp' => '6'])->orderBy('no_sp2d','asc')->get();
+        $dataspd = DB::table('trhspd')->select('no_spd', 'tgl_spd', 'total', 'bulan_awal')->whereRaw("LEFT(kd_skpd,22) = LEFT('$kd_skpd',22)")->orderBy('bulan_awal', 'asc')->get();
+        $datasp2d = DB::table('trhsp2d')->select('no_sp2d', 'tgl_sp2d', 'nilai as total')->where(['kd_skpd' => $kd_skpd, 'jns_spp' => '6'])->orderBy('no_sp2d', 'asc')->get();
         $header =  DB::table('config_app')
             ->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')
             ->first();
