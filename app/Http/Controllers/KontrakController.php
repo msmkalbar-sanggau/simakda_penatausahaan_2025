@@ -19,7 +19,7 @@ class KontrakController extends Controller
         $kuncian = $kunci == 1 && !in_array($role, ['1006', '1012', '1016', '1017']) ? '1' : '0';
 
         $data = [
-            'kunci' =>$kuncian,
+            'kunci' => $kuncian,
         ];
 
         return view('master.kontrak.index')->with($data);
@@ -29,15 +29,15 @@ class KontrakController extends Controller
     {
         $kd_skpd = Auth::user()->kd_skpd;
         $data = DB::table('ms_kontrak AS a')
-        ->select('a.*')
-        ->selectRaw("(SELECT count(*) as tot FROM trhtagih WHERE kontrak=a.no_kontrak and kd_skpd=a.kd_skpd) as total")
-        ->leftJoin('ms_rekening_bank_online AS b', function ($join) {
-            $join->on('a.nm_rekening', '=', 'b.nm_rekening');
-            $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            $join->on('a.no_rekening', '=', 'b.rekening');
-        })
-        ->where('a.kd_skpd', $kd_skpd)
-        ->get();
+            ->select('a.*')
+            ->selectRaw("(SELECT count(*) as tot FROM trhtagih WHERE kontrak=a.no_kontrak and kd_skpd=a.kd_skpd) as total")
+            ->leftJoin('ms_rekening_bank_online AS b', function ($join) {
+                $join->on('a.nm_rekening', '=', 'b.nm_rekening');
+                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+                $join->on('a.no_rekening', '=', 'b.rekening');
+            })
+            ->where('a.kd_skpd', $kd_skpd)
+            ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
             $btn = '<a href="' . route("kontrak.show", Crypt::encryptString($row->no_kontrak)) . '" class="btn btn-info btn-sm" style="margin-right:4px"><i class="uil-eye"></i></a>';
             $btn .= '<a href="' . route("kontrak.edit", Crypt::encryptString($row->no_kontrak)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="uil-edit"></i></a>';
@@ -57,7 +57,7 @@ class KontrakController extends Controller
             'daftar_bank' => DB::table('ms_bank_online')->get(),
             'daftar_kode_akun' => DB::table('ms_map_billing')->select('kd_map', 'nm_map')->groupBy('nm_map', 'kd_map')->get(),
             'kd_skpd' => $kd_skpd,
-            'skpd' => DB::table('ms_skpd')->select('nm_skpd','kd_skpd')->where('kd_skpd', $kd_skpd)->first(),
+            'skpd' => DB::table('ms_skpd')->select('nm_skpd', 'kd_skpd')->where('kd_skpd', $kd_skpd)->first(),
             'daftar_rekening' => DB::table('ms_rekening_bank_online')->where('kd_skpd', $kd_skpd)->get(),
         ];
 
@@ -66,24 +66,48 @@ class KontrakController extends Controller
 
     public function store(KontrakRequest $request)
     {
+
         $input = array_map('htmlentities', $request->validated());
-        $skpd = Auth::user()->kd_skpd;
 
-        DB::table('ms_kontrak')
-            ->insert([
-                'no_kontrak' => str_replace(' ', '', trim($input['no_kontrak'])),
-                'nilai' => $input['nilai'],
-                'kd_skpd' => $input['kd_skpd'],
-                'nm_kerja' => $input['nm_kerja'],
-                'tgl_kerja' => $input['tgl_kerja'],
-                'nmpel' => $input['nmpel'],
-                'nm_rekening' => $input['nm_rekening'],
-                'no_rekening' => $input['no_rekening'],
-                'pimpinan' => $input['pimpinan'],
-                'no_ref' => $input['no_ref'],
-            ]);
+        $noKontrak = str_replace(' ', '', trim($input['no_kontrak']));
 
-        return redirect()->route('kontrak.index');
+        $cek = DB::table('ms_kontrak')
+            ->where([
+                'no_kontrak' => $input['no_kontrak'],
+                'kd_skpd' => $input['kd_skpd']
+            ])
+            ->count();
+
+        if ($cek > 0) {
+            return redirect()->route('kontrak.create')
+                ->withInput()
+                ->with(['message' => 'No Kontrak telah ada!', 'alert' => 'alert-danger']);
+        }
+
+        DB::beginTransaction();
+        try {
+            DB::table('ms_kontrak')
+                ->insert([
+                    'no_kontrak' => $noKontrak,
+                    'nilai' => $input['nilai'],
+                    'kd_skpd' => $input['kd_skpd'],
+                    'nm_kerja' => $input['nm_kerja'],
+                    'tgl_kerja' => $input['tgl_kerja'],
+                    'nmpel' => $input['nmpel'],
+                    'nm_rekening' => $input['nm_rekening'],
+                    'no_rekening' => $input['no_rekening'],
+                    'pimpinan' => $input['pimpinan'],
+                    'no_ref' => $input['no_ref'],
+                ]);
+
+            DB::commit();
+            return redirect()->route('kontrak.index');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('kontrak.create')
+                ->withInput()
+                ->with(['message', 'Kontrak tidak dapat ditambahkan!', 'alert' => 'alert-danger']);
+        }
     }
 
     public function show($id)
@@ -95,7 +119,7 @@ class KontrakController extends Controller
         $data = [
             'data' => $data_awal,
             'skpd' => DB::table('ms_skpd')->where('kd_skpd', $data_awal->kd_skpd)->first(),
-            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening'=> $data_awal->nm_rekening, 'kd_skpd' => $kd_skpd])->first(),
+            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, 'kd_skpd' => $kd_skpd])->first(),
             'tgl_kerja' => date('d M Y', strtotime($data_awal->tgl_kerja))
         ];
         return view('master.kontrak.show')->with($data);
@@ -110,14 +134,14 @@ class KontrakController extends Controller
                 $join->on('a.nm_rekening', '=', 'b.nm_rekening');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
             })
-            ->select('a.*', 'b.rekening','b.npwp')
+            ->select('a.*', 'b.rekening', 'b.npwp')
             ->where(['a.no_kontrak' => $id, 'a.kd_skpd' => $kd_skpd])
             ->first();
 
         $data = [
             'data_kontrak' => $data_awal,
             'daftar_rekening' => DB::table('ms_rekening_bank_online')->where('kd_skpd', $data_awal->kd_skpd)->get(),
-            'skpd' => DB::table('ms_skpd')->select('nm_skpd','kd_skpd')->where('kd_skpd', $data_awal->kd_skpd)->first(),
+            'skpd' => DB::table('ms_skpd')->select('nm_skpd', 'kd_skpd')->where('kd_skpd', $data_awal->kd_skpd)->first(),
             'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, 'kd_skpd' => $data_awal->kd_skpd])->first(),
         ];
 

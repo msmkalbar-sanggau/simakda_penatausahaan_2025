@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Crypt;
 
 class KontrakRequest extends FormRequest
 {
@@ -52,8 +53,10 @@ class KontrakRequest extends FormRequest
         ];
         if (request()->isMethod('post')) {
             $rule = $rules;
+            $this->redirect = 'master/kontrak/create';
         } elseif (request()->isMethod('put')) {
             $rule = $rules;
+            $this->redirect = 'master/kontrak/' . Crypt::encryptString(request()->route('kontrak')) . '/edit';
         }
         return $rule;
     }
