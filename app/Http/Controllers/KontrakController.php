@@ -106,7 +106,7 @@ class KontrakController extends Controller
             DB::rollBack();
             return redirect()->route('kontrak.create')
                 ->withInput()
-                ->with(['message', 'Kontrak tidak dapat ditambahkan!', 'alert' => 'alert-danger']);
+                ->with(['message' => 'Kontrak tidak dapat ditambahkan!', 'alert' => 'alert-danger']);
         }
     }
 
