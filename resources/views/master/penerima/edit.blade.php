@@ -145,14 +145,14 @@
                             </div>
                         </div>
                         <!-- Cek Rekening -->
-                        <div class="mb-3 row">
+                        {{-- <div class="mb-3 row">
                             <label for="cek_rekening" class="col-md-2 col-form-label"></label>
                             <div class="col-md-10">
                                 <button type="button" id="cek_rekening" class="btn btn-primary btn-sm">Cek
                                     Rekening</button>
                             </div>
-                        </div>
-                        <!-- Kode Akun -->
+                        </div> --}}
+                        {{-- <!-- Kode Akun -->
                         <div class="mb-3 row">
                             <label for="kode_akun" class="col-md-2 col-form-label">Kode Akun</label>
                             <div class="col-md-10">
@@ -192,7 +192,7 @@
                                 <input type="hidden" name="kode_setor_sementara" value="{{ $data_penerima->kd_setor }}"
                                     id="kode_setor_sementara">
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- NPWP -->
                         <div class="mb-3 row">
                             <label for="npwp" class="col-md-2 col-form-label">NPWP</label>
@@ -201,13 +201,20 @@
                                     placeholder="Silahkan isi dengan npwp" id="npwp" name="npwp" maxlength="16">
                             </div>
                         </div>
-                        <!-- Cek NPWP -->
                         <div class="mb-3 row">
+                            <label for="npwp" class="col-md-2 col-form-label">Nama NPWP</label>
+                            <div class="col-md-10">
+                                <input class="form-control" value="{{ $data_penerima->nm_wp }}" type="text"
+                                    placeholder="Silahkan isi dengan nama npwp" id="nm_npwp" name="nm_npwp">
+                            </div>
+                        </div>
+                        <!-- Cek NPWP -->
+                        {{-- <div class="mb-3 row">
                             <label for="cek_npwp" class="col-md-2 col-form-label"></label>
                             <div class="col-md-10">
                                 <button type="button" id="cek_npwp" class="btn btn-primary btn-sm">Cek NPWP</button>
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- Keterangan Tambahan -->
                         <div class="mb-3 row">
                             <label for="keterangan" class="col-md-2 col-form-label">Keterangan Tambahan</label>
@@ -254,7 +261,7 @@
                                     value="{{ $data_penerima->alamat }}">
                             </div>
                         </div>
-                        <!-- Hasil Validasi Bank -->
+                        {{-- <!-- Hasil Validasi Bank -->
                         <div class="mb-3 row">
                             <label for="hasil_validasi" class="col-md-12 col-form-label"
                                 style="text-align: center;">Hasil Validasi Bank</label>
@@ -309,7 +316,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- SIMPAN -->
                         <div style="float: right;">
                             <button type="submit" id="save" class="btn btn-primary btn-md">Simpan</button>
@@ -337,42 +344,42 @@
                 }
             });
 
-            if (document.getElementById('jenis').value == '2') {
+            // if (document.getElementById('jenis').value == '2') {
 
-                $('#rekanan').prop('readonly', false);
-                $('#pimpinan').prop('readonly', false);
-                $('#alamat').prop('readonly', false);
-            } else {
-                $('#rekanan').prop('readonly', true);
-                $('#pimpinan').prop('readonly', true);
-                $('#alamat').prop('readonly', true);
-            }
+            //     $('#rekanan').prop('readonly', false);
+            //     $('#pimpinan').prop('readonly', false);
+            //     $('#alamat').prop('readonly', false);
+            // } else {
+            //     $('#rekanan').prop('readonly', false);
+            //     $('#pimpinan').prop('readonly', false);
+            //     $('#alamat').prop('readonly', false);
+            // }
 
-            $('#jenis').on('select2:select', function() {
-                let bank = $('#bank').val();
+            // $('#jenis').on('select2:select', function() {
+            //     let bank = $('#bank').val();
 
-                if (!bank) {
-                    alert('Silahkan pilih Bank terlebih dahulu!');
-                    $('#jenis').val(null).change();
-                    return;
-                }
+            //     if (!bank) {
+            //         alert('Silahkan pilih Bank terlebih dahulu!');
+            //         $('#jenis').val(null).change();
+            //         return;
+            //     }
 
-                let jenis = this.value;
+            //     let jenis = this.value;
 
-                if (jenis == '2') {
-                    $('#pimpinan').prop('readonly', false);
-                    $('#alamat').prop('readonly', false);
-                    $('#rekanan').val(null);
-                    $('#pimpinan').val(null);
-                    $('#alamat').val(null);
-                } else {
-                    $('#pimpinan').prop('readonly', true);
-                    $('#alamat').prop('readonly', true);
-                    $('#rekanan').val(null);
-                    $('#pimpinan').val(null);
-                    $('#alamat').val(null);
-                }
-            });
+            //     if (jenis == '2') {
+            //         $('#pimpinan').prop('readonly', false);
+            //         $('#alamat').prop('readonly', false);
+            //         $('#rekanan').val(null);
+            //         $('#pimpinan').val(null);
+            //         $('#alamat').val(null);
+            //     } else {
+            //         $('#pimpinan').prop('readonly', false);
+            //         $('#alamat').prop('readonly', false);
+            //         $('#rekanan').val(null);
+            //         $('#pimpinan').val(null);
+            //         $('#alamat').val(null);
+            //     }
+            // });
 
             // $('#rekanan').on('change', function() {
             //     let rekanan = this.value;
@@ -410,33 +417,33 @@
                     })
                 }
             })
-            let kode_setor_sementara = document.getElementById('kode_setor_sementara').value;
-            let kode_akun = document.getElementById('kode_akun_sementara').value;
-            $.ajax({
-                url: "{{ route('penerima.kodeSetor') }}",
-                type: "POST",
-                dataType: 'json',
-                data: {
-                    kd_map: kode_akun,
-                    "_token": "{{ csrf_token() }}",
-                },
-                dataType: "json",
-                success: function(data) {
-                    $('#kode_setor').empty();
-                    $('#kode_setor').append(`<option value="0">Pilih Kode Setor</option>`);
-                    $.each(data, function(index, data) {
-                        if (data.kd_setor == kode_setor_sementara) {
-                            $('#kode_setor').append(
-                                `<option value="${data.kd_setor}" selected>${data.nm_setor}</option>`
-                            );
-                        } else {
-                            $('#kode_setor').append(
-                                `<option value="${data.kd_setor}">${data.nm_setor}</option>`
-                            );
-                        }
-                    })
-                }
-            })
+            // let kode_setor_sementara = document.getElementById('kode_setor_sementara').value;
+            // let kode_akun = document.getElementById('kode_akun_sementara').value;
+            // $.ajax({
+            //     url: "{{ route('penerima.kodeSetor') }}",
+            //     type: "POST",
+            //     dataType: 'json',
+            //     data: {
+            //         kd_map: kode_akun,
+            //         "_token": "{{ csrf_token() }}",
+            //     },
+            //     dataType: "json",
+            //     success: function(data) {
+            //         $('#kode_setor').empty();
+            //         $('#kode_setor').append(`<option value="0">Pilih Kode Setor</option>`);
+            //         $.each(data, function(index, data) {
+            //             if (data.kd_setor == kode_setor_sementara) {
+            //                 $('#kode_setor').append(
+            //                     `<option value="${data.kd_setor}" selected>${data.nm_setor}</option>`
+            //                 );
+            //             } else {
+            //                 $('#kode_setor').append(
+            //                     `<option value="${data.kd_setor}">${data.nm_setor}</option>`
+            //                 );
+            //             }
+            //         })
+            //     }
+            // })
             $('#bank').on("change", function() {
                 $("#nama_cabang").val("");
                 let bic = $(this).find(':selected').data('bic');
@@ -469,284 +476,284 @@
                 let nama_cabang = selected.data('nama');
                 $("#nama_cabang").val(nama_cabang);
             });
-            $('#kode_akun').on("change", function() {
-                let kd_map = this.value;
-                $.ajax({
-                    url: "{{ route('penerima.kodeSetor') }}",
-                    type: "POST",
-                    dataType: 'json',
-                    data: {
-                        kd_map: kd_map,
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    dataType: "json",
-                    success: function(data) {
-                        $('#kode_setor').empty();
-                        $('#kode_setor').append(`<option value="0">Pilih Kode Setor</option>`);
-                        $.each(data, function(index, data) {
-                            $('#kode_setor').append(
-                                `<option value="${data.kd_setor}">${data.nm_setor}</option>`
-                            );
-                        })
-                    }
-                })
-            });
-            $('#cek_rekening').on("click", function() {
-                let kode_bank = document.getElementById('bank').value;
+            // $('#kode_akun').on("change", function() {
+            //     let kd_map = this.value;
+            //     $.ajax({
+            //         url: "{{ route('penerima.kodeSetor') }}",
+            //         type: "POST",
+            //         dataType: 'json',
+            //         data: {
+            //             kd_map: kd_map,
+            //             "_token": "{{ csrf_token() }}",
+            //         },
+            //         dataType: "json",
+            //         success: function(data) {
+            //             $('#kode_setor').empty();
+            //             $('#kode_setor').append(`<option value="0">Pilih Kode Setor</option>`);
+            //             $.each(data, function(index, data) {
+            //                 $('#kode_setor').append(
+            //                     `<option value="${data.kd_setor}">${data.nm_setor}</option>`
+            //                 );
+            //             })
+            //         }
+            //     })
+            // });
+            // $('#cek_rekening').on("click", function() {
+            //     let kode_bank = document.getElementById('bank').value;
 
-                let no_rek = document.getElementById('rekening').value;
-                let nm_rek = document.getElementById('nm_rekening').value;
-                let jenis = document.getElementById('jenis').value;
-                let digit = $('#bank').find('option:selected').data('digit');
+            //     let no_rek = document.getElementById('rekening').value;
+            //     let nm_rek = document.getElementById('nm_rekening').value;
+            //     let jenis = document.getElementById('jenis').value;
+            //     let digit = $('#bank').find('option:selected').data('digit');
 
-                if (!kode_bank) {
-                    alert('Bank harus dipilih!');
-                }
-                if (!no_rek) {
-                    alert('No rekening harus diisi!');
-                }
-                if (!nm_rek) {
-                    alert('Nama rekening harus diisi!');
-                }
+            //     if (!kode_bank) {
+            //         alert('Bank harus dipilih!');
+            //     }
+            //     if (!no_rek) {
+            //         alert('No rekening harus diisi!');
+            //     }
+            //     if (!nm_rek) {
+            //         alert('Nama rekening harus diisi!');
+            //     }
 
-                // if (jenis == '4') {
-                //     if (no_rek.length > digit) {
-                //         alert('No Rekening melebihi digit inputan rekening, yaitu ' + digit + ' digit!');
-                //         return;
-                //     }
+            //     // if (jenis == '4') {
+            //     //     if (no_rek.length > digit) {
+            //     //         alert('No Rekening melebihi digit inputan rekening, yaitu ' + digit + ' digit!');
+            //     //         return;
+            //     //     }
 
-                //     Swal.fire({
-                //         title: 'SUKSES!',
-                //         text: 'Rekening bank ' + no_rek + '-' + nm_rek + ' tersimpan',
-                //         icon: 'success',
-                //         confirmButtonColor: '#5b73e8',
-                //     })
+            //     //     Swal.fire({
+            //     //         title: 'SUKSES!',
+            //     //         text: 'Rekening bank ' + no_rek + '-' + nm_rek + ' tersimpan',
+            //     //         icon: 'success',
+            //     //         confirmButtonColor: '#5b73e8',
+            //     //     })
 
-                //     $("#no_rekening_validasi").val(no_rek);
-                //     $("#nm_rekening_validasi").val(nm_rek);
-                //     document.getElementById("save").disabled = false;
-                // } else {
-                //     if (kode_bank && no_rek && nm_rek) {
-                //         swal.fire({
-                //             allowOutsideClick: false,
-                //             allowEscapeKey: false,
-                //             title: 'Proses cek rekening bank',
-                //             text: 'Silahkan tunggu !!!',
-                //             onOpen: function() {
-                //                 swal.showLoading()
-                //             }
-                //         })
-
-
-                //         $.ajax({
-                //             url: "{{ route('penerima.cekRekening') }}",
-                //             type: "POST",
-                //             dataType: 'json',
-                //             data: {
-                //                 kode_bank: kode_bank,
-                //                 no_rek: no_rek,
-                //                 nm_rek: nm_rek,
-                //             },
-                //             dataType: "json",
-                //             success: function(data) {
-                //                 let data1 = $.parseJSON(data);
-                //                 if (data1.status) {
-                //                     Swal.fire({
-                //                         title: 'SUKSES!',
-                //                         text: 'Rekening bank ' + data1.data[0].data
-                //                             .nomorRekening + '-' + data1.data[0].data
-                //                             .namaPemilikRekening + ' tersedia',
-                //                         icon: 'success',
-                //                         confirmButtonColor: '#5b73e8',
-                //                     })
-
-                //                     $("#no_rekening_validasi").val(data1.data[0].data
-                //                         .nomorRekening);
-                //                     $("#nm_rekening_validasi").val(data1.data[0].data
-                //                         .namaPemilikRekening);
-                //                     document.getElementById("save").disabled = false;
-                //                     $("#loading").hide();
-                //                 } else {
-                //                     // alert(data1.message);
-                //                     let pesan = data1.message.replaceAll(" ", "\u00A0");
-
-                //                     Swal.fire({
-                //                         type: "error",
-                //                         icon: "error",
-                //                         title: "Oops...",
-                //                         text: pesan,
-                //                         confirmButtonClass: "btn btn-confirm mt-2",
-                //                     })
-
-                //                     document.getElementById("save").disabled = true;
-                //                     $("#no_rekening_validasi").attr("value", '');
-                //                     $("#nm_rekening_validasi").attr("value", '');
-                //                     $("#loading").hide();
-                //                 }
-                //             }
-                //         })
-                //     }
-                // }
-
-                if (kode_bank && no_rek && nm_rek) {
-                    swal.fire({
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        title: 'Proses cek rekening bank',
-                        text: 'Silahkan tunggu !!!',
-                        onOpen: function() {
-                            swal.showLoading()
-                        }
-                    })
+            //     //     $("#no_rekening_validasi").val(no_rek);
+            //     //     $("#nm_rekening_validasi").val(nm_rek);
+            //     //     document.getElementById("save").disabled = false;
+            //     // } else {
+            //     //     if (kode_bank && no_rek && nm_rek) {
+            //     //         swal.fire({
+            //     //             allowOutsideClick: false,
+            //     //             allowEscapeKey: false,
+            //     //             title: 'Proses cek rekening bank',
+            //     //             text: 'Silahkan tunggu !!!',
+            //     //             onOpen: function() {
+            //     //                 swal.showLoading()
+            //     //             }
+            //     //         })
 
 
-                    $.ajax({
-                        url: "{{ route('penerima.cekRekening') }}",
-                        type: "POST",
-                        dataType: 'json',
-                        data: {
-                            kode_bank: kode_bank,
-                            no_rek: no_rek,
-                            nm_rek: nm_rek,
-                            "_token": "{{ csrf_token() }}",
-                        },
-                        dataType: "json",
-                        success: function(data) {
-                            let data1 = $.parseJSON(data);
-                            if (data1.status) {
-                                Swal.fire({
-                                    title: 'SUKSES!',
-                                    text: 'Rekening bank ' + data1.data[0].data
-                                        .nomorRekening + '-' + data1.data[0].data
-                                        .namaPemilikRekening + ' tersedia',
-                                    icon: 'success',
-                                    confirmButtonColor: '#5b73e8',
-                                })
+            //     //         $.ajax({
+            //     //             url: "{{ route('penerima.cekRekening') }}",
+            //     //             type: "POST",
+            //     //             dataType: 'json',
+            //     //             data: {
+            //     //                 kode_bank: kode_bank,
+            //     //                 no_rek: no_rek,
+            //     //                 nm_rek: nm_rek,
+            //     //             },
+            //     //             dataType: "json",
+            //     //             success: function(data) {
+            //     //                 let data1 = $.parseJSON(data);
+            //     //                 if (data1.status) {
+            //     //                     Swal.fire({
+            //     //                         title: 'SUKSES!',
+            //     //                         text: 'Rekening bank ' + data1.data[0].data
+            //     //                             .nomorRekening + '-' + data1.data[0].data
+            //     //                             .namaPemilikRekening + ' tersedia',
+            //     //                         icon: 'success',
+            //     //                         confirmButtonColor: '#5b73e8',
+            //     //                     })
 
-                                $("#no_rekening_validasi").val(data1.data[0].data
-                                    .nomorRekening);
-                                $("#nm_rekening_validasi").val(data1.data[0].data
-                                    .namaPemilikRekening);
-                                if (jenis == '1') {
-                                    $("#rekanan").val(data1.data[0].data
-                                        .namaPemilikRekening);
-                                }
-                                document.getElementById("save").disabled = false;
-                                $("#loading").hide();
-                            } else {
-                                // alert(data1.message);
-                                let pesan = data1.message.replaceAll(" ", "\u00A0");
+            //     //                     $("#no_rekening_validasi").val(data1.data[0].data
+            //     //                         .nomorRekening);
+            //     //                     $("#nm_rekening_validasi").val(data1.data[0].data
+            //     //                         .namaPemilikRekening);
+            //     //                     document.getElementById("save").disabled = false;
+            //     //                     $("#loading").hide();
+            //     //                 } else {
+            //     //                     // alert(data1.message);
+            //     //                     let pesan = data1.message.replaceAll(" ", "\u00A0");
 
-                                Swal.fire({
-                                    type: "error",
-                                    icon: "error",
-                                    title: "Oops...",
-                                    text: pesan,
-                                    confirmButtonClass: "btn btn-confirm mt-2",
-                                })
+            //     //                     Swal.fire({
+            //     //                         type: "error",
+            //     //                         icon: "error",
+            //     //                         title: "Oops...",
+            //     //                         text: pesan,
+            //     //                         confirmButtonClass: "btn btn-confirm mt-2",
+            //     //                     })
 
-                                document.getElementById("save").disabled = true;
-                                $("#no_rekening_validasi").attr("value", '');
-                                $("#nm_rekening_validasi").attr("value", '');
-                                $("#loading").hide();
-                            }
-                        }
-                    })
-                }
-            });
+            //     //                     document.getElementById("save").disabled = true;
+            //     //                     $("#no_rekening_validasi").attr("value", '');
+            //     //                     $("#nm_rekening_validasi").attr("value", '');
+            //     //                     $("#loading").hide();
+            //     //                 }
+            //     //             }
+            //     //         })
+            //     //     }
+            //     // }
 
-            $('#cek_npwp').on("click", function() {
-                let npwp = document.getElementById('npwp').value;
-                let kode_akun = document.getElementById('kode_akun').value;
-                let kode_setor = document.getElementById('kode_setor').value;
-                if (!npwp) {
-                    alert('Bank harus dipilih!');
-                    exit;
-                }
-                if (!kode_akun) {
-                    alert('No rekening harus diisi!');
-                    exit;
-                }
-                if (!kode_setor) {
-                    alert('Nama rekening harus diisi!');
-                    exit;
-                }
-                if (npwp == '000000000000000') {
-                    $("#npwp_validasi").val(npwp);
-                    $("#nm_npwp_validasi").val("-");
-                    document.getElementById("save").disabled = false;
-                } else {
-                    if (npwp && kode_akun && kode_setor) {
-                        swal.fire({
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                            title: 'Proses cek NPWP',
-                            text: 'Silahkan tunggu !!!',
-                            onOpen: function() {
-                                swal.showLoading()
-                            }
-                        })
-                        $.ajax({
-                            url: "{{ route('penerima.cekNpwp') }}",
-                            type: "POST",
-                            dataType: 'json',
-                            data: {
-                                npwp: npwp,
-                                kode_akun: kode_akun,
-                                kode_setor: kode_setor,
-                                "_token": "{{ csrf_token() }}",
-                            },
-                            dataType: "json",
-                            success: function(data) {
-                                let data1 = $.parseJSON(data);
-                                if (data1.status) {
-                                    if (data1.data[0].response_code == 00) {
-                                        Swal.fire({
-                                            title: 'SUKSES!',
-                                            text: 'NPWP ' + data1.data[0].data
-                                                .nomorPokokWajibPajak + '-' + data1
-                                                .data[0]
-                                                .data.namaWajibPajak + ' tersedia',
-                                            icon: 'success',
-                                            confirmButtonColor: '#5b73e8',
-                                        })
+            //     if (kode_bank && no_rek && nm_rek) {
+            //         swal.fire({
+            //             allowOutsideClick: false,
+            //             allowEscapeKey: false,
+            //             title: 'Proses cek rekening bank',
+            //             text: 'Silahkan tunggu !!!',
+            //             onOpen: function() {
+            //                 swal.showLoading()
+            //             }
+            //         })
 
-                                        $("#npwp_validasi").val(data1.data[0].data
-                                            .nomorPokokWajibPajak);
-                                        $("#nm_npwp_validasi").val(data1.data[0].data
-                                            .namaWajibPajak);
-                                        document.getElementById("save").disabled = false;
-                                        // $("#loading").hide();
-                                    } else {
-                                        Swal.fire({
-                                            type: "error",
-                                            icon: "error",
-                                            title: "Oops...",
-                                            text: data1.data[0].message,
-                                            confirmButtonClass: "btn btn-confirm mt-2",
-                                        })
-                                        document.getElementById("save").disabled = true;
-                                        $("#npwp_validasi").attr("value", '');
-                                        $("#nm_npwp_validasi").attr("value", '');
-                                        // $("#loading").hide();
-                                    }
-                                } else {
-                                    Swal.fire({
-                                        type: "error",
-                                        icon: "error",
-                                        title: "Oops...",
-                                        text: data1.message,
-                                        confirmButtonClass: "btn btn-confirm mt-2",
-                                    })
-                                    document.getElementById("save").disabled = true;
-                                    $("#npwp_validasi").attr("value", '');
-                                    $("#nm_npwp_validasi").attr("value", '');
-                                }
-                            }
-                        })
-                    }
-                }
-            });
+
+            //         $.ajax({
+            //             url: "{{ route('penerima.cekRekening') }}",
+            //             type: "POST",
+            //             dataType: 'json',
+            //             data: {
+            //                 kode_bank: kode_bank,
+            //                 no_rek: no_rek,
+            //                 nm_rek: nm_rek,
+            //                 "_token": "{{ csrf_token() }}",
+            //             },
+            //             dataType: "json",
+            //             success: function(data) {
+            //                 let data1 = $.parseJSON(data);
+            //                 if (data1.status) {
+            //                     Swal.fire({
+            //                         title: 'SUKSES!',
+            //                         text: 'Rekening bank ' + data1.data[0].data
+            //                             .nomorRekening + '-' + data1.data[0].data
+            //                             .namaPemilikRekening + ' tersedia',
+            //                         icon: 'success',
+            //                         confirmButtonColor: '#5b73e8',
+            //                     })
+
+            //                     $("#no_rekening_validasi").val(data1.data[0].data
+            //                         .nomorRekening);
+            //                     $("#nm_rekening_validasi").val(data1.data[0].data
+            //                         .namaPemilikRekening);
+            //                     if (jenis == '1') {
+            //                         $("#rekanan").val(data1.data[0].data
+            //                             .namaPemilikRekening);
+            //                     }
+            //                     document.getElementById("save").disabled = false;
+            //                     $("#loading").hide();
+            //                 } else {
+            //                     // alert(data1.message);
+            //                     let pesan = data1.message.replaceAll(" ", "\u00A0");
+
+            //                     Swal.fire({
+            //                         type: "error",
+            //                         icon: "error",
+            //                         title: "Oops...",
+            //                         text: pesan,
+            //                         confirmButtonClass: "btn btn-confirm mt-2",
+            //                     })
+
+            //                     document.getElementById("save").disabled = true;
+            //                     $("#no_rekening_validasi").attr("value", '');
+            //                     $("#nm_rekening_validasi").attr("value", '');
+            //                     $("#loading").hide();
+            //                 }
+            //             }
+            //         })
+            //     }
+            // });
+
+            // $('#cek_npwp').on("click", function() {
+            //     let npwp = document.getElementById('npwp').value;
+            //     let kode_akun = document.getElementById('kode_akun').value;
+            //     let kode_setor = document.getElementById('kode_setor').value;
+            //     if (!npwp) {
+            //         alert('Bank harus dipilih!');
+            //         exit;
+            //     }
+            //     if (!kode_akun) {
+            //         alert('No rekening harus diisi!');
+            //         exit;
+            //     }
+            //     if (!kode_setor) {
+            //         alert('Nama rekening harus diisi!');
+            //         exit;
+            //     }
+            //     if (npwp == '000000000000000') {
+            //         $("#npwp_validasi").val(npwp);
+            //         $("#nm_npwp_validasi").val("-");
+            //         document.getElementById("save").disabled = false;
+            //     } else {
+            //         if (npwp && kode_akun && kode_setor) {
+            //             swal.fire({
+            //                 allowOutsideClick: false,
+            //                 allowEscapeKey: false,
+            //                 title: 'Proses cek NPWP',
+            //                 text: 'Silahkan tunggu !!!',
+            //                 onOpen: function() {
+            //                     swal.showLoading()
+            //                 }
+            //             })
+            //             $.ajax({
+            //                 url: "{{ route('penerima.cekNpwp') }}",
+            //                 type: "POST",
+            //                 dataType: 'json',
+            //                 data: {
+            //                     npwp: npwp,
+            //                     kode_akun: kode_akun,
+            //                     kode_setor: kode_setor,
+            //                     "_token": "{{ csrf_token() }}",
+            //                 },
+            //                 dataType: "json",
+            //                 success: function(data) {
+            //                     let data1 = $.parseJSON(data);
+            //                     if (data1.status) {
+            //                         if (data1.data[0].response_code == 00) {
+            //                             Swal.fire({
+            //                                 title: 'SUKSES!',
+            //                                 text: 'NPWP ' + data1.data[0].data
+            //                                     .nomorPokokWajibPajak + '-' + data1
+            //                                     .data[0]
+            //                                     .data.namaWajibPajak + ' tersedia',
+            //                                 icon: 'success',
+            //                                 confirmButtonColor: '#5b73e8',
+            //                             })
+
+            //                             $("#npwp_validasi").val(data1.data[0].data
+            //                                 .nomorPokokWajibPajak);
+            //                             $("#nm_npwp_validasi").val(data1.data[0].data
+            //                                 .namaWajibPajak);
+            //                             document.getElementById("save").disabled = false;
+            //                             // $("#loading").hide();
+            //                         } else {
+            //                             Swal.fire({
+            //                                 type: "error",
+            //                                 icon: "error",
+            //                                 title: "Oops...",
+            //                                 text: data1.data[0].message,
+            //                                 confirmButtonClass: "btn btn-confirm mt-2",
+            //                             })
+            //                             document.getElementById("save").disabled = true;
+            //                             $("#npwp_validasi").attr("value", '');
+            //                             $("#nm_npwp_validasi").attr("value", '');
+            //                             // $("#loading").hide();
+            //                         }
+            //                     } else {
+            //                         Swal.fire({
+            //                             type: "error",
+            //                             icon: "error",
+            //                             title: "Oops...",
+            //                             text: data1.message,
+            //                             confirmButtonClass: "btn btn-confirm mt-2",
+            //                         })
+            //                         document.getElementById("save").disabled = true;
+            //                         $("#npwp_validasi").attr("value", '');
+            //                         $("#nm_npwp_validasi").attr("value", '');
+            //                     }
+            //                 }
+            //             })
+            //         }
+            //     }
+            // });
         });
     </script>
 @endsection

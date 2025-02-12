@@ -165,8 +165,8 @@ class PenerimaController extends Controller
         // $input = $request->all();
         $cek = DB::table('ms_rekening_bank_online')
                 ->where([
-                    'rekening' => $data['no_rekening_validasi'],
-                    'nm_rekening' => $data['nm_rekening_validasi'],
+                    'rekening' => $data['no_rekening'],
+                    'nm_rekening' => $data['nm_rekening'],
                     'kd_skpd' => Auth::user()->kd_skpd
                 ])
                 ->count();
@@ -182,16 +182,16 @@ class PenerimaController extends Controller
                 DB::table('ms_rekening_bank_online')
                     ->insert([
                         'kd_bank' => $data['bank'],
-                        'rekening' => $data['no_rekening_validasi'],
-                        'nm_rekening' => $data['nm_rekening_validasi'],
+                        'rekening' => $data['no_rekening'],
+                        'nm_rekening' => $data['nm_rekening'],
                         'bank' => $data['cabang'],
                         'nm_bank' => $data['nama_cabang'],
                         'kd_skpd' => Auth::user()->kd_skpd,
                         'jenis' => $data['jenis'],
-                        'npwp' => isset($data['npwp_validasi']) ? $data['npwp_validasi'] : '',
-                        'nm_wp' => isset($data['nm_npwp_validasi']) ? $data['nm_npwp_validasi'] : '',
-                        'kd_map' => isset($data['kode_akun']) ? $data['kode_akun'] : '',
-                        'kd_setor' => isset($data['kode_setor']) ? $data['kode_setor'] : '',
+                        'npwp' => isset($data['npwp']) ? $data['npwp'] : '',
+                        'nm_wp' => isset($data['nm_npwp']) ? $data['nm_npwp'] : '',
+                        // 'kd_map' => isset($data['kode_akun']) ? $data['kode_akun'] : '',
+                        // 'kd_setor' => isset($data['kode_setor']) ? $data['kode_setor'] : '',
                         'keterangan' => $data['keterangan'],
                         'bic' => $data['bic'],
                         'nmrekan' => $data['rekanan'],
@@ -199,7 +199,7 @@ class PenerimaController extends Controller
                         'alamat' => $data['alamat'],
                         'keperluan' => $data['keperluan'],
                     ]);
-    
+
                 DB::commit();
                 return response()->json([
                     'message' => '1'
@@ -342,16 +342,16 @@ class PenerimaController extends Controller
             ->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])
             ->update([
                 'kd_bank' => $input['bank'],
-                'rekening' => $input['no_rekening_validasi'],
-                'nm_rekening' => $input['nm_rekening_validasi'],
+                'rekening' => $input['rekening'],
+                'nm_rekening' => $input['nm_rekening'],
                 'bank' => $input['cabang'],
                 'nm_bank' => $input['nama_cabang'],
                 'kd_skpd' => $kd_skpd,
                 'jenis' => $input['jenis'],
-                'npwp' => isset($input['npwp_validasi']) ? $input['npwp_validasi'] : '',
-                'nm_wp' => isset($input['nm_npwp_validasi']) ? $input['nm_npwp_validasi'] : '',
-                'kd_map' => isset($input['kode_akun']) ? $input['kode_akun'] : '',
-                'kd_setor' => isset($input['kode_setor']) ? $input['kode_setor'] : '',
+                'npwp' => isset($input['npwp']) ? $input['npwp'] : '',
+                'nm_wp' => isset($input['nm_npwp']) ? $input['nm_npwp'] : '',
+                // 'kd_map' => isset($input['kode_akun']) ? $input['kode_akun'] : '',
+                // 'kd_setor' => isset($input['kode_setor']) ? $input['kode_setor'] : '',
                 'keterangan' => $input['keterangan'],
                 'bic' => $input['bic'],
                 'nmrekan' => $input['rekanan'],
