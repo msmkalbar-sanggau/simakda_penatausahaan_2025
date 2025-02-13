@@ -167,7 +167,7 @@ class Sp2dController extends Controller
                     INNER JOIN trhspp AS c ON a.no_spp = c.no_spp
                     WHERE
                         a.status = 1
-                    AND a.nihil IS NULL
+                    -- AND a.nihil IS NULL
                     AND a.jns_spp = ?
                     AND (spmBatal != 1 or spmBatal is null)
                     AND (
