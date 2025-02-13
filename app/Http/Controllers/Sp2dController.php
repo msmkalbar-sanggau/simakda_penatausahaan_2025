@@ -559,10 +559,13 @@ class Sp2dController extends Controller
         //     $no_sp2d = $nomor->nomor . '/LS' . '/' . tahun_anggaran();
         // }
 
-        $data_spm = DB::table('trhspm')->where(['no_spm' => $no_spm])->select('no_spm', 'tgl_spm', 'no_spp', 'kd_skpd', 'nm_skpd', 'tgl_spp', 'bulan', 'no_spd', 'keperluan', DB::raw("'$nama' as username"), 'last_update', 'jns_spp', 'bank', 'nmrekan', 'no_rek', 'npwp', 'nilai', 'jenis_beban', DB::raw("'$tgl_sp2d' as tgl_sp2d"), DB::raw("'$nomorSppBaru' as no_sp2d"), DB::raw("'$no_sp2d' as no_urut"), DB::raw("'0' as status"), DB::raw("'0' as status_terima"));
+        $data_spm = DB::table('trhspm')
+            ->where(['no_spm' => $no_spm])->select('no_spm', 'tgl_spm', 'no_spp', 'kd_skpd', 'nm_skpd', 'tgl_spp', 'bulan', 'no_spd', 'keperluan', DB::raw("'$nama' as username"), 'last_update', 'jns_spp', 'bank', 'nmrekan', 'no_rek', 'npwp', 'nilai', 'jenis_beban', DB::raw("'$tgl_sp2d' as tgl_sp2d"), DB::raw("'$nomorSppBaru' as no_sp2d"), DB::raw("'$no_sp2d' as no_urut"), DB::raw("'0' as status"), DB::raw("'0' as status_terima"), DB::raw("'1' as is_verified"));
 
 
-        DB::table('trhsp2d')->where(['no_sp2d' => $nomorSppBaru])->insertUsing(['no_spm', 'tgl_spm', 'no_spp', 'kd_skpd', 'nm_skpd', 'tgl_spp', 'bulan', 'no_spd', 'keperluan', 'username', 'last_update', 'jns_spp', 'bank', 'nmrekan', 'no_rek', 'npwp', 'nilai', 'jenis_beban', 'tgl_sp2d', 'no_sp2d', 'no_urut', 'status', 'status_terima'], $data_spm);
+        DB::table('trhsp2d')
+            ->where(['no_sp2d' => $nomorSppBaru])
+            ->insertUsing(['no_spm', 'tgl_spm', 'no_spp', 'kd_skpd', 'nm_skpd', 'tgl_spp', 'bulan', 'no_spd', 'keperluan', 'username', 'last_update', 'jns_spp', 'bank', 'nmrekan', 'no_rek', 'npwp', 'nilai', 'jenis_beban', 'tgl_sp2d', 'no_sp2d', 'no_urut', 'status', 'status_terima', 'is_verified'], $data_spm);
 
         // DB::table('nomor')->update(['nosp2d' => $nomor->nomor]);
         DB::table('trhspm')->where(['no_spm' => $no_spm])->update([
