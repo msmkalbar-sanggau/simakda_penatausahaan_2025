@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PenerimaRequest;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use Yajra\DataTables\Facades\DataTables;
 
 class PenerimaController extends Controller
@@ -164,52 +166,52 @@ class PenerimaController extends Controller
         $data = $request->data;
         // $input = $request->all();
         $cek = DB::table('ms_rekening_bank_online')
-                ->where([
+            ->where([
+                'rekening' => $data['no_rekening'],
+                'nm_rekening' => $data['nm_rekening'],
+                'kd_skpd' => Auth::user()->kd_skpd
+            ])
+            ->count();
+
+        if ($cek > 0) {
+            return response()->json([
+                'message' => '2'
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            DB::table('ms_rekening_bank_online')
+                ->insert([
+                    'kd_bank' => $data['bank'],
                     'rekening' => $data['no_rekening'],
                     'nm_rekening' => $data['nm_rekening'],
-                    'kd_skpd' => Auth::user()->kd_skpd
-                ])
-                ->count();
-
-            if ($cek > 0) {
-                return response()->json([
-                    'message' => '2'
+                    'bank' => $data['cabang'],
+                    'nm_bank' => $data['nama_cabang'],
+                    'kd_skpd' => Auth::user()->kd_skpd,
+                    'jenis' => $data['jenis'],
+                    'npwp' => isset($data['npwp']) ? $data['npwp'] : '',
+                    'nm_wp' => isset($data['nm_npwp']) ? $data['nm_npwp'] : '',
+                    // 'kd_map' => isset($data['kode_akun']) ? $data['kode_akun'] : '',
+                    // 'kd_setor' => isset($data['kode_setor']) ? $data['kode_setor'] : '',
+                    'keterangan' => $data['keterangan'],
+                    'bic' => $data['bic'],
+                    'nmrekan' => $data['rekanan'],
+                    'pimpinan' => $data['pimpinan'],
+                    'alamat' => $data['alamat'],
+                    'keperluan' => $data['keperluan'],
                 ]);
-            }
 
-            DB::beginTransaction();
-            try {
-                DB::table('ms_rekening_bank_online')
-                    ->insert([
-                        'kd_bank' => $data['bank'],
-                        'rekening' => $data['no_rekening'],
-                        'nm_rekening' => $data['nm_rekening'],
-                        'bank' => $data['cabang'],
-                        'nm_bank' => $data['nama_cabang'],
-                        'kd_skpd' => Auth::user()->kd_skpd,
-                        'jenis' => $data['jenis'],
-                        'npwp' => isset($data['npwp']) ? $data['npwp'] : '',
-                        'nm_wp' => isset($data['nm_npwp']) ? $data['nm_npwp'] : '',
-                        // 'kd_map' => isset($data['kode_akun']) ? $data['kode_akun'] : '',
-                        // 'kd_setor' => isset($data['kode_setor']) ? $data['kode_setor'] : '',
-                        'keterangan' => $data['keterangan'],
-                        'bic' => $data['bic'],
-                        'nmrekan' => $data['rekanan'],
-                        'pimpinan' => $data['pimpinan'],
-                        'alamat' => $data['alamat'],
-                        'keperluan' => $data['keperluan'],
-                    ]);
-
-                DB::commit();
-                return response()->json([
-                    'message' => '1'
-                ]);
-            } catch (Exception $e) {
-                DB::rollBack();
-                return response()->json([
-                    'message' => '0'
-                ]);
-            }
+            DB::commit();
+            return response()->json([
+                'message' => '1'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => '0'
+            ]);
+        }
     }
 
     public function showPenerima($rekening, $kd_skpd)
@@ -219,8 +221,8 @@ class PenerimaController extends Controller
         $data_awal = DB::table('ms_rekening_bank_online')->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])->first();
         $data = [
             'data_penerima' => DB::table('ms_rekening_bank_online')->select("*")
-            ->selectRaw("(SELECT count(no_rek) from trhspp a where a.no_rek = rekening and a.kd_skpd = kd_skpd) as totspp")
-            ->selectRaw("(SELECT count(no_rekening) from ms_kontrak b where b.no_rekening = rekening and b.kd_skpd = kd_skpd) as totkon")->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])->first(),
+                ->selectRaw("(SELECT count(no_rek) from trhspp a where a.no_rek = rekening and a.kd_skpd = kd_skpd) as totspp")
+                ->selectRaw("(SELECT count(no_rekening) from ms_kontrak b where b.no_rekening = rekening and b.kd_skpd = kd_skpd) as totkon")->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])->first(),
             'bank' => DB::table('ms_bank_online')->where('kd_bank', $data_awal->kd_bank)->first(),
             'billing' => DB::table('ms_map_billing')->where('kd_map', $data_awal->kd_map)->where('kd_setor', $data_awal->kd_setor)->first(),
         ];
@@ -298,26 +300,26 @@ class PenerimaController extends Controller
         $data = $request->data;
 
         DB::beginTransaction();
-        try{
-                DB::table('ms_rekening_bank_online')
-                    ->where(['rekening' => $data['rekening'], 'kd_skpd' => Auth::user()->kd_skpd])
-                    ->update([
-                        'kd_bank' => $data['bank'],
-                        'rekening' => $data['rekening'],
-                        'nm_rekening' => $data['nm_rekening'],
-                        'bank' => $data['cabang'],
-                        'nm_bank' => $data['nama_cabang'],
-                        'kd_skpd' => Auth::user()->kd_skpd,
-                        'jenis' => $data['jenis'],
-                        'npwp' => isset($data['npwp']) ? $data['npwp'] : '',
-                        'nm_wp' => isset($data['nm_npwp']) ? $data['nm_npwp'] : '',
-                        'keterangan' => $data['keterangan'],
-                        'bic' => $data['bic'],
-                        'nmrekan' => $data['rekanan'],
-                        'pimpinan' => $data['pimpinan'],
-                        'alamat' => $data['alamat'],
-                        'keperluan' => $data['keperluan'],
-                    ]);
+        try {
+            DB::table('ms_rekening_bank_online')
+                ->where(['rekening' => $data['rekening'], 'kd_skpd' => Auth::user()->kd_skpd])
+                ->update([
+                    'kd_bank' => $data['bank'],
+                    'rekening' => $data['rekening'],
+                    'nm_rekening' => $data['nm_rekening'],
+                    'bank' => $data['cabang'],
+                    'nm_bank' => $data['nama_cabang'],
+                    'kd_skpd' => Auth::user()->kd_skpd,
+                    'jenis' => $data['jenis'],
+                    'npwp' => isset($data['npwp']) ? $data['npwp'] : '',
+                    'nm_wp' => isset($data['nm_npwp']) ? $data['nm_npwp'] : '',
+                    'keterangan' => $data['keterangan'],
+                    'bic' => $data['bic'],
+                    'nmrekan' => $data['rekanan'],
+                    'pimpinan' => $data['pimpinan'],
+                    'alamat' => $data['alamat'],
+                    'keperluan' => $data['keperluan'],
+                ]);
             DB::commit();
             return response()->json([
                 'message' => '1'
@@ -330,33 +332,31 @@ class PenerimaController extends Controller
         }
     }
 
-    public function updatePenerima(PenerimaRequest $request, $rekening, $kd_skpd)
+    public function updatePenerima(Request $request, $rekening, $kd_skpd)
     {
         $rekening = Crypt::decryptString($rekening);
         $kd_skpd = Crypt::decryptString($kd_skpd);
 
-        // $input = array_map('htmlentities', $request->validated());
-        $input = $request->validated();
-
         DB::table('ms_rekening_bank_online')
-            ->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])
+            ->where([
+                'rekening' => $rekening,
+                'kd_skpd' => $kd_skpd
+            ])
             ->update([
-                'kd_bank' => $input['bank'],
-                'rekening' => $input['rekening'],
-                'nm_rekening' => $input['nm_rekening'],
-                'bank' => $input['cabang'],
-                'nm_bank' => $input['nama_cabang'],
+                'kd_bank' => $request['bank'],
+                'rekening' => $request['rekening'],
+                'nm_rekening' => $request['nm_rekening'],
+                'bank' => $request['cabang'],
+                'nm_bank' => $request['nama_cabang'],
                 'kd_skpd' => $kd_skpd,
-                'jenis' => $input['jenis'],
-                'npwp' => isset($input['npwp']) ? $input['npwp'] : '',
-                'nm_wp' => isset($input['nm_npwp']) ? $input['nm_npwp'] : '',
-                // 'kd_map' => isset($input['kode_akun']) ? $input['kode_akun'] : '',
-                // 'kd_setor' => isset($input['kode_setor']) ? $input['kode_setor'] : '',
-                'keterangan' => $input['keterangan'],
-                'bic' => $input['bic'],
-                'nmrekan' => $input['rekanan'],
-                'pimpinan' => $input['pimpinan'],
-                'alamat' => $input['alamat'],
+                'jenis' => $request['jenis'],
+                'npwp' => isset($request['npwp']) ? $request['npwp'] : '',
+                'nm_wp' => isset($request['nm_npwp']) ? $request['nm_npwp'] : '',
+                'keterangan' => $request['keterangan'],
+                'bic' => $request['bic'],
+                'nmrekan' => $request['rekanan'],
+                'pimpinan' => $request['pimpinan'],
+                'alamat' => $request['alamat'],
             ]);
 
         return redirect()->route('penerima.index');
