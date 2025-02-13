@@ -34,8 +34,16 @@ class PenerimaController extends Controller
             })
             ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
-            $btn = '<a href="' . route("penerima.show_penerima", ['rekening' => Crypt::encryptString($row->rekening), 'kd_skpd' => Crypt::encryptString($row->kd_skpd)]) . '" class="btn btn-info btn-sm" style="margin-right:4px"><i class="uil-eye"></i></a>';
-            $btn .= '<a href="' . route("penerima.edit_penerima", ['rekening' => Crypt::encryptString($row->rekening), 'kd_skpd' => Crypt::encryptString($row->kd_skpd)]) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="uil-edit"></i></a>';
+            $btn = '<a href="' . route("penerima.show_penerima", [
+                'rekening' => Crypt::encryptString($row->rekening),
+                'kd_skpd' => Crypt::encryptString($row->kd_skpd),
+                'npwp' => Crypt::encryptString($row->npwp)
+            ]) . '" class="btn btn-info btn-sm" style="margin-right:4px"><i class="uil-eye"></i></a>';
+            $btn .= '<a href="' . route("penerima.edit_penerima", [
+                'rekening' => Crypt::encryptString($row->rekening),
+                'kd_skpd' => Crypt::encryptString($row->kd_skpd),
+                'npwp' => Crypt::encryptString($row->npwp)
+            ]) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="uil-edit"></i></a>';
             $btn .= '<a href="javascript:void(0);" onclick="deleteData(\'' . $row->rekening . '|' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>';
             return $btn;
         })->rawColumns(['aksi'])->make(true);
@@ -216,15 +224,30 @@ class PenerimaController extends Controller
         }
     }
 
-    public function showPenerima($rekening, $kd_skpd)
+    public function showPenerima($rekening, $kd_skpd, $npwp)
     {
         $rekening = Crypt::decryptString($rekening);
         $kd_skpd = Crypt::decryptString($kd_skpd);
-        $data_awal = DB::table('ms_rekening_bank_online')->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])->first();
+        $npwp = Crypt::decryptString($npwp);
+
+        $data_awal = DB::table('ms_rekening_bank_online')
+            ->where([
+                'rekening' => $rekening,
+                'kd_skpd' => $kd_skpd,
+                'npwp' => $npwp,
+            ])
+            ->first();
+
+        // dd($data_awal);
         $data = [
-            'data_penerima' => DB::table('ms_rekening_bank_online')->select("*")
+            'data_penerima' => DB::table('ms_rekening_bank_online')
+                ->select("*")
                 ->selectRaw("(SELECT count(no_rek) from trhspp a where a.no_rek = rekening and a.kd_skpd = kd_skpd) as totspp")
-                ->selectRaw("(SELECT count(no_rekening) from ms_kontrak b where b.no_rekening = rekening and b.kd_skpd = kd_skpd) as totkon")->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])->first(),
+                ->selectRaw("(SELECT count(no_rekening) from ms_kontrak b where b.no_rekening = rekening and b.kd_skpd = kd_skpd) as totkon")->where([
+                    'rekening' => $rekening,
+                    'kd_skpd' => $kd_skpd,
+                    'npwp' => $npwp,
+                ])->first(),
             'bank' => DB::table('ms_bank_online')->where('kd_bank', $data_awal->kd_bank)->first(),
             'billing' => DB::table('ms_map_billing')->where('kd_map', $data_awal->kd_map)->where('kd_setor', $data_awal->kd_setor)->first(),
         ];
@@ -233,13 +256,18 @@ class PenerimaController extends Controller
         return view('master.penerima.show')->with($data);
     }
 
-    public function editPenerima($rekening, $kd_skpd)
+    public function editPenerima($rekening, $kd_skpd, $npwp)
     {
         $rekening = Crypt::decryptString($rekening);
         $kd_skpd = Crypt::decryptString($kd_skpd);
+        $npwp = Crypt::decryptString($npwp);
 
         $data_awal = DB::table('ms_rekening_bank_online')
-            ->where(['rekening' => $rekening, 'kd_skpd' => $kd_skpd])
+            ->where([
+                'rekening' => $rekening,
+                'kd_skpd' => $kd_skpd,
+                'npwp' => $npwp,
+            ])
             ->first();
 
         $skpd = Auth::user()->kd_skpd;
@@ -282,7 +310,10 @@ class PenerimaController extends Controller
             ->get();
 
         $cek = DB::table('trhspp')
-            ->where(['no_rek' => $data_awal->rekening, 'kd_skpd' => $data_awal->kd_skpd])
+            ->where([
+                'no_rek' => $data_awal->rekening,
+                'kd_skpd' => $data_awal->kd_skpd
+            ])
             ->count();
 
         $data = [
@@ -334,10 +365,33 @@ class PenerimaController extends Controller
         }
     }
 
-    public function updatePenerima(Request $request, $rekening, $kd_skpd)
+    public function updatePenerima(Request $request, $rekening, $kd_skpd, $npwp)
     {
         $rekening = Crypt::decryptString($rekening);
         $kd_skpd = Crypt::decryptString($kd_skpd);
+        $npwp = Crypt::decryptString($npwp);
+
+        $cek = DB::table('ms_rekening_bank_online')
+            ->where([
+                'rekening' => $request['rekening'],
+                'kd_skpd' => $kd_skpd,
+                'npwp' => $request['npwp'],
+            ])
+            ->count();
+
+        if ($rekening !== $request['rekening'] && $cek > 0) {
+            return redirect()
+                ->route(
+                    'penerima.edit_penerima',
+                    [
+                        'rekening' => Crypt::encryptString($rekening),
+                        'kd_skpd' => Crypt::encryptString($kd_skpd),
+                        'npwp' => Crypt::encryptString($npwp),
+                    ]
+                )
+                ->withInput()
+                ->with(['message' => 'No Rekening dan NPWP telah digunakan!', 'alert' => 'alert-danger']);
+        }
 
         DB::table('ms_rekening_bank_online')
             ->where([
@@ -367,7 +421,13 @@ class PenerimaController extends Controller
     public function destroy($id)
     {
         $kd_skpd = Auth::user()->kd_skpd;
-        $data = DB::table('ms_rekening_bank_online')->where(['rekening' => $id, 'kd_skpd' => $kd_skpd])->delete();
+
+        $data = DB::table('ms_rekening_bank_online')
+            ->where([
+                'rekening' => $id,
+                'kd_skpd' => $kd_skpd
+            ])->delete();
+
         if ($data) {
             return response()->json([
                 'message' => '1'

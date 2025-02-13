@@ -11,7 +11,11 @@
             <div class="card">
                 <div class="card-body">
                     <form
-                        action="{{ route('penerima.update_penerima', ['rekening' => Crypt::encryptString($data_penerima->rekening), 'kd_skpd' => Crypt::encryptString($data_penerima->kd_skpd)]) }}"
+                        action="{{ route('penerima.update_penerima', [
+                            'rekening' => Crypt::encryptString($data_penerima->rekening),
+                            'kd_skpd' => Crypt::encryptString($data_penerima->kd_skpd),
+                            'npwp' => Crypt::encryptString($data_penerima->npwp),
+                        ]) }}"
                         method="post">
                         @method('PUT')
                         @csrf

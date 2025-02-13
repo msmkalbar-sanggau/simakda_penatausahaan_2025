@@ -134,9 +134,9 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
 
     Route::group(['prefix' => 'master'], function () {
         Route::resource('penerima', PenerimaController::class);
-        Route::get('penerima/show/{rekening?}/{kd_skpd?}', [PenerimaController::class, 'showPenerima'])->name('penerima.show_penerima');
-        Route::get('penerima/edit/{rekening?}/{kd_skpd?}', [PenerimaController::class, 'editPenerima'])->name('penerima.edit_penerima');
-        Route::put('penerima/update/{rekening?}/{kd_skpd?}', [PenerimaController::class, 'updatePenerima'])->name('penerima.update_penerima');
+        Route::get('penerima/show/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'showPenerima'])->name('penerima.show_penerima');
+        Route::get('penerima/edit/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'editPenerima'])->name('penerima.edit_penerima');
+        Route::put('penerima/update/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'updatePenerima'])->name('penerima.update_penerima');
         Route::post('load_penerima', [PenerimaController::class, 'loadData'])->name('penerima.load_data');
         Route::post('simpan_penerima', [PenerimaController::class, 'simpanPenerima'])->name('penerima.simpan_penerima');
         Route::post('simpan_edit_penerima', [PenerimaController::class, 'simpanEditPenerima'])->name('penerima.simpan_edit_penerima');
@@ -257,7 +257,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::post('load_data', [SpmController::class, 'loadData'])->name('spm.load_data');
             // created by elvara
             Route::post('cek_kelengkapan', [SpmController::class, 'cekKelengkapan'])->name('spm.cek_kelengkapan');
-             // Cetak Persyaratan SPM
+            // Cetak Persyaratan SPM
             Route::get('persyaratan', [SpmController::class, 'cetakPersyaratan'])->name('spm.persyaratan');
             Route::get('create', [SpmController::class, 'create'])->name('spm.create');
             Route::post('cari_jenis', [SpmController::class, 'cariJenis'])->name('spm.cari_jenis');
@@ -1745,13 +1745,13 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
         Route::get('cetak_pengeluaran_spj', [PengesahanSPJController::class, 'cetak_pengeluaran_spj'])->name('pengesahan_spj.cetak_pengeluaran_spj');
         Route::post('simpan_pengeluaran_spj', [PengesahanSPJController::class, 'simpan_pengeluaran_spj'])->name('pengesahan_spj.simpan_pengeluaran_spj');
     });
-     // Rekal Jurnal
-     Route::group(['prefix' => 'rekal'], function () {
+    // Rekal Jurnal
+    Route::group(['prefix' => 'rekal'], function () {
         Route::get('', [RekalController::class, 'index'])->name('rekal.index');
     });
 
-      // Koreksi SP2D/SPM/SPP/PENAGIHAN
-      Route::group(['prefix' => 'koreksi_data'], function () {
+    // Koreksi SP2D/SPM/SPP/PENAGIHAN
+    Route::group(['prefix' => 'koreksi_data'], function () {
         Route::get('', [KoreksiDataController::class, 'index'])->name('koreksi_data.index');
         Route::post('simpan', [KoreksiDataController::class, 'simpan'])->name('koreksi_data.simpan');
         Route::post('sp2d', [KoreksiDataController::class, 'sp2d'])->name('koreksi_data.sp2d');
@@ -1771,7 +1771,7 @@ Route::post('ubah_password/simpan', [HomeController::class, 'simpanUbahPassword'
 Route::post('backup_database', [SettingController::class, 'BackupDatabase'])->name('backup_database');
 // Route::get('coba', [HomeController::class, 'coba'])->name('coba');
 
-Route::post('login', [LoginController::class, 'authenticate'])->name('login.index')->middleware(['throttle:3,1']);
+Route::post('login', [LoginController::class, 'authenticate'])->name('login.index');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('403', function () {
