@@ -396,7 +396,8 @@ class PenerimaController extends Controller
         DB::table('ms_rekening_bank_online')
             ->where([
                 'rekening' => $rekening,
-                'kd_skpd' => $kd_skpd
+                'kd_skpd' => $kd_skpd,
+                'npwp' => $npwp
             ])
             ->update([
                 'kd_bank' => $request['bank'],
