@@ -18,6 +18,7 @@
                                         <th>Nama Rekening</th>
                                         <th>Bank</th>
                                         <th>NPWP</th>
+                                        <th>SKPD</th>
                                         <th>Keterangan</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -92,6 +93,10 @@
                     {
                         data: 'npwp',
                         name: 'npwp',
+                    },
+                    {
+                        data: 'nm_skpd',
+                        name: 'nm_skpd',
                     },
                     {
                         data: 'keterangan',

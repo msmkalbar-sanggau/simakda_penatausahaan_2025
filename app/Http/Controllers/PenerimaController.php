@@ -24,7 +24,9 @@ class PenerimaController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $admin = Auth::user()->is_admin;
 
-        $data = DB::table('ms_rekening_bank_online')
+        $data = DB::table('ms_rekening_bank_online as a')
+            ->select('a.*')
+            ->selectRaw("(select nm_skpd from ms_skpd where a.kd_skpd=kd_skpd) as nm_skpd")
             ->where(function ($query) use ($admin, $kd_skpd) {
                 if ($admin == '2') {
                     $query->where(['kd_skpd' => $kd_skpd]);
