@@ -202,7 +202,7 @@ class SpmController extends Controller
         $nama = Auth::user()->nama;
 
         DB::beginTransaction();
-        // try {
+        try {
 
             $nomorSppBaru = nomorSppBaru("spm", $no_spm, $tgl_spm, $beban);
 
@@ -247,7 +247,7 @@ class SpmController extends Controller
                 'npwp' => $npwp,
                 'nilai' => $total,
                 'urut' => $no_spm,
-                'status' => '0',
+                'status' => '1',
                 'username' => $nama,
                 'last_update' => date('Y-m-d H:i:s')
             ]);
@@ -263,12 +263,12 @@ class SpmController extends Controller
                 'message' => '2',
                 'url' => route('spm.tambah_potongan', Crypt::encryptString($nomorSppBaru))
             ]);
-        // } catch (Exception $e) {
-        //     DB::rollBack();
-        //     return response()->json([
-        //         'message' => '0'
-        //     ]);
-        // }
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => '0'
+            ]);
+        }
     }
 
     public function tambahPotongan(Request $request , $no_spm)
