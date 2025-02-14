@@ -118,18 +118,18 @@ class TransaksiCmsController extends Controller
             })->join('trdspp as d', function ($join) {
                 $join->on('a.no_spp', '=', 'd.no_spp');
                 $join->on('a.kd_skpd', '=', 'd.kd_skpd');
-            })->where(['c.kd_skpd' => $kd_skpd, 'c.status' => '1'])->where('c.tgl_kas' ,'<=', $tgl)->whereRaw($where, [$beban, $kd_sub_kegiatan])->whereRaw('c.no_sp2d NOT IN (SELECT no_sp2d FROM trhlpj WHERE kd_skpd=?)', [$kd_skpd])->orderByDesc('c.tgl_sp2d')->orderBy('c.no_sp2d')->select('c.no_sp2d', 'c.tgl_sp2d', 'c.nilai', DB::raw("'0' as sisa"))->distinct()->get();
-        // } else if ($beban == '6') {
-        //     $data = DB::table('trhspp as a')->join('trhspm as b', function ($join) {
-        //         $join->on('a.no_spp', '=', 'b.no_spp');
-        //         $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-        //     })->join('trhsp2d as c', function ($join) {
-        //         $join->on('b.no_spm', '=', 'c.no_spm');
-        //         $join->on('b.kd_skpd', '=', 'c.kd_skpd');
-        //     })->join('trdspp as d', function ($join) {
-        //         $join->on('a.no_spp', '=', 'd.no_spp');
-        //         $join->on('a.kd_skpd', '=', 'd.kd_skpd');
-        //     })->where(['c.kd_skpd' => $kd_skpd, 'c.status' => '1'])->whereRaw($where, [$beban, $kd_sub_kegiatan])->orderByDesc('c.tgl_sp2d')->orderBy('c.no_sp2d')->select('c.no_sp2d', 'c.tgl_sp2d', 'c.nilai', DB::raw("'0' as sisa"))->distinct()->get();
+            })->where(['c.kd_skpd' => $kd_skpd, 'c.status' => '1'])->where('c.tgl_kas', '<=', $tgl)->whereRaw($where, [$beban, $kd_sub_kegiatan])->whereRaw('c.no_sp2d NOT IN (SELECT no_sp2d FROM trhlpj WHERE kd_skpd=?)', [$kd_skpd])->orderByDesc('c.tgl_sp2d')->orderBy('c.no_sp2d')->select('c.no_sp2d', 'c.tgl_sp2d', 'c.nilai', DB::raw("'0' as sisa"))->distinct()->get();
+            // } else if ($beban == '6') {
+            //     $data = DB::table('trhspp as a')->join('trhspm as b', function ($join) {
+            //         $join->on('a.no_spp', '=', 'b.no_spp');
+            //         $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+            //     })->join('trhsp2d as c', function ($join) {
+            //         $join->on('b.no_spm', '=', 'c.no_spm');
+            //         $join->on('b.kd_skpd', '=', 'c.kd_skpd');
+            //     })->join('trdspp as d', function ($join) {
+            //         $join->on('a.no_spp', '=', 'd.no_spp');
+            //         $join->on('a.kd_skpd', '=', 'd.kd_skpd');
+            //     })->where(['c.kd_skpd' => $kd_skpd, 'c.status' => '1'])->whereRaw($where, [$beban, $kd_sub_kegiatan])->orderByDesc('c.tgl_sp2d')->orderBy('c.no_sp2d')->select('c.no_sp2d', 'c.tgl_sp2d', 'c.nilai', DB::raw("'0' as sisa"))->distinct()->get();
         } else {
             $data = DB::table('trhspp as a')->join('trhspm as b', function ($join) {
                 $join->on('a.no_spp', '=', 'b.no_spp');
@@ -412,18 +412,41 @@ class TransaksiCmsController extends Controller
         $angkas = field_angkas($status_angkas);
         $jenis_ang = status_anggaran();
 
-        if ($beban == '4' || substr($kd_sub_kegiatan, 5, 10) == '01.1.02.01') {
-            $bulan1 = $bulan + 1;
-            $data = DB::table('trdskpd_ro as a')->join('trskpd as b', function ($join) {
-                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-                $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-            })->where(['a.kd_skpd' => $kd_skpd, 'a.kd_sub_kegiatan' => $kd_sub_kegiatan, 'kd_rek6' => $kd_rekening, 'jns_ang' => $jenis_ang])->where('bulan', '<=', $bulan1)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->select('a.kd_sub_kegiatan', DB::raw("SUM(a.$angkas) as nilai"))->first();
-        } else {
-            $data = DB::table('trdskpd_ro as a')->join('trskpd as b', function ($join) {
-                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-                $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-            })->where(['a.kd_skpd' => $kd_skpd, 'a.kd_sub_kegiatan' => $kd_sub_kegiatan, 'kd_rek6' => $kd_rekening, 'jns_ang' => $jenis_ang])->where('bulan', '<=', $bulan)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->select('a.kd_sub_kegiatan', DB::raw("SUM(a.$angkas) as nilai"))->first();
-        }
+        // if ($beban == '4' || substr($kd_sub_kegiatan, 5, 10) == '01.1.02.01') {
+        //     $bulan1 = $bulan + 1;
+        //     $data = DB::table('trdskpd_ro as a')->join('trskpd as b', function ($join) {
+        //         $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+        //         $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+        //     })->where(['a.kd_skpd' => $kd_skpd, 'a.kd_sub_kegiatan' => $kd_sub_kegiatan, 'kd_rek6' => $kd_rekening, 'jns_ang' => $jenis_ang])->where('bulan', '<=', $bulan1)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->select('a.kd_sub_kegiatan', DB::raw("SUM(a.$angkas) as nilai"))->first();
+        // } else {
+        //     $data = DB::table('trdskpd_ro as a')->join('trskpd as b', function ($join) {
+        //         $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+        //         $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+        //     })->where(['a.kd_skpd' => $kd_skpd, 'a.kd_sub_kegiatan' => $kd_sub_kegiatan, 'kd_rek6' => $kd_rekening, 'jns_ang' => $jenis_ang])->where('bulan', '<=', $bulan)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->select('a.kd_sub_kegiatan', DB::raw("SUM(a.$angkas) as nilai"))->first();
+        // }
+
+        $bulan1 = DB::table('trhspd')
+            ->selectRaw("MAX(bulan_akhir) as bulan")
+            ->whereRaw("left(kd_skpd,17)=left(?,17)", [$kd_skpd])
+            ->first()
+            ->bulan;
+
+        $data = DB::table('trdskpd_ro as a')
+            ->join(
+                'trskpd as b',
+                function ($join) {
+                    $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+                    $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+                }
+            )->where([
+                'a.kd_skpd' => $kd_skpd,
+                'a.kd_sub_kegiatan' => $kd_sub_kegiatan,
+                'kd_rek6' => $kd_rekening,
+                'jns_ang' => $jenis_ang
+            ])->where('bulan', '<=', $bulan1)
+            ->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')
+            ->select('a.kd_sub_kegiatan', DB::raw("SUM(a.$angkas) as nilai"))
+            ->first();
 
         return response()->json($data);
     }
@@ -510,11 +533,10 @@ class TransaksiCmsController extends Controller
             AND u.no_bukti
             NOT IN (select no_tagih FROM trhspp WHERE kd_skpd=?)
             AND t.sumber=?
-            )r", [$kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber, $no_sp2d, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber,$kd_sub_kegiatan, $kd_skpd, $kd_rekening, $kd_skpd, $sumber]))->first();
+            )r", [$kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber, $no_sp2d, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $kd_skpd, $sumber]))->first();
         }
 
         return response()->json($data);
-
     }
 
     public function loadSpd(Request $request)

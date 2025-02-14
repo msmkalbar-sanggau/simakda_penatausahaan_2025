@@ -1032,6 +1032,7 @@
                     beban: document.getElementById('beban').value,
                     kd_skpd: document.getElementById('kd_skpd').value,
                     no_bukti: document.getElementById('no_bukti').value,
+                    tgl: document.getElementById('tgl_voucher').value,
                 },
                 success: function(data) {
                     $('#no_sp2d').empty();
