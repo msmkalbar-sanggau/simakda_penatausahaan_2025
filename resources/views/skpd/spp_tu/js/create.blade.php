@@ -204,7 +204,7 @@
                         `<option value="" disabled selected>Silahkan Pilih</option>`);
                     $.each(data, function(index, data) {
                         $('#sumber').append(
-                            `<option value="${data.sumber}" data-nama="${data.nm_sumber}" data-nilai="${data.nilai}">${data.sumber} | ${data.nm_sumber}</option>`
+                            `<option value="${data.kd_sumber}" data-nama="${data.nm_sumber}" data-nilai="${data.nilai}">${data.kd_sumber} | ${data.nm_sumber}</option>`
                         );
                     })
                 }

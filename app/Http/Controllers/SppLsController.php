@@ -620,15 +620,32 @@ class SppLsController extends Controller
 
         // $bulanspd = $spd->bulan_akhir;
 
-        if ($beban == '4') {
-            $bulan1 = $bulan  + 1;
-        } else {
-            $bulan1 = $bulan;
-        }
-        $data = DB::table('trdskpd_ro as a')->select('a.kd_sub_kegiatan', 'kd_rek6', DB::raw("SUM(a.$field_angkas) as nilai"))->join('trskpd as b', function ($join) {
-            $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-        })->where(['a.kd_skpd' => $skpd, 'a.kd_sub_kegiatan' => $kdgiat, 'a.kd_rek6' => $kdrek, 'jns_ang' => $status_anggaran->jns_ang])->where('bulan', '<=', $bulan1)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->first();
+        // if ($beban == '4') {
+        //     $bulan1 = $bulan  + 1;
+        // } else {
+        //     $bulan1 = $bulan;
+        // }
+
+        $bulan1 = DB::table('trhspd')
+            ->selectRaw("MAX(bulan_akhir) as bulan")
+            ->whereRaw("left(kd_skpd,17)=left(?,17)", [$skpd])
+            ->first()
+            ->bulan;
+
+        $data = DB::table('trdskpd_ro as a')
+            ->select('a.kd_sub_kegiatan', 'kd_rek6', DB::raw("SUM(a.$field_angkas) as nilai"))
+            ->join('trskpd as b', function ($join) {
+                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+                $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+            })
+            ->where([
+                'a.kd_skpd' => $skpd,
+                'a.kd_sub_kegiatan' => $kdgiat,
+                'a.kd_rek6' => $kdrek,
+                'jns_ang' => $status_anggaran->jns_ang
+            ])->where('bulan', '<=', $bulan1)
+            ->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')
+            ->first();
 
         return response()->json($data);
     }

@@ -20,7 +20,7 @@ class PenagihanController extends Controller
 
         $data = [
             'cek' => selisih_angkas(),
-            'kunci' =>$kuncian,
+            'kunci' => $kuncian,
         ];
         return view('penatausahaan.pengeluaran.penagihan.index')->with($data);
     }
@@ -29,7 +29,7 @@ class PenagihanController extends Controller
     {
         $kd_skpd = Auth::user()->kd_skpd;
         $data = DB::table('trhtagih as a')
-            ->select('no_bukti','status','nm_rekanan','tgl_bukti', 'sts_tagih')
+            ->select('no_bukti', 'status', 'nm_rekanan', 'tgl_bukti', 'sts_tagih')
             ->where(['kd_skpd' => $kd_skpd])
             ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
@@ -57,24 +57,24 @@ class PenagihanController extends Controller
 
         if ($bpp != '0') {
             $sub_kegiatan = DB::table('trskpd as a')
-            ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
-            ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
-            ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])
-            ->whereRaw("a.kd_sub_kegiatan IN (SELECT kd_sub_kegiatan FROM pelimpahan_kegiatan WHERE kd_bpp=? AND kd_skpd=? AND id_user=?)", [$kd_bpp, $kd_skpd, $id_user])
-            ->get();
+                ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
+                ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
+                ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])
+                ->whereRaw("a.kd_sub_kegiatan IN (SELECT kd_sub_kegiatan FROM pelimpahan_kegiatan WHERE kd_bpp=? AND kd_skpd=? AND id_user=?)", [$kd_bpp, $kd_skpd, $id_user])
+                ->get();
         } else {
             $sub_kegiatan = DB::table('trskpd as a')
-            ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
-            ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
-            ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])->get();
+                ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
+                ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
+                ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])->get();
         }
 
         $data = [
             'data_penagihan' => DB::table('trhtagih')->get(),
             'kd_skpd' => $kd_skpd,
-            'skpd' => DB::table('ms_skpd')->select('nm_skpd','kd_skpd')->where('kd_skpd', $kd_skpd)->first(),
+            'skpd' => DB::table('ms_skpd')->select('nm_skpd', 'kd_skpd')->where('kd_skpd', $kd_skpd)->first(),
             'daftar_kontrak' => DB::table('ms_kontrak as z')->where('z.kd_skpd', $kd_skpd)
-                ->select('z.no_kontrak', 'z.nmpel','z.nilai', DB::raw("(SELECT SUM(nilai) FROM trhtagih a INNER JOIN trdtagih b ON a.no_bukti=b.no_bukti AND a.kd_skpd=b.kd_skpd WHERE kontrak=z.no_kontrak and z.kd_skpd=a.kd_skpd) as lalu"))->orderBy('z.no_kontrak', 'ASC')->get(),
+                ->select('z.no_kontrak', 'z.nmpel', 'z.nilai', DB::raw("(SELECT SUM(nilai) FROM trhtagih a INNER JOIN trdtagih b ON a.no_bukti=b.no_bukti AND a.kd_skpd=b.kd_skpd WHERE kontrak=z.no_kontrak and z.kd_skpd=a.kd_skpd) as lalu"))->orderBy('z.no_kontrak', 'ASC')->get(),
             'daftar_rekanan' => DB::table('ms_rekening_bank_online')->where('kd_skpd', $kd_skpd)->orderBy('rekening', 'ASC')->get(),
             'daftar_sub_kegiatan' => $sub_kegiatan,
         ];
@@ -89,21 +89,21 @@ class PenagihanController extends Controller
         $no_bukti = Crypt::decryptString($no_bukti);
         $data_tagih = DB::table('trhtagih')->where('no_bukti', $no_bukti)->first();
         $data = [
-            'data_tagih' => DB::table('trhtagih as a')->select('a.*','c.nm_kerja','c.nmpel')->join('trdtagih as b', function ($join) {
+            'data_tagih' => DB::table('trhtagih as a')->select('a.*', 'c.nm_kerja', 'c.nmpel')->join('trdtagih as b', function ($join) {
                 $join->on('a.no_bukti', '=', 'b.no_bukti');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            })->join('ms_kontrak as c', function ($join){
-                $join->on('a.kontrak','=','c.no_kontrak');
-                $join->on('a.kd_skpd','=','c.kd_skpd');
-            })->where(['a.no_bukti'=> $no_bukti, 'a.kd_skpd' =>$kd_skpd])->first(),
+            })->join('ms_kontrak as c', function ($join) {
+                $join->on('a.kontrak', '=', 'c.no_kontrak');
+                $join->on('a.kd_skpd', '=', 'c.kd_skpd');
+            })->where(['a.no_bukti' => $no_bukti, 'a.kd_skpd' => $kd_skpd])->first(),
             'detail_tagih' => DB::table('trdtagih as a')->select('a.*')->join('trhtagih as b', function ($join) {
                 $join->on('a.no_bukti', '=', 'b.no_bukti');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            })->where(['a.no_bukti'=> $no_bukti, 'a.kd_skpd' =>$kd_skpd])->get(),
+            })->where(['a.no_bukti' => $no_bukti, 'a.kd_skpd' => $kd_skpd])->get(),
             'kontrak' => DB::table('ms_kontrak')->where('no_kontrak', $data_tagih->kontrak)->first(),
             'dttagih' => collect(DB::select("SELECT nmpel,nm_kerja,no_kontrak,nilai,SUM (lalu) AS lalu FROM (
                 SELECT a.nmpel AS nmpel,a.nm_kerja AS nm_kerja,a.no_kontrak AS no_kontrak,a.nilai AS nilai,SUM (b.total) AS lalu FROM ms_kontrak a LEFT JOIN trhtagih b ON b.kd_skpd =a.kd_skpd AND b.kontrak =a.no_kontrak WHERE a.kd_skpd = ? and a.no_kontrak = ? GROUP BY a.nmpel,a.nm_kerja,a.no_kontrak,a.nilai,b.total) oke
-                GROUP BY nmpel,nm_kerja,no_kontrak,nilai ORDER BY no_kontrak",[$kd_skpd,$data_tagih->kontrak]))->first(),
+                GROUP BY nmpel,nm_kerja,no_kontrak,nilai ORDER BY no_kontrak", [$kd_skpd, $data_tagih->kontrak]))->first(),
         ];
 
         return view('penatausahaan.pengeluaran.penagihan.show')->with($data);
@@ -161,16 +161,18 @@ class PenagihanController extends Controller
         return response()->json($daftar_rekening);
     }
 
-    public function totalSpd(Request $request){
+    public function totalSpd(Request $request)
+    {
         $kd_skpd = Auth::user()->kd_skpd;
         $giat   = $request->kd_sub_kegiatan;
 
-        $data = collect(DB::select("SELECT SUM (a.nilai) AS totalspd FROM trdspd a JOIN trhspd b ON a.no_spd = b.no_spd WHERE b.kd_skpd = ? AND a.kd_sub_kegiatan = ? AND b.status = '1'",[$kd_skpd,$giat]))->first();
+        $data = collect(DB::select("SELECT SUM (a.nilai) AS totalspd FROM trdspd a JOIN trhspd b ON a.no_spd = b.no_spd WHERE b.kd_skpd = ? AND a.kd_sub_kegiatan = ? AND b.status = '1'", [$kd_skpd, $giat]))->first();
 
         return response()->json($data);
     }
 
-    public function totalAngkas(Request $request){
+    public function totalAngkas(Request $request)
+    {
         $skpd    = $request->skpd;
         $giat    = $request->kdgiat;
         $rek     = $request->kdrek;
@@ -180,10 +182,27 @@ class PenagihanController extends Controller
 
         $stsangkas1 = status_angkas1($skpd);
 
-        $data = DB::table('trdskpd_ro as a')->select('a.kd_sub_kegiatan', 'kd_rek6', DB::raw("SUM(a.$stsangkas1) as nilai"))->join('trskpd as b', function ($join) {
-            $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-        })->where(['a.kd_skpd' => $skpd, 'a.kd_sub_kegiatan' => $giat, 'a.kd_rek6' => $rek, 'jns_ang' => $status_anggaran->jns_ang])->where('bulan', '<=', $bln)->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')->first();
+        $bulan1 = DB::table('trhspd')
+            ->selectRaw("MAX(bulan_akhir) as bulan")
+            ->whereRaw("left(kd_skpd,17)=left(?,17)", [$skpd])
+            ->first()
+            ->bulan;
+
+        $data = DB::table('trdskpd_ro as a')
+            ->select('a.kd_sub_kegiatan', 'kd_rek6', DB::raw("SUM(a.$stsangkas1) as nilai"))
+            ->join('trskpd as b', function ($join) {
+                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+                $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+            })
+            ->where([
+                'a.kd_skpd' => $skpd,
+                'a.kd_sub_kegiatan' => $giat,
+                'a.kd_rek6' => $rek,
+                'jns_ang' => $status_anggaran->jns_ang
+            ])
+            ->where('bulan', '<=', $bulan1)
+            ->groupBy('a.kd_sub_kegiatan', 'a.kd_rek6')
+            ->first();
 
         return response()->json($data);
     }
@@ -247,7 +266,7 @@ class PenagihanController extends Controller
                 ->mergeBindings($urut38)
                 ->orderByRaw("CAST(urut AS INT) DESC")
                 ->first();
-             return response()->json($result);
+            return response()->json($result);
         }
     }
 
@@ -613,7 +632,7 @@ class PenagihanController extends Controller
             SELECT x.sumber, 0 AS nilai,SUM (x.nilai) AS sd FROM trdspp x INNER JOIN trhspp y ON x.no_spp=y.no_spp AND x.kd_skpd=y.kd_skpd WHERE x.kd_sub_kegiatan =? AND LEFT (x.kd_skpd,22)=LEFT (?,22) AND x.kd_rek6 =? AND y.jns_spp IN ('3','4','5','6') AND (sp2d_batal IS NULL OR sp2d_batal='' OR sp2d_batal='0') GROUP BY x.sumber UNION ALL
             SELECT t.sumber,0 AS nilai,SUM (t.nilai) AS sd FROM trdtagih t INNER JOIN trhtagih u ON t.no_bukti=u.no_bukti AND t.kd_skpd=u.kd_skpd WHERE t.kd_sub_kegiatan =? AND u.kd_skpd =? AND t.kd_rek =? AND u.no_bukti NOT IN (
             SELECT no_tagih FROM trhspp WHERE kd_skpd=?) GROUP BY t.sumber) r
-            ) oke GROUP BY oke.sumber", [$giat,$rek,$kode,$status_anggaran,$giat,$kode,$rek,$giat,$kode,$rek,$giat,$kode,$rek,$giat,$kode,$rek,$kode]);
+            ) oke GROUP BY oke.sumber", [$giat, $rek, $kode, $status_anggaran, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $kode]);
         return response()->json($data);
     }
 
@@ -690,7 +709,7 @@ class PenagihanController extends Controller
     public function cariNamaSumber2(Request $request)
     {
         $sumber_dana = $request->sumber_dana;
-        $data = DB::table('sumber_dana')->select('nm_sumber_dana1','kd_sumber_dana1')->where('nm_sumber_dana1', $sumber_dana)->first();
+        $data = DB::table('sumber_dana')->select('nm_sumber_dana1', 'kd_sumber_dana1')->where('nm_sumber_dana1', $sumber_dana)->first();
         return response()->json($data);
     }
 
@@ -879,7 +898,7 @@ class PenagihanController extends Controller
             'bulan' => $data_tagih->tgl_bukti,
             'dttagih' => collect(DB::select("SELECT nmpel,nm_kerja,no_kontrak,nilai,SUM (lalu) AS lalu FROM (
                 SELECT a.nmpel AS nmpel,a.nm_kerja AS nm_kerja,a.no_kontrak AS no_kontrak,a.nilai AS nilai,SUM (b.total) AS lalu FROM ms_kontrak a LEFT JOIN trhtagih b ON b.kd_skpd =a.kd_skpd AND b.kontrak =a.no_kontrak WHERE a.kd_skpd = ? AND b.kontrak = ? GROUP BY a.nmpel,a.nm_kerja,a.no_kontrak,a.nilai,b.total) oke
-                GROUP BY nmpel,nm_kerja,no_kontrak,nilai ORDER BY no_kontrak",[$kd_skpd, $data_tagih->kontrak]))->first()
+                GROUP BY nmpel,nm_kerja,no_kontrak,nilai ORDER BY no_kontrak", [$kd_skpd, $data_tagih->kontrak]))->first()
         ];
 
         return view('penatausahaan.pengeluaran.penagihan.edit')->with($data);
