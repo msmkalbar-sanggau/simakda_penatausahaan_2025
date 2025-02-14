@@ -128,6 +128,7 @@
 
 
         $('#simpan').on('click', function() {
+            let no_sts = document.getElementById('no_sts').value;
             let no_terima = document.getElementById('no_terima').value;
             let tgl_terima = document.getElementById('tgl_terima').value;
             let kd_skpd = document.getElementById('kd_skpd').value;
@@ -174,6 +175,11 @@
 
             if (tahun_input != tahun_anggaran) {
                 alert('Tahun tidak sama dengan tahun Anggaran');
+                return;
+            }
+
+            if (!no_sts) {
+                alert('No STS Tidak Boleh Kosong');
                 return;
             }
 
@@ -231,6 +237,7 @@
                 dengan_penetapan,
                 pajakk,
                 jns_pembayaran,
+                no_sts,
                 no_terima,
                 tgl_terima,
                 no_tetap,
@@ -289,6 +296,9 @@
                     alert('Data berhasil disimpan!');
                     window.location.href =
                         "{{ route('penerimaan_ini.index') }}";
+                } else if (response.message == '2') {
+                    alert('No STS telah digunakan!');
+                    $('#simpan').prop('disabled', false);
                 } else {
                     alert('Data gagal disimpan!');
                     $('#simpan').prop('disabled', false);

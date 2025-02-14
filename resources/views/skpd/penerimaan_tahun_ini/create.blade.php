@@ -72,6 +72,13 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="mb-3 row">
+                        <label for="no_sts" class="col-md-2 col-form-label">No. STS</label>
+                        <div class="col-md-4">
+                            <input class="form-control" type="text" id="no_sts" name="no_sts"
+                                placeholder="Silahkan Diisi" required>
+                        </div>
+                    </div>
                     {{-- No Penetapan dan Tanggal Penetapan --}}
                     <div class="mb-3 row">
                         <label for="no_terima" class="col-md-2 col-form-label">No. Terima</label>

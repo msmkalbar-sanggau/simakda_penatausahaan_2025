@@ -329,7 +329,9 @@ class PenerimaanController extends Controller
     public function cekSimpan(Request $request)
     {
         $no_terima = $request->no_terima;
-        $data = DB::table('tr_terima')->where('no_terima', $no_terima)->count();
+        $data = DB::table('tr_terima')
+            ->where('no_terima', $no_terima)
+            ->count();
         return response()->json($data);
     }
 
@@ -339,7 +341,7 @@ class PenerimaanController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $nama = Auth::user()->nama;
         $jns_pembayaran = $data['jns_pembayaran'];
-        // dd ($data);
+        // dd($data);
 
         DB::beginTransaction();
         try {
@@ -365,59 +367,74 @@ class PenerimaanController extends Controller
                     'user_name' => Auth::user()->nama,
                 ]);
             }
+
             if ($jns_pembayaran == 'BANK') {
-                DB::table('tr_terima')->insert([
-                    'no_terima' => $data['no_terima'],
-                    'tgl_terima' => $data['tgl_terima'],
-                    'no_tetap' => $data['no_tetap'],
-                    'tgl_tetap' => $data['tgl_tetap'],
-                    'sts_tetap' => $data['dengan_penetapan'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'kd_rek6' => $data['kode_akun'],
-                    'kd_rek_lo' => $data['kode_rek'],
-                    'nilai' => $data['nilai'],
-                    'keterangan' => $data['keterangan'],
-                    'jenis' => '1',
-                    'sumber' => '-',
-                    'kunci' => '1',
-                    'status_setor' => $data['statusSetor'],
-                    'jns_pembayaran' => $data['jns_pembayaran'],
-                    'jns_pajak' => $data['pajakk'],
-                    'user_name' => Auth::user()->nama,
+                $cekSetor = DB::table('trhkasin_pkd')
+                    ->where([
+                        'no_sts' => $data['no_sts'],
+                        'kd_skpd' => $data['kd_skpd']
+                    ])
+                    ->count();
+
+                return response()->json([
+                    'message' => '2'
                 ]);
 
-                DB::table('trhkasin_pkd')->insert([
-                    'no_sts' => $data['no_terima'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'tgl_sts' => $data['tgl_terima'],
-                    'keterangan' => $data['keterangan'],
-                    'total' => $data['nilai'],
-                    'kd_bank' => '',
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'jns_trans' => '4',
-                    // 'rek_bank' => '',
-                    // 'no_kas' => '',
-                    // 'no_cek' => '',
-                    // 'status' => '',
-                    // 'jns_cp' => '',
-                    'pot_khusus' => '0',
-                    // 'no_sp2d' => '',
-                    'no_terima' => '',
-                    // 'sumber' => '',
-                    'user_name' => Auth::user()->nama,
-                    'bank' => ''
-                ]);
+                DB::table('tr_terima')
+                    ->insert([
+                        'no_terima' => $data['no_terima'],
+                        'tgl_terima' => $data['tgl_terima'],
+                        'no_tetap' => $data['no_tetap'],
+                        'tgl_tetap' => $data['tgl_tetap'],
+                        'sts_tetap' => $data['dengan_penetapan'],
+                        'kd_skpd' => $data['kd_skpd'],
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'kd_rek6' => $data['kode_akun'],
+                        'kd_rek_lo' => $data['kode_rek'],
+                        'nilai' => $data['nilai'],
+                        'keterangan' => $data['keterangan'],
+                        'jenis' => '1',
+                        'sumber' => '-',
+                        'kunci' => '1',
+                        'status_setor' => $data['statusSetor'],
+                        'jns_pembayaran' => $data['jns_pembayaran'],
+                        'jns_pajak' => $data['pajakk'],
+                        'user_name' => Auth::user()->nama,
+                    ]);
 
-                DB::table('trdkasin_pkd')->insert([
-                    'kd_skpd' => $data['kd_skpd'],
-                    'no_sts' => $data['no_terima'],
-                    'kd_rek6' => $data['kode_akun'],
-                    'rupiah' => $data['nilai'],
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'no_terima' => $data['no_terima'],
-                    'sumber' => '-'
-                ]);
+                DB::table('trhkasin_pkd')
+                    ->insert([
+                        'no_sts' => $data['no_sts'],
+                        'kd_skpd' => $data['kd_skpd'],
+                        'tgl_sts' => $data['tgl_terima'],
+                        'keterangan' => $data['keterangan'],
+                        'total' => $data['nilai'],
+                        'kd_bank' => '',
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'jns_trans' => '4',
+                        // 'rek_bank' => '',
+                        // 'no_kas' => '',
+                        // 'no_cek' => '',
+                        // 'status' => '',
+                        // 'jns_cp' => '',
+                        'pot_khusus' => '0',
+                        // 'no_sp2d' => '',
+                        'no_terima' => $data['no_terima'],
+                        // 'sumber' => '',
+                        'user_name' => Auth::user()->nama,
+                        'bank' => ''
+                    ]);
+
+                DB::table('trdkasin_pkd')
+                    ->insert([
+                        'kd_skpd' => $data['kd_skpd'],
+                        'no_sts' => $data['no_sts'],
+                        'kd_rek6' => $data['kode_akun'],
+                        'rupiah' => $data['nilai'],
+                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+                        'no_terima' => $data['no_terima'],
+                        'sumber' => '-'
+                    ]);
             }
 
             DB::commit();
@@ -427,7 +444,7 @@ class PenerimaanController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => '0'
+                'message' => '0',
             ]);
         }
     }
