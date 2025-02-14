@@ -376,9 +376,11 @@ class PenerimaanController extends Controller
                     ])
                     ->count();
 
-                return response()->json([
-                    'message' => '2'
-                ]);
+                if ($cekSetor > 0) {
+                    return response()->json([
+                        'message' => '2'
+                    ]);
+                }
 
                 DB::table('tr_terima')
                     ->insert([
