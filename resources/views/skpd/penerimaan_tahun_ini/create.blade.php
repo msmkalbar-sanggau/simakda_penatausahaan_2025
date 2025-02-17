@@ -72,7 +72,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="mb-3 row">
+                    <div class="mb-3 row" id="tanpaPenyetoran">
                         <label for="no_sts" class="col-md-2 col-form-label">No. STS</label>
                         <div class="col-md-4">
                             <input class="form-control" type="text" id="no_sts" name="no_sts"

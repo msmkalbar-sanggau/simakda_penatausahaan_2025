@@ -7,6 +7,8 @@
             }
         });
 
+        $("#tanpaPenyetoran").hide()
+
         $('.dengan_penetapan').hide();
         $('#jns_pem1').hide();
         $('#jns_pem2').hide();
@@ -149,6 +151,7 @@
             // let pajak_mineral = document.getElementById('pajak_mineral').value;
             let statusSetor = $('input[name="status_setor"]:checked').val();
             let jns_pembayaran = document.getElementById('jenis_pembayaran_tambah').value;
+            let tanpa_setor = document.getElementById('tanpa_setor').checked;
             let pilihan = document.getElementById('pilihan').checked;
             let dengan_penetapan;
             let pajakk;
@@ -178,7 +181,7 @@
                 return;
             }
 
-            if (!no_sts) {
+            if (!no_sts && tanpa_setor) {
                 alert('No STS Tidak Boleh Kosong');
                 return;
             }
@@ -308,15 +311,21 @@
     }
 
     function opt(val) {
+        $("#tanpaPenyetoran").hide()
+
         ctk = val;
         if (ctk == "Dengan Setor") {
             $("#tanpa_setor").prop("checked", false);
             $("#jenis_pembayaran_tambah").val("TUNAI").change();
             $("#jenis_pembayaran_tambah").prop("disabled", true);
+
+            $("#tanpaPenyetoran").hide()
         } else if (ctk == "Tanpa Setor") {
             $("#dengan_setor").prop("checked", false);
             $("#jenis_pembayaran_tambah").val("BANK").change();
             $("#jenis_pembayaran_tambah").prop("disabled", true);
+
+            $("#tanpaPenyetoran").show()
         }
     }
 

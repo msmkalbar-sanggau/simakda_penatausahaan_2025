@@ -338,10 +338,7 @@ class PenerimaanController extends Controller
     public function simpanPenerimaanIni(Request $request)
     {
         $data = $request->data;
-        $kd_skpd = Auth::user()->kd_skpd;
-        $nama = Auth::user()->nama;
         $jns_pembayaran = $data['jns_pembayaran'];
-        // dd($data);
 
         DB::beginTransaction();
         try {
