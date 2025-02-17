@@ -653,7 +653,7 @@ class PenyetoranController extends Controller
             ->orderBy('a.kd_rek6')
             ->get();
 
-            // dd ($data);
+        // dd ($data);
         // $data = DB::table('tr_terima')
         // ->selectRaw("no_terima, tgl_terima, kd_rek6, nilai")
         // ->where(['kd_skpd' => $kd_skpd, 'no_terima' => $no_terima, 'jns_pembayaran' => 'TUNAI'])
@@ -669,7 +669,7 @@ class PenyetoranController extends Controller
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
         $detail_sts = json_decode($data['detail_sts'], true);
-        // dd($detail_sts);
+
         DB::beginTransaction();
         try {
             $nomorUrut = DB::table('trhkasin_pkd')
@@ -678,7 +678,9 @@ class PenyetoranController extends Controller
                 ->first()
                 ->urut;
 
-            $nomorSetor = nomorPendapatan('penyetoran', $nomorUrut, $data['kd_skpd'], $data['tgl_sts']);
+            // $nomorSetor = nomorPendapatan('penyetoran', $nomorUrut, $data['kd_skpd'], $data['tgl_sts']);
+
+            $nomorSetor = $data['no_sts'];
 
             $cek_terima = DB::table('trhkasin_pkd')
                 ->where([
@@ -839,7 +841,7 @@ class PenyetoranController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => '0'
+                'message' => '0',
             ]);
         }
     }

@@ -15,7 +15,7 @@
                         <label for="no_sts" class="col-md-2 col-form-label">No. STS</label>
                         <div class="col-md-4">
                             <input class="form-control" type="text" id="no_sts" name="no_sts"
-                                placeholder="Tidak perlu diisi! Otomatis!" required readonly>
+                                placeholder="Silahkan diisi!" required>
                         </div>
                         <label for="tgl_sts" class="col-md-2 col-form-label">Tanggal STS</label>
                         <div class="col-md-4">

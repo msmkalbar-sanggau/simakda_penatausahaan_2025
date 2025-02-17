@@ -103,10 +103,10 @@
                 return;
             }
 
-            // if (!no_sts) {
-            //     alert('No STS Tidak Boleh Kosong');
-            //     return;
-            // }
+            if (!no_sts) {
+                alert('No STS Tidak Boleh Kosong');
+                return;
+            }
 
             if (!kd_skpd) {
                 alert('Kode SKPD Tidak Boleh Kosong');
