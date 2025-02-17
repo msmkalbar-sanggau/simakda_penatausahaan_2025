@@ -97,7 +97,7 @@
                     <!-- SIMPAN -->
                     <div class="mb-3 row" style="float: right;">
                         <div class="col-md-12" style="text-align: center">
-                            <button id="simpan" class="btn btn-primary btn-md">Simpan</button>
+                            {{-- <button id="simpan" class="btn btn-primary btn-md">Simpan</button> --}}
                             <a href="{{ route('penyetoran_ini.index') }}" class="btn btn-warning btn-md">Kembali</a>
                         </div>
                     </div>
@@ -140,9 +140,9 @@
                                     <td>{{ $detail->sumber }}</td>
                                     <td>{{ $detail->nm_pengirim }}</td>
                                     <td>
-                                        <a href="javascript:void(0);"
+                                        {{-- <a href="javascript:void(0);"
                                             onclick="deleteData('{{ $detail->no_terima }}','{{ $detail->kd_rek6 }}','{{ $detail->nm_rek }}','{{ $detail->rupiah }}')"
-                                            class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>
+                                            class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a> --}}
                                     </td>
                                 </tr>
                             @endforeach
