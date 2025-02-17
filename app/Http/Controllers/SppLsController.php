@@ -1053,7 +1053,7 @@ class SppLsController extends Controller
             DB::raw('LOCK TABLES trhspp WRITE');
             DB::raw('LOCK TABLES trdspp WRITE');
 
-            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban']);
+            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
             $cek = DB::table('trhspp')
                 ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
                 ->count();

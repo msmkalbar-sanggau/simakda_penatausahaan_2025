@@ -537,7 +537,7 @@ class Sp2dController extends Controller
         DB::raw("LOCK TABLES nomor WRITE");
         // $nomor = DB::table('nomor')->select(DB::raw("(nosp2d+1) as nomor"))->first();
 
-        $nomorSppBaru = nomorSppBaru("sp2d", $no_sp2d, $tgl_sp2d, $beban);
+        $nomorSppBaru = nomorSppBaru("sp2d", $no_sp2d, $tgl_sp2d, $beban, $kd_skpd);
 
         $cek = collect(DB::select("SELECT count(*) as a from trhsp2d where SUBSTRING(no_sp2d,12,6)= ? ", [$nomorSppBaru]))->first();
         if ($cek->a > 0) {

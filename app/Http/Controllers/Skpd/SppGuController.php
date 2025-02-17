@@ -143,7 +143,7 @@ class SppGuController extends Controller
         //     ->where(['kd_skpd' => $kd_skpd])
         //     ->first();
         $nomor = DB::table('trhspp')->select(DB::raw("ISNULL(MAX(urut),0)+1 as nilai"))->where(['kd_skpd' => $kd_skpd, 'jns_spp' => '2'])->first();
-        $data = str::padLeft($nomor -> nilai, 6, '0');
+        $data = str::padLeft($nomor->nilai, 6, '0');
         return response()->json([
             'nilai' => $data
         ]);
@@ -158,7 +158,7 @@ class SppGuController extends Controller
 
         DB::beginTransaction();
         try {
-            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban']);
+            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
             $cek = DB::table('trhspp')->where(['no_spp' => $nomorSppBaru])->count();
             if ($cek > 0) {
                 return response()->json([

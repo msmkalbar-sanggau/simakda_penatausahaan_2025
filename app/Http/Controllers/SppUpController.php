@@ -60,11 +60,11 @@ class SppUpController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
 
         $nomorup = DB::table('trhspp')->select(DB::raw("ISNULL(MAX(urut),0)+1 as nilai"))->where(['kd_skpd' => $kd_skpd, 'jns_spp' => '1'])->first();
-        $nomor   = str::padLeft($nomorup -> nilai, 6, '0');
+        $nomor   = str::padLeft($nomorup->nilai, 6, '0');
         $data = [
             'ketentuan' => DB::table('ms_sk_up')->orderBy('keterangan_up')->first(),
             'skpd' => DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
-            'data_spd' => DB::table('trhspd')->select('no_spd', 'tgl_spd','bulan_awal')->where(DB::raw("LEFT(kd_skpd,22)"), DB::raw("LEFT('$kd_skpd',22)"))->where(['status' => '1', 'jns_beban' => '5'])->orderByDesc('bulan_awal')->get(),
+            'data_spd' => DB::table('trhspd')->select('no_spd', 'tgl_spd', 'bulan_awal')->where(DB::raw("LEFT(kd_skpd,22)"), DB::raw("LEFT('$kd_skpd',22)"))->where(['status' => '1', 'jns_beban' => '5'])->orderByDesc('bulan_awal')->get(),
             'data_bank' => DB::table('ms_bank')->select('kode', 'nama')->orderBy('kode')->get(),
             'data_rek' => DB::table('ms_rekening_bank_online')->select('rekening', 'nm_rekening', 'npwp')->where(['kd_skpd' => $kd_skpd])->orderBy('rekening')->get(),
             'nilai_up' => DB::table('ms_up')->select('nilai_up as nilai')->where(['kd_skpd' => $kd_skpd])->first(),
@@ -82,8 +82,8 @@ class SppUpController extends Controller
     {
         $jenis_beban = $request->jenis_beban;
         $kd_skpd = Auth::user()->kd_skpd;
-        $nomor = DB::table('trhspp')->select(DB::raw("ISNULL(MAX(urut),0)+1 as nilai"))->where(['kd_skpd' => $kd_skpd])->whereIn('jns_spp',['4','5','6'])->first();
-        $data = str::padLeft($nomor -> nilai, 6, '0');
+        $nomor = DB::table('trhspp')->select(DB::raw("ISNULL(MAX(urut),0)+1 as nilai"))->where(['kd_skpd' => $kd_skpd])->whereIn('jns_spp', ['4', '5', '6'])->first();
+        $data = str::padLeft($nomor->nilai, 6, '0');
         return response()->json([
             'nilai' => $data
         ]);
@@ -110,11 +110,11 @@ class SppUpController extends Controller
         $kd_skpd = $request->kd_skpd;
         DB::beginTransaction();
         try {
-            $nomorSppBaru = nomorSppBaru("spp", $no_spp, $tgl_spp, $beban);
+            $nomorSppBaru = nomorSppBaru("spp", $no_spp, $tgl_spp, $beban, $kd_skpd);
             $cek = DB::table('trhspp')
-            ->select('no_spp')
-            ->where(['no_spp' => $nomorSppBaru])
-            ->count();
+                ->select('no_spp')
+                ->where(['no_spp' => $nomorSppBaru])
+                ->count();
 
             if ($cek > 0) {
                 return response()->json([
@@ -122,25 +122,25 @@ class SppUpController extends Controller
                 ]);
             } else {
                 DB::table('trhspp')
-                ->insert([
-                    'no_spp' => $nomorSppBaru,
-                    'kd_skpd' => $kd_skpd,
-                    'keperluan' => $keperluan,
-                    'no_spd' => $no_spd,
-                    'jns_spp' => $beban,
-                    'bank' => $bank,
-                    'nmrekan' => $nama_penerima,
-                    'penerima' => $nama_penerima,
-                    'no_rek' => $rekening,
-                    'npwp' => $npwp,
-                    'nm_skpd' => $nm_skpd,
-                    'tgl_spp' => $tgl_spp,
-                    'status' => '0',
-                    'nilai' => $nilai_up,
-                    'urut' => $no_spp,
-                    'username' => Auth::user()->nama,
-                    'last_update' => date('Y-m-d H:i:s')
-                ]);
+                    ->insert([
+                        'no_spp' => $nomorSppBaru,
+                        'kd_skpd' => $kd_skpd,
+                        'keperluan' => $keperluan,
+                        'no_spd' => $no_spd,
+                        'jns_spp' => $beban,
+                        'bank' => $bank,
+                        'nmrekan' => $nama_penerima,
+                        'penerima' => $nama_penerima,
+                        'no_rek' => $rekening,
+                        'npwp' => $npwp,
+                        'nm_skpd' => $nm_skpd,
+                        'tgl_spp' => $tgl_spp,
+                        'status' => '0',
+                        'nilai' => $nilai_up,
+                        'urut' => $no_spp,
+                        'username' => Auth::user()->nama,
+                        'last_update' => date('Y-m-d H:i:s')
+                    ]);
 
                 DB::table('trdspp')
                     ->where(['no_spp' => $nomorSppBaru, 'kd_rek6' => $kode_akun])
@@ -557,7 +557,7 @@ class SppUpController extends Controller
             'tglspd' => DB::table('trhspd')->select('tgl_spd')->where(['no_spd' => $data->no_spd])->first(),
             'data' => $data,
             'nilaispd' => DB::table('trhspp')->select('nilai')->where(['no_spp' => $no_spp])->first(),
-            'dataspd' => DB::table('trhspd')->select('bulan_awal','no_spd', 'tgl_spd', 'total')->whereRaw("LEFT(kd_skpd,22) = LEFT('$kd_skpd',22)")->orderBy('bulan_awal', 'asc')->get(),
+            'dataspd' => DB::table('trhspd')->select('bulan_awal', 'no_spd', 'tgl_spd', 'total')->whereRaw("LEFT(kd_skpd,22) = LEFT('$kd_skpd',22)")->orderBy('bulan_awal', 'asc')->get(),
             'datasp2d' => DB::table('trhsp2d')->select('no_sp2d', 'tgl_sp2d', 'nilai as total')->where(['kd_skpd' => $kd_skpd, 'jns_spp' => '6'])->orderBy('tgl_sp2d')->orderBy('no_sp2d')->get(),
             'sub_kegiatan' => $sub_kegiatan,
             'tanpa' => $tanpa,
@@ -683,4 +683,3 @@ class SppUpController extends Controller
         }
     }
 }
-
