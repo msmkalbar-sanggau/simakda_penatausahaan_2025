@@ -1099,6 +1099,8 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::get('cetak_realisasi_fisik', [RealisasiFisikController::class, 'cetakRealisasiFisik'])->name('skpd.laporan_bendahara.cetak_realisasi_fisik');
             // cetak_laporan_penutupan_kas_bulanan
             Route::get('cetak_laporan_penutupan_kas_bulanan', [LaporanPenutupanKasBulananController::class, 'cetakLaporanPenutupanKasBulanan'])->name('skpd.laporan_bendahara.cetak_laporan_penutupan_kas_bulanan');
+            // LAPORAN PENUTUPAN KAS BULANAN (SIPD)
+            Route::get('cetak_laporan_penutupan_kas_bulanan_sipd', [LaporanPenutupanKasBulananController::class, 'cetakLaporanPenutupanKasBulananSIPD'])->name('skpd.laporan_bendahara.cetak_laporan_penutupan_kas_bulanan_sipd');
             // cetak_dth
             Route::get('cetak_dth', [LaporanDthController::class, 'cetakLaporanDth'])->name('skpd.laporan_bendahara.cetak_dth');
             // cetak register pajak

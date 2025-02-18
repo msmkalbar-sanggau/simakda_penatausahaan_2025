@@ -28,11 +28,17 @@ class LaporanPenutupanKasBulananController extends Controller
         $tahun_anggaran = tahun_anggaran();
 
         // TANDA TANGAN
-        $cari_bendahara = DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $bendahara, 'kd_skpd' => $kd_skpd])
+        $cari_bendahara = DB::table('ms_ttd')
+            ->select('nama', 'nip', 'jabatan', 'pangkat')
+            ->where([
+                'nip' => $bendahara,
+                'kd_skpd' => $kd_skpd
+            ])
             ->whereIn('kode', ['BK', 'BPP'])
             ->first();
-        // $cari_pakpa = DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PA', 'KPA'])->first();
-        $cari_pakpa = collect(DB::select("SELECT nama, nip, jabatan, pangkat from ms_ttd where LTRIM(nip) = ? and kd_skpd = ? and kode in ('PA', 'KPA')", [$pa_kpa, $kd_skpd]))->first();
+
+        $cari_pakpa = collect(DB::select("SELECT nama, nip, jabatan, pangkat from ms_ttd where LTRIM(nip) = ? and kd_skpd = ? and kode in ('PA', 'KPA')", [$pa_kpa, $kd_skpd]))
+            ->first();
 
         $saldobank  = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
                         -- SP2 Terima
@@ -540,6 +546,192 @@ class LaporanPenutupanKasBulananController extends Controller
                 --         from trdtransout_blud a inner join trhtransout_blud b on a.no_bukti=b.no_bukti and a.kd_skpd=b.kd_skpd
                 --         WHERE a.kd_skpd= ? and right(kd_rek6,6)='999999'
                         )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd,  $kd_skpd, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $bulan, $kd_skpd, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $bulan, $bulan, $kd_skpd, $bulan, $bulan, $bulan, $kd_skpd, $bulan, $bulan, $bulan, $kd_skpd, $bulan, $bulan, $bulan, $kd_skpd, $bulan, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+
+
+        foreach ($terimakeluarbank as $trmklrbank) {
+            $terimabank     = $trmklrbank->terima;
+            $keluarbank     = $trmklrbank->keluar;
+        }
+
+        // saldo tunai lalu
+
+        $tahun_lalu = DB::table('ms_skpd')
+            ->select(DB::raw('isnull(sld_awal,0) AS nilai'), 'sld_awalpajak')
+            ->where('kd_skpd', $kd_skpd)
+            ->first();
+
+        $nm_skpd = cari_nama($kd_skpd, 'ms_skpd', 'kd_skpd', 'nm_skpd');
+
+        $tunai_lalu = collect(DB::select("exec kas_tunai_lalu ?,?", array($kd_skpd, $bulan)))->first();
+
+        $xhasil_lalu = ($tunai_lalu->terima - $tunai_lalu->keluar) + $tahun_lalu->sld_awalpajak;
+
+        $tunai      = collect(DB::select("exec kas_tunai ?,?", array($kd_skpd, $bulan)))->first();
+
+        $xhasil_tunai = ($tunai->terima - $tunai->keluar) + $xhasil_lalu;
+
+        $daerah = DB::table('sclient')->select('daerah')->where('kd_skpd', $kd_skpd)->first();
+
+        $saldo_berharga = collect(DB::select("select sum(nilai) as total from trhsp2d where month(tgl_terima)=? and kd_skpd=?
+                    and status_terima = '1' and month(tgl_kas) > ?", [$bulan, $kd_skpd, $bulan]))->first();
+
+        // KIRIM KE VIEW
+        $data = [
+            'header'            => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
+            'skpd'              => DB::table('ms_skpd')->select('nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
+            'bulan'             => $bulan,
+            'saldoawalbank'     => $saldoawalbank,
+            'nm_skpd'           => $nm_skpd,
+            'terimabank'        => $terimabank,
+            'keluarbank'        => $keluarbank,
+            'enter'             => $enter,
+            'daerah'            => $daerah,
+            'tanggal_ttd'       => $tanggal_ttd,
+            'cari_pa_kpa'       => $cari_pakpa,
+            'cari_bendahara'    => $cari_bendahara,
+            'xhasil_tunai'      => $xhasil_tunai,
+            'saldoberharga'     => $saldo_berharga->total,
+
+        ];
+
+        $view =  view('skpd.laporan_bendahara.cetak.laporan_penutupan_kas_bulanan')->with($data);
+        if ($cetak == '1') {
+            return $view;
+        } else if ($cetak == '2') {
+            $pdf = PDF::loadHtml($view)->setPaper('legal');
+            return $pdf->stream('LAORAN PENUTUPAN KAS BULANAN.pdf');
+        } else {
+
+            header("Cache-Control: no-cache, no-store, must_revalidate");
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachement; filename="LAORAN PENUTUPAN KAS BULANAN - ' . $nm_skpd . '.xls"');
+            return $view;
+        }
+    }
+
+    public function cetakLaporanPenutupanKasBulananSIPD(Request $request)
+    {
+        $tanggal_ttd    = $request->tgl_ttd;
+        $pa_kpa         = $request->pa_kpa;
+        $bendahara      = $request->bendahara;
+        $bulan          = $request->bulan;
+        $enter          = $request->spasi;
+        $kd_skpd        = $request->kd_skpd;
+        $cetak          = $request->cetak;
+
+        // TANDA TANGAN
+        $cari_bendahara = DB::table('ms_ttd')
+            ->select('nama', 'nip', 'jabatan', 'pangkat')
+            ->where([
+                'nip' => $bendahara,
+                'kd_skpd' => $kd_skpd
+            ])
+            ->whereIn('kode', ['BK', 'BPP'])
+            ->first();
+
+        $cari_pakpa = collect(DB::select("SELECT nama, nip, jabatan, pangkat from ms_ttd where LTRIM(nip) = ? and kd_skpd = ? and kode in ('PA', 'KPA')", [$pa_kpa, $kd_skpd]))
+            ->first();
+
+        $saldobank  = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
+                        -- SP2D Terima
+                        SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd = ?
+                        AND  MONTH(a.tgl_kas)< ? and a.status='1' and a.jns_spp='1'
+
+                        UNION ALL
+                        SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
+                        AND  MONTH(a.tgl_kas)< ?
+
+                        --DROPPING TERIMA
+                        UNION ALL
+                        SELECT sum(x.sd_bln_ini) terima, 0 keluar from(
+                        select SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as sd_bln_ini
+                        from tr_setorpelimpahan WHERE kd_skpd= ?
+                        UNION ALL
+                        select SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as sd_bln_ini
+                        from tr_setorpelimpahan_bank WHERE kd_skpd= ?
+                        UNION ALL
+                        SELECT SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as jar_sd_bln_ini
+                        from tr_setorsimpanan WHERE kd_skpd= ? and jenis='3'
+                        )x
+
+                        UNION ALL
+                        SELECT 0 as terima , SUM(a.gaji_ini + a.brg_ini + a.up_ini) as keluar from
+
+                        (
+                        select a.kd_skpd, 0 as gaji_ini, 0 as brg_ini, isnull(a.nilai,0) as up_ini, 0 as gaji_lalu, 0 as brg_lalu, 0 as up_lalu from trdtransout a join trhtransout b on a.no_bukti=b.no_bukti and a.kd_skpd=b.kd_skpd where MONTH(b.tgl_bukti)< ? and jns_spp in (1,2,3) and pay not in ('PANJAR')
+
+                        ) a
+                        WHERE a.kd_skpd= ?
+
+                        -- DROPPING KELUAR
+                        UNION ALL
+                        SELECT 0 as masuk, SUM(z.sd_bln_ini) as keluar from(
+                                select
+                                SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as sd_bln_ini
+                                from tr_setorpelimpahan_bank
+                                WHERE kd_skpd_sumber= ?
+                                UNION ALL
+                                select
+                                SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as sd_bln_ini
+                                from tr_setorpelimpahan
+                                WHERE kd_skpd_sumber= ?
+                                )z
+
+                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+        foreach ($saldobank as $sawalbank) {
+            $saldoawalbank   = $sawalbank->terima - $sawalbank->keluar;
+        }
+
+
+        $terimakeluarbank = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
+                -- SP2 Terima
+                SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
+                AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp='1'
+
+                UNION ALL
+                SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
+                AND  MONTH(a.tgl_kas)= ?
+
+                --DROPPING TERIMA
+                UNION ALL
+                SELECT sum(x.sd_bln_ini) terima, 0 keluar from(
+                select SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as sd_bln_ini
+                from tr_setorpelimpahan WHERE kd_skpd= ?
+                UNION ALL
+                select SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as sd_bln_ini
+                from tr_setorpelimpahan_bank WHERE kd_skpd= ?
+                UNION ALL
+                SELECT SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as jar_sd_bln_ini
+                from tr_setorsimpanan WHERE kd_skpd= ? and jenis='3'
+                )x
+
+                UNION ALL
+
+                SELECT 0 as terima , sum(gaji_ini)+ sum(brg_ini)+sum(up_ini)as keluar from
+
+                (
+                    select a.kd_skpd, 0 as gaji_ini, 0 as brg_ini, isnull(a.nilai,0) as up_ini, 0 as gaji_lalu, 0 as brg_lalu, 0 as up_lalu from trdtransout a join trhtransout b on a.no_bukti=b.no_bukti and a.kd_skpd=b.kd_skpd where MONTH(b.tgl_bukti)= ?
+                    and jns_spp in (1,2,3) and pay not in ('PANJAR')
+
+                ) a
+                WHERE a.kd_skpd= ?
+
+                -- DROPPING KELUAR
+                UNION ALL
+                SELECT 0 as masuk, SUM(z.sd_bln_ini) as keluar from(
+                        select
+                        SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as sd_bln_ini
+                        from tr_setorpelimpahan_bank
+                        WHERE kd_skpd_sumber= ?
+                        UNION ALL
+                        select
+                        SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as sd_bln_ini
+                        from tr_setorpelimpahan
+                        WHERE kd_skpd_sumber= ?
+                        )z
+
+                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+
 
 
         foreach ($terimakeluarbank as $trmklrbank) {

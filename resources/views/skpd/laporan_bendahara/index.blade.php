@@ -510,6 +510,16 @@
                                 name="spasi">
                         </div>
                     </div>
+                    <div class="mb-3 row" id="khususLaporanKas">
+                        <div class="col-md-6">
+                            <label for="pa_kpa" class="form-label">Format</label>
+                            <select class="form-control select2-modal" style=" width: 100%;" id="formatCetakan"
+                                name="formatCetakan">
+                                <option value="SIMAKDA" selected>SIMAKDA</option>
+                                <option value="SIPD">SIPD</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="mb-3 row" id="row-hidden3">
                         <div class="col-md-6">
                             <label for="pil_reg_pajak2" class="form-label">Pilihan 1</label>
@@ -979,6 +989,7 @@
                                 name="spasi">
                         </div>
                     </div>
+
                     {{-- Margin --}}
                     <div class="mb-3 row">
                         <label for="sptb" class="col-md-12 col-form-label">
@@ -1188,6 +1199,7 @@
             $('#bulanspj').hide();
             $('#periode71').hide();
             $('#periode72').hide();
+            $('#khususLaporanKas').hide();
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1246,6 +1258,10 @@
                 theme: 'bootstrap-5'
             });
             $('#pil_reg_pajak2').select2({
+                dropdownParent: $('#modal_cetak'),
+                theme: 'bootstrap-5'
+            });
+            $('#formatCetakan').select2({
                 dropdownParent: $('#modal_cetak'),
                 theme: 'bootstrap-5'
             });
@@ -1456,6 +1472,7 @@
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
             cari_skpd(kd_skpd, 'unit');
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapbppajak').on('click', function() {
@@ -1471,6 +1488,7 @@
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
             cari_skpd(kd_skpd, 'unit');
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapbppanjar').on('click', function() {
@@ -1486,6 +1504,7 @@
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
             cari_skpd(kd_skpd, 'unit');
+            $("#khususLaporanKas").hide()
         });
 
 
@@ -1502,6 +1521,7 @@
             document.getElementById('row-hidden2').hidden = true; // Hide
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapkasab').on('click', function() {
@@ -1517,6 +1537,7 @@
             document.getElementById('row-hidden2').hidden = true; // Hide
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
+            $("#khususLaporanKas").show()
         });
 
         $('#lapdth').on('click', function() {
@@ -1532,6 +1553,7 @@
             document.getElementById('row-hidden2').hidden = true; // Hide
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapregpajak').on('click', function() {
@@ -1547,6 +1569,7 @@
             document.getElementById('row-hidden2').hidden = true; // Hide
             document.getElementById('row-hidden3').hidden = false; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapregcp').on('click', function() {
@@ -1562,6 +1585,7 @@
             document.getElementById('row-hidden2').hidden = true; // Hide
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapregsppspm').on('click', function() {
@@ -1577,6 +1601,7 @@
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = false; // Hide
             cari_skpd(kd_skpd, 'unit');
+            $("#khususLaporanKas").hide()
         });
 
         $('#lapbpsrobjek').on('click', function() {
@@ -1665,6 +1690,7 @@
             document.getElementById('row-hidden3').hidden = true; // Hide
             document.getElementById('row-hidden4').hidden = true; // Hide
             cari_skpd(kd_skpd, 'unit');
+            $("#khususLaporanKas").hide()
         });
 
         // cari skpd/org
@@ -2233,6 +2259,7 @@
             let tgl2 = document.getElementById('tanggalb2').value;
             let tgl_ttdb = document.getElementById('tgl_ttdb').value;
             let ttdb = document.getElementById('ttdb').value;
+            let formatCetakan = document.getElementById('formatCetakan').value;
 
 
             if (jenis_cetak2 == 'Cetak Buku Sub Rincian Objek') {
@@ -2414,8 +2441,20 @@
                 searchParams.append("margin_kiri", margin_kiri);
                 searchParams.append("margin_kanan", margin_kanan);
                 window.open(url.toString(), "_blank");
-            } else if (jenis_cetak == 'Cetak Laporan Penutupan Kas Bulanan') {
+            } else if (jenis_cetak == 'Cetak Laporan Penutupan Kas Bulanan' && formatCetakan === 'SIMAKDA') {
                 let url = new URL("{{ route('skpd.laporan_bendahara.cetak_laporan_penutupan_kas_bulanan') }}");
+                let searchParams = url.searchParams;
+                searchParams.append("spasi", spasi);
+                searchParams.append("bendahara", bendahara);
+                searchParams.append("pa_kpa", pa_kpa);
+                searchParams.append("bulan", bulan);
+                searchParams.append("kd_skpd", kd_skpd);
+                searchParams.append("tgl_ttd", tgl_ttd);
+                searchParams.append("jenis_print", jenis_print);
+                searchParams.append("cetak", jns_cetak);
+                window.open(url.toString(), "_blank");
+            } else if (jenis_cetak == 'Cetak Laporan Penutupan Kas Bulanan' && formatCetakan === 'SIPD') {
+                let url = new URL("{{ route('skpd.laporan_bendahara.cetak_laporan_penutupan_kas_bulanan_sipd') }}");
                 let searchParams = url.searchParams;
                 searchParams.append("spasi", spasi);
                 searchParams.append("bendahara", bendahara);
