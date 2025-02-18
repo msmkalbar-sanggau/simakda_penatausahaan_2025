@@ -477,15 +477,17 @@ function nomorSppBaru($tipe, $nomorUrut, $tanggal, $beban, $kd_skpd)
 {
     $month = intval(date("m", strtotime($tanggal)));
 
-    if ($month >= 1 && $month <= 3) {
-        $bulan = 1;
-    } else if ($month >= 4 && $month <= 6) {
-        $bulan = 2;
-    } else if ($month >= 7 && $month <= 9) {
-        $bulan = 3;
-    } else if ($month >= 10 && $month <= 12) {
-        $bulan = 4;
-    }
+    // if ($month >= 1 && $month <= 3) {
+    //     $bulan = 1;
+    // } else if ($month >= 4 && $month <= 6) {
+    //     $bulan = 2;
+    // } else if ($month >= 7 && $month <= 9) {
+    //     $bulan = 3;
+    // } else if ($month >= 10 && $month <= 12) {
+    //     $bulan = 4;
+    // }
+
+    $bulan = $month;
 
     if (Str::length($nomorUrut) == '1') {
         $nomor = "00000" . $nomorUrut;
