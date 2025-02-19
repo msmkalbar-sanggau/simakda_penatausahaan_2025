@@ -780,7 +780,7 @@ class LaporanPenutupanKasBulananController extends Controller
 
         ];
 
-        $view =  view('skpd.laporan_bendahara.cetak.laporan_penutupan_kas_bulanan')->with($data);
+        $view =  view('skpd.laporan_bendahara.cetak.laporan_penutupan_kas_bulanan_sipd')->with($data);
         if ($cetak == '1') {
             return $view;
         } else if ($cetak == '2') {
