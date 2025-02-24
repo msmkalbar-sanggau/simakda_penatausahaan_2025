@@ -77,6 +77,10 @@
                 alert("Nilai Nomor SPD tidak boleh Kosong");
                 return;
             }
+            if (!keperluan) {
+                alert("Isi Keperluan Terlebih Dahulu...!!!");
+                return;
+            }
             if (!npwp) {
                 alert("Isi NPWP Terlebih Dahulu...!!!");
                 return;

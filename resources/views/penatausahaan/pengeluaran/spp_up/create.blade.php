@@ -70,8 +70,7 @@
                         </div>
                         <label for="keperluan" class="col-md-2 col-form-label">Keperluan</label>
                         <div class="col-md-4">
-                            <textarea type="text" readonly class="form-control @error('keperluan') is-invalid @enderror" id="keperluan"
-                                name="keperluan">{{ $ketentuan->keterangan_up }}</textarea>
+                            <textarea type="text" class="form-control @error('keperluan') is-invalid @enderror" id="keperluan" name="keperluan"></textarea>
                             @error('keperluan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
