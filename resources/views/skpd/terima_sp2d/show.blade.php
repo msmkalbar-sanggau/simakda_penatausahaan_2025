@@ -137,7 +137,7 @@
                                 <td class="kiri">Kepada</td>
                                 <td>:</td>
                                 <td colspan="4" class="kanan">
-                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '6') || $data_sp2d->jns_spp == '5')
+                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '3') || $data_sp2d->jns_spp == '5')
                                         {{ $data_sp2d->pimpinan }},
                                         {{ $data_sp2d->nmrekan }}, {{ $data_sp2d->alamat }}
                                     @else
@@ -150,7 +150,7 @@
                                 <td class="kiri">NPWP</td>
                                 <td>:</td>
                                 <td colspan="4" class="kanan">
-                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '6') || $data_sp2d->jns_spp == '5')
+                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '3') || $data_sp2d->jns_spp == '5')
                                         {{ $data_sp2d->npwp }}
                                     @else
                                         {{ $bank->npwp ? $bank->npwp : ' ' }}
@@ -161,7 +161,7 @@
                                 <td class="kiri">No.Rekening Bank</td>
                                 <td>:</td>
                                 <td colspan="4" class="kanan">
-                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '6') || $data_sp2d->jns_spp == '5')
+                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '3') || $data_sp2d->jns_spp == '5')
                                         {{ $data_sp2d->no_rek }}
                                     @else
                                         {{ $bank->rekening ? $bank->rekening : ' ' }}
@@ -172,7 +172,7 @@
                                 <td class="kiri">Bank Penerima</td>
                                 <td>:</td>
                                 <td colspan="4" class="kanan">
-                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '6') || $data_sp2d->jns_spp == '5')
+                                    @if (($data_sp2d->jns_spp == '6' && $data_sp2d->jenis_beban == '3') || $data_sp2d->jns_spp == '5')
                                         {{ $sp2d->bank ? bank($sp2d->bank) : 'Belum Pilih Bank' }}
                                     @else
                                         {{ $sp2d->bank ? bank($sp2d->bank) : 'Belum Pilih Bank' }}
