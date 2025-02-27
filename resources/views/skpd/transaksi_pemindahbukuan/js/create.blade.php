@@ -593,10 +593,10 @@
                 return;
             }
 
-            if (beban == '1' && (akumulasi > sisa_spd)) {
-                alert('Total Transaksi melebihi Sisa SPD');
-                return;
-            }
+            // if (beban == '1' && (akumulasi > sisa_spd)) {
+            //     alert('Total Transaksi melebihi Sisa SPD');
+            //     return;
+            // }
 
             rekening_belanja.row.add({
                 'no_bukti': no_bukti,
