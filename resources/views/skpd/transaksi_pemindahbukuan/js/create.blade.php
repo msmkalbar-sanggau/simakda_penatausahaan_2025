@@ -593,6 +593,11 @@
                 return;
             }
 
+            if (nilai > sisa_spd) {
+                alert('Nilai Melebihi Sisa Anggaran SPD...!!!, Cek Lagi...!!!');
+                return;
+            }
+
             // if (beban == '1' && (akumulasi > sisa_spd)) {
             //     alert('Total Transaksi melebihi Sisa SPD');
             //     return;
