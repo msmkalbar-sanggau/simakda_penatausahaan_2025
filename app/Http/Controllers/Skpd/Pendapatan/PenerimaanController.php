@@ -338,12 +338,13 @@ class PenerimaanController extends Controller
     public function simpanPenerimaanIni(Request $request)
     {
         $data = $request->data;
+
         $jns_pembayaran = $data['jns_pembayaran'];
 
         DB::beginTransaction();
         try {
 
-            if ($jns_pembayaran == 'TUNAI') {
+            if ($data['tanpa_setor'] == 'true') {
                 DB::table('tr_terima')->insert([
                     'no_terima' => $data['no_terima'],
                     'tgl_terima' => $data['tgl_terima'],
@@ -365,7 +366,7 @@ class PenerimaanController extends Controller
                 ]);
             }
 
-            if ($jns_pembayaran == 'BANK') {
+            if ($data['dengan_setor'] == 'true') {
                 $cekSetor = DB::table('trhkasin_pkd')
                     ->where([
                         'no_sts' => $data['no_sts'],

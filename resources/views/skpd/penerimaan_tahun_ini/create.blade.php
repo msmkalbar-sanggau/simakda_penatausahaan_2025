@@ -218,7 +218,7 @@
                             Pembayaran</label>
                         <div class="col-md-4">
                             <select id="jenis_pembayaran_tambah" name="jenis_pembayaran_tambah"
-                                class="form-control form-control-sm" disabled>
+                                class="form-control form-control-sm">
                                 <option value="TUNAI"> Tunai</option>
                                 <option value="BANK"> Bank</option>
                             </select>

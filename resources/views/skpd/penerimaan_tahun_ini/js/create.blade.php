@@ -23,43 +23,12 @@
 
         $('#jenis_pembayaran_tambah').select2({
             width: '100%',
-            dropdownParent: $("#tambah-dialog"),
+            // dropdownParent: $("#tambah-dialog"),
             theme: 'bootstrap-5'
         })
 
-        // if (kd_skpd == '5.02.0.00.0.00.03.0000') {
-        //     $('.jns_penerimaan').show();
-
-        //     $('#jns_penerimaan').on('select2:select', function() {
-        //         let nomor = this.value;
-        //         let jenis;
-
-        //         if (nomor == 1) {
-        //             jenis = "/SKP BAPENDA/2024";
-        //         }
-        //         if (nomor == 2) {
-        //             jenis = "/STS KASDA/2024";
-        //         }
-        //         if (nomor == 3) {
-        //             jenis = "/BPHTB BAPENDA/2024";
-        //         }
-        //         if (nomor == 4) {
-        //             jenis = "/PBB BAPENDA/2024";
-        //         }
-        //         if (nomor == 5) {
-        //             jenis = "/PBB KASDA/2024";
-        //         }
-
-
-        //         let nomor1 = jenis;
-        //         $('#no_terima').val(nomor1);
-
-        //     });
-        // } else {
-        //     $('.jns_penerimaan').hide();
-        // }
-
         let data = false;
+
         $('#pilihan').on('change', function() {
             if ($(this).is(':checked')) {
                 data = $(this).is(':checked');
@@ -128,7 +97,6 @@
             $('#nilai').val(nilai);
         });
 
-
         $('#simpan').on('click', function() {
             let no_sts = document.getElementById('no_sts').value;
             let no_terima = document.getElementById('no_terima').value;
@@ -152,6 +120,7 @@
             let statusSetor = $('input[name="status_setor"]:checked').val();
             let jns_pembayaran = document.getElementById('jenis_pembayaran_tambah').value;
             let tanpa_setor = document.getElementById('tanpa_setor').checked;
+            let dengan_setor = document.getElementById('dengan_setor').checked;
             let pilihan = document.getElementById('pilihan').checked;
             let dengan_penetapan;
             let pajakk;
@@ -163,6 +132,11 @@
             // } else {
             //     pajakk = '';
             // }
+
+            if (!tanpa_setor && !dengan_setor) {
+                alert('Silahkan pilih tanpa setor atau dengan setor')
+                return;
+            }
 
             if (kode_rek6 == '410106010001') {
                 pajakk = document.getElementById('pajak_hotel').value;
@@ -181,7 +155,7 @@
                 return;
             }
 
-            if (!no_sts && tanpa_setor) {
+            if (!no_sts && dengan_setor) {
                 alert('No STS Tidak Boleh Kosong');
                 return;
             }
@@ -234,8 +208,6 @@
                 }
             }
 
-
-
             let data = {
                 dengan_penetapan,
                 pajakk,
@@ -254,6 +226,8 @@
                 kd_sub_kegiatan,
                 keterangan,
                 nilai,
+                dengan_setor,
+                tanpa_setor
             };
 
             $('#simpan').prop('disabled', true);
@@ -316,16 +290,16 @@
         ctk = val;
         if (ctk == "Dengan Setor") {
             $("#tanpa_setor").prop("checked", false);
-            $("#jenis_pembayaran_tambah").val("TUNAI").change();
-            $("#jenis_pembayaran_tambah").prop("disabled", true);
-
-            $("#tanpaPenyetoran").hide()
-        } else if (ctk == "Tanpa Setor") {
-            $("#dengan_setor").prop("checked", false);
-            $("#jenis_pembayaran_tambah").val("BANK").change();
-            $("#jenis_pembayaran_tambah").prop("disabled", true);
+            // $("#jenis_pembayaran_tambah").val("TUNAI").change();
+            // $("#jenis_pembayaran_tambah").prop("disabled", true);
 
             $("#tanpaPenyetoran").show()
+        } else if (ctk == "Tanpa Setor") {
+            $("#dengan_setor").prop("checked", false);
+            // $("#jenis_pembayaran_tambah").val("BANK").change();
+            // $("#jenis_pembayaran_tambah").prop("disabled", true);
+
+            $("#tanpaPenyetoran").hide()
         }
     }
 
