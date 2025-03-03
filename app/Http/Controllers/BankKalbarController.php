@@ -166,67 +166,71 @@ class BankKalbarController extends Controller
 
         DB::beginTransaction();
         try {
+
             // $data_bank = json_decode($this->isiListPot($request)->getData());
-            // dd($data_bank);
 
-            $data_bank = json_decode($this->isiListPot($request)->getData());
-            // $data_bank = json_decode('{"status":true,"message":null,"maxPage":null,"perPage":null,"columns":null,"data":[{"response_code":"00","message":"Sukses","data":{"statusTransaksi":"Inquiry","idBilling":"128440743834022","ntpn":"","ntb":null,"jenisPajak":"DJP","tanggalDanWaktuTransaksi":"2024-01-29 08:40:43","tanggalBuku":"2024-01-29","jumlahBayar":"279722","nomorPokokWajibPajak":"963459292707000","namaWajibPajak":"BADAN PENGELOLA PERBATASAN DAE","alamatWajibPajak":"Jl Ahmad Yani - KOTA PONTIANAK","kodeMap":"","kodeSetor":"","masaPajak":"","tahunPajak":"","nomorSk":"","nomorObjekPajak":"","kementrianLembaga":"","unitEselonI":"","kodeSatker":"","idWajibBayar":null,"jenisDokumen":null,"nomorDokumen":null,"tanggalDokumen":null,"kantorPengawasandanPelayananBeadanCukai":null,"nomorSP2D":"","referenceNo":"101000028099","waktuBuku":"08:40:43","msgSTAN":"888476","jumlahAkunPajak":"1"}}]}');
+            // if ($data_bank->status) {
+            //     if ($data_bank->data[0]->response_code == '00') {
+            //         $total_potongan = DB::table('trspmpot_tampungan')
+            //             ->selectRaw("SUM(ISNULL(nilai,0)) as nilai")
+            //             ->where(['no_spm' => $no_spm])
+            //             ->whereIn('kd_rek6', $rekening_tampungan)
+            //             ->first()
+            //             ->nilai;
 
-            if ($data_bank->status) {
-                if ($data_bank->data[0]->response_code == '00') {
-                    $total_potongan = DB::table('trspmpot_tampungan')
-                        ->selectRaw("SUM(ISNULL(nilai,0)) as nilai")
-                        ->where(['no_spm' => $no_spm])
-                        ->whereIn('kd_rek6', $rekening_tampungan)
-                        ->first()
-                        ->nilai;
+            //         if (floatval($total_potongan) != floatval($data_bank->data[0]->data->jumlahBayar)) {
+            //             return response()->json([
+            //                 'status' => false,
+            //                 'message' => 'Total Potongan tidak sesuai dengan Total yang dibayar!',
+            //                 'icon' => 'info'
+            //             ]);
+            //         }
 
-                    if (floatval($total_potongan) != floatval($data_bank->data[0]->data->jumlahBayar)) {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Total Potongan tidak sesuai dengan Total yang dibayar!',
-                            'icon' => 'info'
-                        ]);
-                    }
+            //         // if ($data_bank->data[0]->data->jumlahAkunPajak != count($rekening_tampungan)) {
+            //         //     return response()->json([
+            //         //         'status' => false,
+            //         //         'message' => 'Jumlah akun pajak tidak sesuai dengan jumlah rekening yang dipilih!',
+            //         //         'icon' => 'info'
+            //         //     ]);
+            //         // }
 
-                    // if ($data_bank->data[0]->data->jumlahAkunPajak != count($rekening_tampungan)) {
-                    //     return response()->json([
-                    //         'status' => false,
-                    //         'message' => 'Jumlah akun pajak tidak sesuai dengan jumlah rekening yang dipilih!',
-                    //         'icon' => 'info'
-                    //     ]);
-                    // }
+            //         DB::table('trspmpot_tampungan')
+            //             ->where(['no_spm' => $no_spm])
+            //             ->whereIn('kd_rek6', $rekening_tampungan)
+            //             ->update([
+            //                 'idBilling' => $data_bank->data[0]->data->idBilling
+            //             ]);
 
-                    DB::table('trspmpot_tampungan')
-                        ->where(['no_spm' => $no_spm])
-                        ->whereIn('kd_rek6', $rekening_tampungan)
-                        ->update([
-                            'idBilling' => $data_bank->data[0]->data->idBilling
-                        ]);
+            //         DB::table('log_billing')
+            //             ->where(['id_billing' => $data_bank->data[0]->data->idBilling])
+            //             ->delete();
 
-                    DB::table('log_billing')
-                        ->where(['id_billing' => $data_bank->data[0]->data->idBilling])
-                        ->delete();
+            //         DB::table('log_billing')
+            //             ->insert([
+            //                 'id_billing' => $data_bank->data[0]->data->idBilling,
+            //                 'data_billing' => json_encode($data_bank)
+            //             ]);
+            //     } else {
+            //         return response()->json([
+            //             'status' => false,
+            //             'message' => $data_bank->data[0]->message,
+            //             'icon' => 'warning'
+            //         ]);
+            //     }
+            // } else {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Data ID Billing tidak ditemukan',
+            //         'icon' => 'info'
+            //     ]);
+            // }
 
-                    DB::table('log_billing')
-                        ->insert([
-                            'id_billing' => $data_bank->data[0]->data->idBilling,
-                            'data_billing' => json_encode($data_bank)
-                        ]);
-                } else {
-                    return response()->json([
-                        'status' => false,
-                        'message' => $data_bank->data[0]->message,
-                        'icon' => 'warning'
-                    ]);
-                }
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data ID Billing tidak ditemukan',
-                    'icon' => 'info'
+            DB::table('trspmpot_tampungan')
+                ->where(['no_spm' => $no_spm])
+                ->whereIn('kd_rek6', $rekening_tampungan)
+                ->update([
+                    'idBilling' => $request->id_billing
                 ]);
-            }
 
             DB::commit();
             return response()->json([
