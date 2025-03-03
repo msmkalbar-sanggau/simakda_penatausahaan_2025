@@ -76,7 +76,8 @@
         <thead>
             <tr>
                 <td bgcolor='#CCCCCC' align='center' rowspan='2'>NO</td>
-                <td bgcolor='#CCCCCC' align='center' colspan='6'>Penerimaan</td>
+                {{-- <td bgcolor='#CCCCCC' align='center' colspan='6'>Penerimaan</td> --}}
+                <td bgcolor='#CCCCCC' align='center' colspan='5'>Penerimaan</td>
                 <td bgcolor='#CCCCCC' align='center' colspan='3'>Penyetoran</td>
                 <td bgcolor='#CCCCCC' align='center' rowspan='2'>Ket.</td>
                 <td bgcolor='#CCCCCC' align='center' rowspan='2'>Status.</td>
@@ -84,7 +85,7 @@
             <tr>
                 <td bgcolor='#CCCCCC' align='center'>Tgl</td>
                 <td bgcolor='#CCCCCC' align='center'>No Bukti</td>
-                <td bgcolor='#CCCCCC' align='center'>Cara Pembayaran</td>
+                {{-- <td bgcolor='#CCCCCC' align='center'>Cara Pembayaran</td> --}}
                 <td bgcolor='#CCCCCC' align='center'>Kode Rekening</td>
                 <td bgcolor='#CCCCCC' align='center'>Uraian</td>
                 <td bgcolor='#CCCCCC' align='center'>Jumlah</td>
@@ -104,7 +105,7 @@
                 <td bgcolor='#CCCCCC' align='center' width='10%'>9</td>
                 <td bgcolor='#CCCCCC' align='center' width='8%'>10</td>
                 <td bgcolor='#CCCCCC' align='center' width='18%'>11</td>
-                <td bgcolor='#CCCCCC' align='center' width='3%'>12</td>
+                {{-- <td bgcolor='#CCCCCC' align='center' width='3%'>12</td> --}}
             </tr>
         </thead>
         @php
@@ -160,7 +161,7 @@
                     <td align='center'>{{ $nomor }}</td>
                     <td align='center'>{{ $tgl }}</td>
                     <td align='center'>{{ $bukti }}</td>
-                    <td align='center'>{{ $status_setor }}</td>
+                    {{-- <td align='center'>{{ $status_setor }}</td> --}}
                     <td align='center'>{{ $rek }}</td>
                     <td align='left'>{{ $uraian }}</td>
                     <td align='right'>{{ $nilai }}</td>
@@ -175,7 +176,7 @@
                     <td align='center'>{{ $nomor }}</td>
                     <td align='center'>{{ $tgl }}</td>
                     <td align='center'>{{ $bukti }}</td>
-                    <td align='center'>{{ $status_setor }}</td>
+                    {{-- <td align='center'>{{ $status_setor }}</td> --}}
                     <td align='center'>{{ $rek }}</td>
                     <td align='left'>{{ $uraian }}</td>
                     <td align='right'>{{ $nilai }}</td>
@@ -188,7 +189,7 @@
             @endif
         @endforeach
         <tr>
-            <td colspan='6' align='center'><b>Jumlah</b></td>
+            <td colspan='5' align='center'><b>Jumlah</b></td>
             <td align='right'><b>{{ rupiah($lnnilai) }}</b></td>
             <td align='center'></td>
             <td align='center'></td>
