@@ -224,7 +224,7 @@
                     <!-- SIMPAN -->
                     <div class="mb-3 row" style="float: right;">
                         <div class="col-md-12" style="text-align: center">
-                            <button id="simpan" class="btn btn-primary btn-md">Simpan</button>
+                            {{-- <button id="simpan" class="btn btn-primary btn-md">Simpan</button> --}}
                             <a href="{{ route('penerimaan_ini.index') }}" class="btn btn-warning btn-md">Kembali</a>
                         </div>
                     </div>
