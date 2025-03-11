@@ -95,8 +95,7 @@
                                 <td style="padding-left: 600px">Sisa Saldo Bank</td>
                                 <td>:</td>
                                 <td><input type="text" style="border:none;background-color:white;text-align:right"
-                                        readonly id="sisa_saldo" class="form-control"
-                                        value="{{ rupiah($sisa_bank->sisa) }}">
+                                        readonly id="sisa_saldo" class="form-control" value="{{ rupiah($sisa_bank) }}">
                                 </td>
                             </tr>
                         </tbody>

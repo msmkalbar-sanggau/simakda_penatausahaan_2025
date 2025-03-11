@@ -28,8 +28,7 @@
                                         data-bank_tujuan="{{ $pelimpahan->bank_tujuan }}"
                                         data-ket_tujuan="{{ $pelimpahan->ket_tujuan }}"
                                         data-status_upload="{{ $pelimpahan->status_upload }}"
-                                        data-tgl_upload="{{ $pelimpahan->tgl_upload }}"
-                                        data-lpj_unit="{{ $pelimpahan->lpj_unit }}">
+                                        data-tgl_upload="{{ $pelimpahan->tgl_upload }}">
                                         {{ $pelimpahan->no_kas }} |
                                         {{ $pelimpahan->tgl_kas }}
                                     </option>
