@@ -18,7 +18,8 @@
                                 <option value="" disabled selected>Silahkan Pilih</option>
                                 @foreach ($tujuan_skpd as $skpd)
                                     <option value="{{ $skpd->kd_skpd }}" data-nm_skpd="{{ $skpd->nm_skpd }}"
-                                        data-skpd_sumber="{{ $skpd->skpd }}" data-skpd_ringkas="{{ $skpd->kd_ringkas }}">
+                                        data-skpd_sumber="{{ $skpd->skpd }}" data-skpd_ringkas="{{ $skpd->kd_ringkas }}"
+                                        data-nilai="{{ $skpd->nilai }}">
                                         {{ $skpd->kd_skpd }} - {{ $skpd->nm_skpd }}</option>
                                 @endforeach
                             </select>
@@ -99,7 +100,8 @@
                         <label for="nilai" class="col-md-2 col-form-label">Nilai</label>
                         <div class="col-md-4">
                             <input type="text" class="form-control" name="nilai" id="nilai"
-                                pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency" style="text-align: right">
+                                pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency" style="text-align: right"
+                                disabled>
                         </div>
                     </div>
                     {{-- Sisa Kas Bank --}}
@@ -107,7 +109,7 @@
                         <label for="sisa_kas" class="col-md-2 col-form-label">Sisa Kas Bank</label>
                         <div class="col-md-10">
                             <input class="form-control" type="text" id="sisa_kas" name="sisa_kas" required readonly
-                                value="{{ rupiah($sisa_bank->sisa) }}" style="text-align: right">
+                                value="{{ rupiah($sisa_bank) }}" style="text-align: right">
                         </div>
                     </div>
                     {{-- Keterangan --}}

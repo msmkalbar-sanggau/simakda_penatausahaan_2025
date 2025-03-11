@@ -15,9 +15,13 @@
             let skpd_sumber = $(this).find(':selected').data('skpd_sumber');
             let skpd_ringkas = $(this).find(':selected').data('skpd_ringkas');
             let nm_skpd = $(this).find(':selected').data('nm_skpd');
+            let nilai = $(this).find(':selected').data('nilai');
             $('#nm_skpd').val(nm_skpd);
             $('#skpd_sumber').val(skpd_sumber);
             $('#skpd_ringkas').val(skpd_ringkas);
+            $('#nilai').val(new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 2
+            }).format(nilai));
         });
 
         $('#beban').on('select2:select', function() {
@@ -62,7 +66,7 @@
             let rekening_tujuan = document.getElementById('rekening_tujuan').value;
             let nama_tujuan = document.getElementById('nama_tujuan').value;
             let bank_tujuan = document.getElementById('bank_tujuan').value;
-            let nilai = angka(document.getElementById('nilai').value);
+            let nilai = rupiah(document.getElementById('nilai').value);
             let tahun_input = tgl_kas.substr(0, 4);
 
             if (tahun_input != tahun_anggaran) {
@@ -70,10 +74,10 @@
                 return;
             }
 
-            if (nilai > sisa_kas) {
-                alert('Nilai Lebih Besar dari Sisa Bank');
-                return;
-            }
+            // if (nilai > sisa_kas) {
+            //     alert('Nilai Lebih Besar dari Sisa Bank');
+            //     return;
+            // }
 
             if (!tgl_kas) {
                 alert('Tanggal  Tidak Boleh Kosong');
@@ -128,7 +132,8 @@
                 type: "POST",
                 dataType: 'json',
                 data: {
-                    data: data
+                    data: data,
+                    "_token": "{{ csrf_token() }}",
                     // data: encrypt(data)
                 },
                 success: function(response) {

@@ -70,10 +70,10 @@
                 return;
             }
 
-            if (nilai > sisa_kas) {
-                alert('Nilai Lebih Besar dari Sisa Bank');
-                return;
-            }
+            // if (nilai > sisa_kas) {
+            //     alert('Nilai Lebih Besar dari Sisa Bank');
+            //     return;
+            // }
 
             if (!tgl_kas) {
                 alert('Tanggal  Tidak Boleh Kosong');
