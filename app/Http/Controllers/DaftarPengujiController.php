@@ -114,16 +114,28 @@ class DaftarPengujiController extends Controller
 
     public function loadSp2d(Request $request)
     {
+        $sp2d = $request->sp2d;
+
+        $no_sp2d = array();
+        if (!empty($sp2d)) {
+            foreach ($sp2d as $data_sp2d) {
+                $no_sp2d[] = $data_sp2d['no_sp2d'];
+            }
+        } else {
+            $no_sp2d[] = '';
+        }
+
         $data = DB::table('trhsp2d')
-        ->whereRaw("no_sp2d NOT IN (SELECT no_sp2d from trhuji a inner join trduji b on a.no_uji=b.no_uji)")
-        ->where(function ($query) {
-            $query->where('sp2d_batal', '')->orWhereNull('sp2d_batal');
-        })
-        ->where('is_verified', '1')
-        ->select('no_sp2d', 'tgl_sp2d', 'no_spm', 'tgl_spm', 'nilai', 'nm_skpd', 'bank', 'no_rek', 'kd_skpd')
-        ->selectRaw("(SELECT nama from ms_bank a where bank=a.kode) as nmbank")
-        ->selectRaw("(SELECT bic from ms_bank a where bank=a.kode) as bic")
-        ->get();
+            ->whereRaw("no_sp2d NOT IN (SELECT no_sp2d from trhuji a inner join trduji b on a.no_uji=b.no_uji)")
+            ->where(function ($query) {
+                $query->where('sp2d_batal', '')->orWhereNull('sp2d_batal');
+            })
+            ->whereNotIn('no_sp2d', $no_sp2d)
+            ->where('is_verified', '1')
+            ->select('no_sp2d', 'tgl_sp2d', 'no_spm', 'tgl_spm', 'nilai', 'nm_skpd', 'bank', 'no_rek', 'kd_skpd')
+            ->selectRaw("(SELECT nama from ms_bank a where bank=a.kode) as nmbank")
+            ->selectRaw("(SELECT bic from ms_bank a where bank=a.kode) as bic")
+            ->get();
 
         // $sp2d = $request->sp2d;
 
@@ -479,7 +491,7 @@ class DaftarPengujiController extends Controller
         }
 
         $data = [
-            'ttd' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat','jabatan2')->where(['kode' => 'BUD', 'nip' => $ttd])->first(),
+            'ttd' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat', 'jabatan2')->where(['kode' => 'BUD', 'nip' => $ttd])->first(),
             'tanggal' => DB::table('trhuji')->select('tgl_uji')->where(['no_uji' => $no_uji])->first(),
             'jumlah_detail' => DB::table('trduji as a')->join('trhuji as b', 'a.no_uji', '=', 'b.no_uji')->where(['a.no_uji' => $no_uji])->count(),
             'no_uji' => $no_uji,
