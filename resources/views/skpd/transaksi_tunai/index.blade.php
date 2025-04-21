@@ -23,6 +23,7 @@
                                         <th style="width: 50px;text-align:center">Keterangan</th>
                                         <th style="width: 50px;text-align:center">LPJ</th>
                                         <th style="width: 50px;text-align:center">SPJ</th>
+                                        <th style="width: 50px;text-align:center">POT</th>
                                         <th style="width: 200px;text-align:center">Aksi</th>
                                     </tr>
                                 </thead>

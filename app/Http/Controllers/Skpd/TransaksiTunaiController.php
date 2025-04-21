@@ -21,16 +21,24 @@ class TransaksiTunaiController extends Controller
     {
         $kd_skpd = Auth::user()->kd_skpd;
 
-        $data = DB::table('trhtransout as a')->select('a.*', DB::raw("'' as nokas_pot"), DB::raw("'' as tgl_pot"), DB::raw("'' as kete"), DB::raw("(SELECT COUNT(*) FROM trlpj z JOIN trhlpj v ON v.no_lpj=z.no_lpj WHERE v.jenis=a.jns_spp AND z.no_bukti=a.no_bukti AND z.kd_bp_skpd=a.kd_skpd) as ketlpj"), DB::raw("CASE WHEN a.tgl_bukti<'2018-01-01' THEN 1 ELSE 0 END as ketspj"))->where(['a.panjar' => '0', 'a.kd_skpd' => $kd_skpd, 'a.pay' => 'TUNAI'])->orderBy(DB::raw("CAST(a.no_bukti as numeric)"))->orderBy('a.kd_skpd')->get();
-        // dd ($data);
+        $data = DB::table('trhtransout as a')
+            ->select('a.*', DB::raw("'' as nokas_pot"), DB::raw("'' as tgl_pot"), DB::raw("'' as kete"), DB::raw("(SELECT COUNT(*) FROM trlpj z JOIN trhlpj v ON v.no_lpj=z.no_lpj WHERE v.jenis=a.jns_spp AND z.no_bukti=a.no_bukti AND z.kd_bp_skpd=a.kd_skpd) as ketlpj"), DB::raw("CASE WHEN a.tgl_bukti<'2018-01-01' THEN 1 ELSE 0 END as ketspj"), DB::raw("(SELECT COUNT(*) FROM trhtrmpot x WHERE x.no_kas=a.no_kas AND x.kd_skpd=a.kd_skpd) as ketpot"))
+            ->where([
+                'a.panjar' => '0',
+                'a.kd_skpd' => $kd_skpd,
+                'a.pay' => 'TUNAI'
+            ])
+            ->orderBy(DB::raw("CAST(a.no_bukti as numeric)"))
+            ->orderBy('a.kd_skpd')
+            ->get();
+
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
             $btn = '<a href="' . route("skpd.transaksi_tunai.edit", Crypt::encryptString($row->no_bukti)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="uil-edit"></i></a>';
-            if ($row->ketlpj != 1) {
+            if ($row->ketlpj != 1 && $row->ketpot == 0) {
                 $btn .= '<a href="javascript:void(0);" onclick="hapusTransaksi(' . $row->no_bukti . ');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>';
             }
             return $btn;
         })->rawColumns(['aksi'])->make(true);
-        return view('skpd.transaksi_tunai.index');
     }
 
     public function create()
@@ -56,7 +64,7 @@ class TransaksiTunaiController extends Controller
             select NO_BUKTI nomor, 'Terima lain-lain' ket,KD_SKPD as kd_skpd from TRHINLAIN where  isnumeric(NO_BUKTI)=1 union ALL
             select NO_BUKTI nomor, 'Keluar lain-lain' ket,KD_SKPD as kd_skpd from TRHOUTLAIN where  isnumeric(NO_BUKTI)=1 union ALL
             select no_kas nomor, 'Drop Uang ke Bidang' ket,kd_skpd_sumber as kd_skpd from tr_setorpelimpahan where  isnumeric(no_kas)=1) z WHERE KD_SKPD = ?", [$kd_skpd]))->first();
-            //dd($no_urut2);
+        //dd($no_urut2);
 
         $data = [
             'skpd' => DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
@@ -179,8 +187,8 @@ class TransaksiTunaiController extends Controller
                     AND u.no_bukti
                     NOT IN (select no_tagih FROM trhspp WHERE kd_skpd=?)
                     )r) AS lalu,
-                    0 AS sp2d,nilai AS anggaran FROM trdrka a WHERE a.kd_sub_kegiatan= ? AND a.jns_ang = ? AND a.kd_rek6 in ('5221104') AND a.kd_skpd = ? ", [$no_bukti,$beban,$beban,$kd_skpd, $kd_sub_kegiatan, $jenis_ang, $kd_skpd]);
-            }elseif ($kd_sub_kegiatan == '4.08.4.08.01.00.01.351') {
+                    0 AS sp2d,nilai AS anggaran FROM trdrka a WHERE a.kd_sub_kegiatan= ? AND a.jns_ang = ? AND a.kd_rek6 in ('5221104') AND a.kd_skpd = ? ", [$no_bukti, $beban, $beban, $kd_skpd, $kd_sub_kegiatan, $jenis_ang, $kd_skpd]);
+            } elseif ($kd_sub_kegiatan == '4.08.4.08.01.00.01.351') {
                 $data = DB::select("SELECT a.kd_rek6,a.nm_rek6,
                 (SELECT SUM(nilai) FROM
                     (SELECT
@@ -229,7 +237,7 @@ class TransaksiTunaiController extends Controller
                     )r) AS lalu,
                     0 AS sp2d,nilai AS anggaran
                     FROM trdrka a WHERE a.kd_sub_kegiatan= ? AND a.jns_ang = ? AND a.kd_skpd = ? ", [$no_bukti, $beban, $beban, $kd_skpd, $kd_sub_kegiatan, $jenis_ang, $kd_skpd]);
-            }else {
+            } else {
                 $data = DB::select("SELECT a.kd_rek6,a.nm_rek6,
                     (SELECT SUM(nilai) FROM
                     (SELECT
@@ -281,10 +289,8 @@ class TransaksiTunaiController extends Controller
                     AND a.kd_skpd = ?
                     AND a.kd_rek6 not in (select kd_rek6 from ms_rek6 where kd_rek6 = ?)
                     ", [$no_bukti, $beban, $beban, $kd_skpd, $kd_sub_kegiatan, $jenis_ang, $kd_skpd, $kd_rek6]);
-
-
             }
-        }else {
+        } else {
             $data = DB::select("SELECT b.kd_rek6,b.nm_rek6,
             (SELECT SUM(c.nilai) FROM trdtransout_cmsbank c LEFT JOIN trhtransout_cmsbank d ON c.no_voucher=d.no_voucher AND c.kd_skpd=d.kd_skpd
             WHERE c.kd_sub_kegiatan = b.kd_sub_kegiatan AND
@@ -360,17 +366,16 @@ class TransaksiTunaiController extends Controller
         //     ->mergeBindings($data6)
         //     ->first();
 
-        $skpdbp = explode('.',$kd_skpd);
+        $skpdbp = explode('.', $kd_skpd);
 
 
 
-        if($skpdbp[7]=='0000'){
-                $init_skpd = "a.kd_skpd='$kd_skpd'";
-                $init_skpd2 = "kd_skpd='$kd_skpd'";
-                $init_skpd3 = "kd_skpd_sumber='$kd_skpd'";
-                $init_skpd4 = "kode='$kd_skpd'";
-
-        }else{
+        if ($skpdbp[7] == '0000') {
+            $init_skpd = "a.kd_skpd='$kd_skpd'";
+            $init_skpd2 = "kd_skpd='$kd_skpd'";
+            $init_skpd3 = "kd_skpd_sumber='$kd_skpd'";
+            $init_skpd4 = "kode='$kd_skpd'";
+        } else {
             $init_skpd = "left(a.kd_skpd,22)=left('$kd_skpd',22)";
             $init_skpd2 = "left(kd_skpd,22)=left('$kd_skpd',22)";
             $init_skpd3 = "left(kd_skpd_sumber,22)=left('$kd_skpd',22)";

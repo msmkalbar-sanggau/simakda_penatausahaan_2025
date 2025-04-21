@@ -65,6 +65,11 @@
                     className: "text-center",
                 },
                 {
+                    data: 'ketpot',
+                    name: 'ketpot',
+                    className: "text-center",
+                },
+                {
                     data: 'aksi',
                     name: 'aksi',
                     width: 100,
