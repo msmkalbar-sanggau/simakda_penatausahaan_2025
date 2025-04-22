@@ -673,7 +673,7 @@ class PenyetoranController extends Controller
         DB::beginTransaction();
         try {
             $nomorUrut = DB::table('trhkasin_pkd')
-                ->selectRaw("ISNULL(MAX(urut),0)+1 as urut")
+                ->selectRaw("ISNULL(MAX(CAST(urut as INT)),0)+1 as urut")
                 ->where('kd_skpd', $data['kd_skpd'])
                 ->first()
                 ->urut;
