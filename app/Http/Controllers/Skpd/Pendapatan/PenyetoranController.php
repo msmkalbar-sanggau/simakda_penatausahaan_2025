@@ -159,6 +159,7 @@ class PenyetoranController extends Controller
                         'pot_khusus' => '0',
                         'no_sp2d' => '',
                         'jns_cp' => '',
+                        'username' => Auth::user()->nama
                     ]);
 
                 DB::table('trhkasin_pkd')
@@ -388,6 +389,7 @@ class PenyetoranController extends Controller
                         'pot_khusus' => '0',
                         'no_sp2d' => '',
                         'jns_cp' => '',
+                        'username' => Auth::user()->nama
                     ]);
 
                 DB::table('trhkasin_pkd')
@@ -756,6 +758,7 @@ class PenyetoranController extends Controller
                         'no_sp2d' => '',
                         'jns_cp' => '',
                         'no_terima' => '',
+                        'username' => Auth::user()->nama
                     ]);
 
                 DB::table('trhkasin_pkd')
@@ -979,6 +982,7 @@ class PenyetoranController extends Controller
                         'no_sp2d' => '',
                         'jns_cp' => '',
                         'no_terima' => '',
+                        'username' => Auth::user()->nama
                     ]);
 
                 DB::table('trhkasin_pkd')

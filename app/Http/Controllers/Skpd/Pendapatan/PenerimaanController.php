@@ -786,6 +786,7 @@ class PenerimaanController extends Controller
                 'pot_khusus' => '0',
                 'no_sp2d' => '',
                 'jns_cp' => '',
+                'username' => Auth::user()->nama
             ]);
 
             DB::table('trdkasin_ppkd')->insert([
@@ -1311,7 +1312,8 @@ class PenerimaanController extends Controller
                     'sumber' => '',
                     'rek_bank' => $data['rek_bank'],
                     'kd_bank' => '',
-                    'urut' => $no_bukti
+                    'urut' => $no_bukti,
+                    'username' => Auth::user()->nama
                 ]);
 
             // DB::table('trhkasin_pkd')
