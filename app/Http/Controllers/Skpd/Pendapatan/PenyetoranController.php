@@ -141,34 +141,34 @@ class PenyetoranController extends Controller
 
             $jumlah = DB::table('ms_skpd')->where(['jns' => '2', 'kd_skpd' => $data['kd_skpd']])->count();
 
-            if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
-                DB::table('trhkasin_ppkd')
-                    ->insert([
-                        'no_kas' => $nomor,
-                        'tgl_kas' => $data['tgl_sts'],
-                        'no_sts' => $data['no_sts'],
-                        'tgl_sts' => $data['tgl_sts'],
-                        'kd_skpd' => $data['kd_skpd'],
-                        'keterangan' => $data['keterangan'],
-                        'total' => $data['total'],
-                        'kd_bank' => '',
-                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                        'jns_trans' => '2',
-                        'rek_bank' => '',
-                        'sumber' => $data['pengirim'],
-                        'pot_khusus' => '0',
-                        'no_sp2d' => '',
-                        'jns_cp' => '',
-                        'username' => Auth::user()->nama
-                    ]);
+            // if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
+            //     DB::table('trhkasin_ppkd')
+            //         ->insert([
+            //             'no_kas' => $nomor,
+            //             'tgl_kas' => $data['tgl_sts'],
+            //             'no_sts' => $data['no_sts'],
+            //             'tgl_sts' => $data['tgl_sts'],
+            //             'kd_skpd' => $data['kd_skpd'],
+            //             'keterangan' => $data['keterangan'],
+            //             'total' => $data['total'],
+            //             'kd_bank' => '',
+            //             'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+            //             'jns_trans' => '2',
+            //             'rek_bank' => '',
+            //             'sumber' => $data['pengirim'],
+            //             'pot_khusus' => '0',
+            //             'no_sp2d' => '',
+            //             'jns_cp' => '',
+            //             'username' => Auth::user()->nama
+            //         ]);
 
-                DB::table('trhkasin_pkd')
-                    ->where(['kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
-                    ->update([
-                        'no_cek' => '1',
-                        'status' => '1'
-                    ]);
-            }
+            //     DB::table('trhkasin_pkd')
+            //         ->where(['kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
+            //         ->update([
+            //             'no_cek' => '1',
+            //             'status' => '1'
+            //         ]);
+            // }
 
             DB::table('trdkasin_pkd')
                 ->where(['kd_skpd' => $data['kd_skpd'], 'no_sts' => $data['no_sts']])
@@ -200,33 +200,33 @@ class PenyetoranController extends Controller
                     'a.kunci' => '1'
                 ]);
 
-            if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
-                if (isset($data['detail_sts'])) {
-                    DB::table('trdkasin_ppkd')
-                        ->insert(array_map(function ($value) use ($data) {
-                            return [
-                                'no_sts' => $data['no_sts'],
-                                'kd_skpd' => $data['kd_skpd'],
-                                'kd_rek6' => $value['kd_rek6'],
-                                'rupiah' => $value['nilai'],
-                                'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                                'no_kas' => '',
-                                'sumber' => $data['pengirim'],
-                            ];
-                        }, $data['detail_sts']));
-                }
+            // if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
+            //     if (isset($data['detail_sts'])) {
+            //         DB::table('trdkasin_ppkd')
+            //             ->insert(array_map(function ($value) use ($data) {
+            //                 return [
+            //                     'no_sts' => $data['no_sts'],
+            //                     'kd_skpd' => $data['kd_skpd'],
+            //                     'kd_rek6' => $value['kd_rek6'],
+            //                     'rupiah' => $value['nilai'],
+            //                     'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+            //                     'no_kas' => '',
+            //                     'sumber' => $data['pengirim'],
+            //                 ];
+            //             }, $data['detail_sts']));
+            //     }
 
-                DB::table('trdkasin_ppkd as a')
-                    ->join('trhkasin_ppkd as b', function ($join) {
-                        $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-                        $join->on('a.no_sts', '=', 'b.no_sts');
-                        $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-                    })
-                    ->where(['a.kd_skpd' => $data['kd_skpd'], 'b.no_sts' => $data['no_sts']])
-                    ->update([
-                        'a.no_kas' => $nomor
-                    ]);
-            }
+            //     DB::table('trdkasin_ppkd as a')
+            //         ->join('trhkasin_ppkd as b', function ($join) {
+            //             $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+            //             $join->on('a.no_sts', '=', 'b.no_sts');
+            //             $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+            //         })
+            //         ->where(['a.kd_skpd' => $data['kd_skpd'], 'b.no_sts' => $data['no_sts']])
+            //         ->update([
+            //             'a.no_kas' => $nomor
+            //         ]);
+            // }
 
             DB::commit();
             return response()->json([
@@ -739,35 +739,35 @@ class PenyetoranController extends Controller
                 ])
                 ->count();
 
-            if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
-                DB::table('trhkasin_ppkd')
-                    ->insert([
-                        'no_kas' => $nomor,
-                        'tgl_kas' => $data['tgl_sts'],
-                        'no_sts' => $nomorSetor,
-                        'tgl_sts' => $data['tgl_sts'],
-                        'kd_skpd' => $data['kd_skpd'],
-                        'keterangan' => isset($data['keterangan']) ? $data['keterangan'] : '',
-                        'total' => $data['total'],
-                        'kd_bank' => '',
-                        'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                        'jns_trans' => '4',
-                        'rek_bank' => '',
-                        'sumber' => '',
-                        'pot_khusus' => '0',
-                        'no_sp2d' => '',
-                        'jns_cp' => '',
-                        'no_terima' => '',
-                        'username' => Auth::user()->nama
-                    ]);
+            // if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
+            //     DB::table('trhkasin_ppkd')
+            //         ->insert([
+            //             'no_kas' => $nomor,
+            //             'tgl_kas' => $data['tgl_sts'],
+            //             'no_sts' => $nomorSetor,
+            //             'tgl_sts' => $data['tgl_sts'],
+            //             'kd_skpd' => $data['kd_skpd'],
+            //             'keterangan' => isset($data['keterangan']) ? $data['keterangan'] : '',
+            //             'total' => $data['total'],
+            //             'kd_bank' => '',
+            //             'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+            //             'jns_trans' => '4',
+            //             'rek_bank' => '',
+            //             'sumber' => '',
+            //             'pot_khusus' => '0',
+            //             'no_sp2d' => '',
+            //             'jns_cp' => '',
+            //             'no_terima' => '',
+            //             'username' => Auth::user()->nama
+            //         ]);
 
-                DB::table('trhkasin_pkd')
-                    ->where(['kd_skpd' => $data['kd_skpd'], 'no_sts' => $nomorSetor])
-                    ->update([
-                        'no_cek' => '1',
-                        'status' => '1'
-                    ]);
-            }
+            //     DB::table('trhkasin_pkd')
+            //         ->where(['kd_skpd' => $data['kd_skpd'], 'no_sts' => $nomorSetor])
+            //         ->update([
+            //             'no_cek' => '1',
+            //             'status' => '1'
+            //         ]);
+            // }
 
             DB::table('trdkasin_pkd')
                 ->where([
@@ -805,36 +805,36 @@ class PenyetoranController extends Controller
                     'a.kunci' => '1'
                 ]);
 
-            if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
-                if (isset($detail_sts)) {
-                    foreach ($detail_sts as $detail) {
-                        $dataPpkd = [
-                            'no_sts' => $nomorSetor,
-                            'kd_skpd' => $data['kd_skpd'],
-                            'kd_rek6' => $detail['kd_rek6'],
-                            'rupiah' => $detail['nilai'],
-                            'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                            'no_kas' => $detail['no_sts'],
-                            'sumber' => $detail['sumber'],
-                        ];
-                        DB::table('trdkasin_ppkd')->insert($dataPpkd);
-                    }
-                }
+            // if ($jumlah == 0 && $data['kd_skpd'] <> '1.02.0.00.0.00.02.0000') {
+            //     if (isset($detail_sts)) {
+            //         foreach ($detail_sts as $detail) {
+            //             $dataPpkd = [
+            //                 'no_sts' => $nomorSetor,
+            //                 'kd_skpd' => $data['kd_skpd'],
+            //                 'kd_rek6' => $detail['kd_rek6'],
+            //                 'rupiah' => $detail['nilai'],
+            //                 'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
+            //                 'no_kas' => $detail['no_sts'],
+            //                 'sumber' => $detail['sumber'],
+            //             ];
+            //             DB::table('trdkasin_ppkd')->insert($dataPpkd);
+            //         }
+            //     }
 
-                DB::table('trdkasin_ppkd as a')
-                    ->join('trhkasin_ppkd as b', function ($join) {
-                        $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-                        $join->on('a.no_sts', '=', 'b.no_sts');
-                        $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
-                    })
-                    ->where([
-                        'a.kd_skpd' => $data['kd_skpd'],
-                        'b.no_sts' => $nomorSetor
-                    ])
-                    ->update([
-                        'a.no_kas' => $nomor
-                    ]);
-            }
+            //     DB::table('trdkasin_ppkd as a')
+            //         ->join('trhkasin_ppkd as b', function ($join) {
+            //             $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+            //             $join->on('a.no_sts', '=', 'b.no_sts');
+            //             $join->on('a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan');
+            //         })
+            //         ->where([
+            //             'a.kd_skpd' => $data['kd_skpd'],
+            //             'b.no_sts' => $nomorSetor
+            //         ])
+            //         ->update([
+            //             'a.no_kas' => $nomor
+            //         ]);
+            // }
 
             DB::commit();
             return response()->json([
