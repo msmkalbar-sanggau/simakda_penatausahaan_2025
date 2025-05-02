@@ -449,7 +449,19 @@ class SpmController extends Controller
         $data = DB::table('trspmpot_tampungan')
             ->select('kd_rek6', 'nm_rek6')
             ->where(['no_spm' => $request->no_spm])
-            ->whereIn('kd_rek6', ['210105010001', '210105020001', '210105030001', '210109010001', '210105040001', '210106010001'])
+            ->whereIn(
+                'kd_rek6',
+                [
+                    '210105010001',
+                    '210105020001',
+                    '210105030001',
+                    '210109010001',
+                    '210105040001',
+                    '210106010001',
+                    '210102010001',
+                    '210102010001'
+                ]
+            )
             ->groupBy('kd_rek6', 'nm_rek6')
             ->get();
 
