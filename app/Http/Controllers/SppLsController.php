@@ -254,7 +254,14 @@ class SppLsController extends Controller
             $beban = ['5'];
         }
 
-        $data = DB::table('trhspd')->select('no_spd', 'tgl_spd', 'bulan_awal', 'total')->whereRaw('LEFT(kd_skpd,22) = ?', [$skpd])->where('status', '1')->where('tgl_spd', '<=', $tgl_spp)->whereIn('jns_beban', $beban)->orderBy('bulan_awal', 'DESC')->get();
+        $data = DB::table('trhspd')
+            ->select('no_spd', 'tgl_spd', 'bulan_awal', 'total')
+            ->whereRaw('LEFT(kd_skpd,17) = left(?,17)', [$skpd])
+            ->where('status', '1')
+            ->where('tgl_spd', '<=', $tgl_spp)
+            ->whereIn('jns_beban', $beban)
+            ->orderBy('bulan_awal', 'DESC')
+            ->get();
         return response()->json($data);
     }
 
@@ -1396,21 +1403,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "Gaji & Tunjangan";
                     break;
@@ -1420,9 +1427,9 @@ class SppLsController extends Controller
                 case '9': //TU
                     $lcbeban = "Tunjangan Lainnya";
                     break;
-                    // case '10': //TU
-                    //     $lcbeban = "Gaji Anggota DPRD";
-                    //     break;
+                // case '10': //TU
+                //     $lcbeban = "Gaji Anggota DPRD";
+                //     break;
                 default:
                     $lcbeban = "LS";
             }
@@ -1624,18 +1631,18 @@ class SppLsController extends Controller
                 case '3': //TU
                     $lcbeban = "Pihak Ketiga";
                     break;
-                    // case '4': //TU
-                    //     $lcbeban = " Honor Kontrak";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = " Jasa Pelayanan Kesehatan";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = " Pihak ketiga";
-                    //     break;
-                    // case '7': //TU
-                    //     $lcbeban = " PNS";
-                    //     break;
+                // case '4': //TU
+                //     $lcbeban = " Honor Kontrak";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = " Jasa Pelayanan Kesehatan";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = " Pihak ketiga";
+                //     break;
+                // case '7': //TU
+                //     $lcbeban = " PNS";
+                //     break;
                 default:
                     $lcbeban = "LS";
             }
@@ -1698,21 +1705,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "Gaji & Tunjangan";
                     break;
@@ -2042,21 +2049,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "LS - Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "LS - Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "LS - Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "LS - Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "LS - Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "LS - Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "LS - Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "LS - Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "LS - Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "LS - Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "LS - Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "LS - Tambah / Kekurangan Gaji Tunjangan";
                     break;
@@ -2226,21 +2233,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
@@ -2587,21 +2594,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
@@ -2686,21 +2693,21 @@ class SppLsController extends Controller
                 case '1': //UP
                     $lcbeban = "Gaji dan Tunjangan";
                     break;
-                    // case '2': //GU
-                    //     $lcbeban = "Uang Kespeg";
-                    //     break;
-                    // case '3': //TU
-                    //     $lcbeban = "Uang Makan";
-                    //     break;
-                    // case '4': //TU
-                    //     $lcbeban = "Upah Pungut";
-                    //     break;
-                    // case '5': //TU
-                    //     $lcbeban = "Upah Pungut PBB";
-                    //     break;
-                    // case '6': //TU
-                    //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
-                    //     break;
+                // case '2': //GU
+                //     $lcbeban = "Uang Kespeg";
+                //     break;
+                // case '3': //TU
+                //     $lcbeban = "Uang Makan";
+                //     break;
+                // case '4': //TU
+                //     $lcbeban = "Upah Pungut";
+                //     break;
+                // case '5': //TU
+                //     $lcbeban = "Upah Pungut PBB";
+                //     break;
+                // case '6': //TU
+                //     $lcbeban = "Upah Pungut PBB-KB PKB & BBN-KB ";
+                //     break;
                 case '7': //TU
                     $lcbeban = "Tambah/Kekurangan Gaji Tunjangan";
                     break;
