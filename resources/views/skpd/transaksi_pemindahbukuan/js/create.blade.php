@@ -457,30 +457,30 @@
                 );
             }
 
-            if (kd_rekening.substr(0, 2) == '52' && (!satuan || !volume)) {
-                alert('Volume atau Satuan Output Harus Diisi');
-                return;
-            }
+            // if (kd_rekening.substr(0, 2) == '52' && (!satuan || !volume)) {
+            //     alert('Volume atau Satuan Output Harus Diisi');
+            //     return;
+            // }
 
-            if (kd_rekening.substr(0, 4) == '5105' && (!satuan || !volume)) {
-                alert('Volume atau Satuan Output Harus Diisi');
-                return;
-            }
+            // if (kd_rekening.substr(0, 4) == '5105' && (!satuan || !volume)) {
+            //     alert('Volume atau Satuan Output Harus Diisi');
+            //     return;
+            // }
 
-            if (kd_rekening.substr(0, 4) == '5106' && (!satuan || !volume)) {
-                alert('Volume atau Satuan Output Harus Diisi');
-                return;
-            }
+            // if (kd_rekening.substr(0, 4) == '5106' && (!satuan || !volume)) {
+            //     alert('Volume atau Satuan Output Harus Diisi');
+            //     return;
+            // }
 
-            if (kd_rekening.substr(0, 4) == '5402' && (!satuan || !volume)) {
-                alert('Volume atau Satuan Output Harus Diisi');
-                return;
-            }
+            // if (kd_rekening.substr(0, 4) == '5402' && (!satuan || !volume)) {
+            //     alert('Volume atau Satuan Output Harus Diisi');
+            //     return;
+            // }
 
-            if (kd_rekening.substr(0, 6) == '510203' && (!satuan || !volume)) {
-                alert('Volume atau Satuan Output Harus Diisi');
-                return;
-            }
+            // if (kd_rekening.substr(0, 6) == '510203' && (!satuan || !volume)) {
+            //     alert('Volume atau Satuan Output Harus Diisi');
+            //     return;
+            // }
 
             // if (kd_rekening.substr(0, 2) == '52' && nilai > 15000000) {
             //     alert('Akun Belanja ini tidak boleh melebihi 15 juta');
