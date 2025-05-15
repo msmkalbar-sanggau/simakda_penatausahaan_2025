@@ -166,7 +166,7 @@ class PenagihanController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $giat   = $request->kd_sub_kegiatan;
 
-        $data = collect(DB::select("SELECT SUM (a.nilai) AS totalspd FROM trdspd a JOIN trhspd b ON a.no_spd = b.no_spd WHERE b.kd_skpd = ? AND a.kd_sub_kegiatan = ? AND b.status = '1'", [$kd_skpd, $giat]))->first();
+        $data = collect(DB::select("SELECT SUM (a.nilai) AS totalspd FROM trdspd a JOIN trhspd b ON a.no_spd = b.no_spd WHERE a.kd_unit = ? AND a.kd_sub_kegiatan = ? AND b.status = '1'", [$kd_skpd, $giat]))->first();
 
         return response()->json($data);
     }
