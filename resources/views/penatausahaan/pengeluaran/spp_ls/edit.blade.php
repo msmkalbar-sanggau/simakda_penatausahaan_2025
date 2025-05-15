@@ -151,7 +151,7 @@
                                     <option value="" disabled selected>Silahkan Pilih Bank</option>
                                     @foreach ($daftar_bank as $bank)
                                         <option value="{{ $bank->kode }}" data-nama="{{ $bank->nama }}"
-                                            {{ $sppls->bank == $bank->kode ? 'selected' : '' }}>
+                                            {{ (string) $sppls->bank === (string) $bank->kode ? 'selected' : '' }}>
                                             {{ $bank->kode }} | {{ $bank->nama }}</option>
                                     @endforeach
                                 </optgroup>
