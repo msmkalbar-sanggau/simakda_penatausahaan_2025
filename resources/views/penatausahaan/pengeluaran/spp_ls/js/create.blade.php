@@ -818,10 +818,10 @@
                 return;
             }
             let tgl_spp_lalu = document.getElementById('tgl_spp_lalu').value;
-            if (tgl_spp < tgl_spp_lalu) {
-                alert("tanggal SPP tidak boleh kurang dari SPP Lalu...!!!");
-                return;
-            }
+            // if (tgl_spp < tgl_spp_lalu) {
+            //     alert("tanggal SPP tidak boleh kurang dari SPP Lalu...!!!");
+            //     return;
+            // }
 
             let no_penagihan = document.getElementById('no_penagihan').value;
             let beban = document.getElementById('beban').value;
@@ -1127,10 +1127,10 @@
                 alert("Isi Tanggal Terlebih Dahulu...!!!");
                 return;
             }
-            if (tgl_spp < tgl_spp_lalu) {
-                alert("tanggal SPP tidak boleh kurang dari SPP Lalu...!!!");
-                return;
-            }
+            // if (tgl_spp < tgl_spp_lalu) {
+            //     alert("tanggal SPP tidak boleh kurang dari SPP Lalu...!!!");
+            //     return;
+            // }
             if (!kd_skpd) {
                 alert("Isi SKPD Terlebih Dahulu...!!!");
                 return;
