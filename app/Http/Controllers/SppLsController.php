@@ -425,13 +425,13 @@ class SppLsController extends Controller
         //     ->first();
 
         //spd triwulan prov awal
-        $revisi1 = collect(DB::select("SELECT max(revisi_ke) as revisi from trhspd where left(kd_skpd,22)=left(?,22) and bulan_akhir='3' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
+        $revisi1 = collect(DB::select("SELECT max(revisi_ke) as revisi from trhspd where left(kd_skpd,17)=left(?,17) and bulan_akhir='3' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
 
-        $revisi2 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,22)=left(?,22) and bulan_akhir='6' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
+        $revisi2 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,17)=left(?,17) and bulan_akhir='6' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
 
-        $revisi3 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,22)=left(?,22) and bulan_akhir='9' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
+        $revisi3 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,17)=left(?,17) and bulan_akhir='9' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
 
-        $revisi4 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,22)=left(?,22) and bulan_akhir='12' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
+        $revisi4 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,17)=left(?,17) and bulan_akhir='12' and tgl_spd<=?", [$skpd, $tgl_spp]))->first()->revisi;
 
         $result = collect(DB::select("SELECT sum(nilai)as total_spd from (
                     SELECT
