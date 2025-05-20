@@ -59,14 +59,25 @@ class PenagihanController extends Controller
             $sub_kegiatan = DB::table('trskpd as a')
                 ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
                 ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
-                ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])
-                ->whereRaw("a.kd_sub_kegiatan IN (SELECT kd_sub_kegiatan FROM pelimpahan_kegiatan WHERE kd_bpp=? AND kd_skpd=? AND id_user=?)", [$kd_bpp, $kd_skpd, $id_user])
+                ->where([
+                    'a.kd_skpd' => $kd_skpd,
+                    'a.status_sub_kegiatan' => '1',
+                    'a.jns_ang' => $status_anggaran->jns_ang,
+                    'b.jns_sub_kegiatan' => '5'
+                ])
+                // ->whereRaw("a.kd_sub_kegiatan IN (SELECT kd_sub_kegiatan FROM pelimpahan_kegiatan WHERE kd_bpp=? AND kd_skpd=? AND id_user=?)", [$kd_bpp, $kd_skpd, $id_user])
                 ->get();
         } else {
             $sub_kegiatan = DB::table('trskpd as a')
                 ->select('a.total', 'a.kd_sub_kegiatan', 'b.nm_sub_kegiatan', 'a.kd_program', DB::raw("(SELECT nm_program FROM ms_program WHERE kd_program=a.kd_program) as nm_program"))
                 ->join('ms_sub_kegiatan AS b', 'a.kd_sub_kegiatan', '=', 'b.kd_sub_kegiatan')
-                ->where(['a.kd_skpd' => $kd_skpd, 'a.status_sub_kegiatan' => '1', 'a.jns_ang' => $status_anggaran->jns_ang, 'b.jns_sub_kegiatan' => '5'])->get();
+                ->where([
+                    'a.kd_skpd' => $kd_skpd,
+                    'a.status_sub_kegiatan' => '1',
+                    'a.jns_ang' => $status_anggaran->jns_ang,
+                    'b.jns_sub_kegiatan' => '5'
+                ])
+                ->get();
         }
 
         $data = [
