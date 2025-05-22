@@ -405,6 +405,12 @@
             let no_spm = document.getElementById('no_spm').value;
             let no_spp = document.getElementById('no_spp').value;
             let tgl_sp2d = document.getElementById('tgl_sp2d').value;
+            let statusAnggaran = document.getElementById('statusAnggaran').value;
+            let bulanInputan = document.getElementById('bulanInputan').value;
+
+            if (!statusAnggaran) return alert("Pilih status anggaran Terlebih Dahulu...!!!");
+            if (!bulanInputan) return alert("Pilih bulan inputan Terlebih Dahulu...!!!");
+
             if (!beban) {
                 alert('Silahkan pilih jenis beban!');
                 return;
@@ -456,6 +462,8 @@
                     ckd_skpd: kd_skpd,
                     no_sp2d: no_sp2d,
                     "_token": "{{ csrf_token() }}",
+                    statusAnggaran,
+                    bulanInputan
                 },
                 success: function(data) {
                     if (data.message == '1') {

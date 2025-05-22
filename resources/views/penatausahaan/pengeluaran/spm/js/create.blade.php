@@ -119,7 +119,7 @@
                 }
             });
 
-            get_spm(no_spp, kd_skpd, beban, tahun_anggaran, no_spm, str);
+            // get_spm(no_spp, kd_skpd, beban, tahun_anggaran, no_spm, str);
         });
 
         // $('#cari_nospm').on('click', function() {
@@ -152,6 +152,12 @@
             let total = rupiah(document.getElementById("total").value);
             let tahun_anggaran = "{{ tahun_anggaran() }}";
             let tahun_input = tgl_spm.substring(0, 4);
+            let statusAnggaran = document.getElementById('statusAnggaran').value;
+            let bulanInputan = document.getElementById('bulanInputan').value;
+
+            if (!statusAnggaran) return alert("Pilih status anggaran Terlebih Dahulu...!!!");
+            if (!bulanInputan) return alert("Pilih bulan inputan Terlebih Dahulu...!!!");
+
             if (!tgl_spm) {
                 alert('Silahkan pilih tanggal SPM!');
                 return;
@@ -212,6 +218,8 @@
                     urut: urut,
                     no_spp: no_spp,
                     jenis: jenis,
+                    statusAnggaran: statusAnggaran,
+                    bulanInputan: bulanInputan,
                 },
                 beforeSend: function() {
                     $("#overlay").fadeIn(100);

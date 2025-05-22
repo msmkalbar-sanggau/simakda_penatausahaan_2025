@@ -1048,6 +1048,9 @@
             let nm_program = document.getElementById('nm_program').value;
             let bidang = document.getElementById('bidang').value;
 
+            let statusAnggaran = document.getElementById('statusAnggaran').value;
+            let bulanInputan = document.getElementById('bulanInputan').value;
+
             let rincian_rekening = tabel.rows().data().toArray().map((value) => {
                 let data = {
                     kd_sub_kegiatan: value.kd_sub_kegiatan,
@@ -1086,15 +1089,23 @@
                 return;
             }
 
-            // if (!no_spp) {
-            //     alert("Isi Nomor SPP Terlebih Dahulu...!!!");
-            //     return;
-            // }
+            if (!no_spp) {
+                alert("Isi Nomor SPP Terlebih Dahulu...!!!");
+                return;
+            }
 
-            // if (no_spp == 0) {
-            //     alert('Nomor SPP tidak boleh NULL!');
-            //     return;
-            // }
+            if (no_spp == 0) {
+                alert('Nomor SPP tidak boleh NULL!');
+                return;
+            }
+
+            if (!statusAnggaran) return alert("Pilih status anggaran Terlebih Dahulu...!!!");
+            if (!bulanInputan) return alert("Pilih bulan inputan Terlebih Dahulu...!!!");
+
+            if (!nomor_spd) {
+                alert("Isi Nomor SPD Terlebih Dahulu...!!!");
+                return;
+            }
 
             if (!nomor_spd) {
                 alert("Isi Nomor SPD Terlebih Dahulu...!!!");
@@ -1238,7 +1249,9 @@
                 kd_program,
                 nm_program,
                 bidang,
-                rincian_rekening
+                rincian_rekening,
+                statusAnggaran,
+                bulanInputan
             };
 
             // proses simpan

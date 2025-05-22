@@ -113,9 +113,15 @@ class SpmController extends Controller
         SELECT no_spp,tgl_spp,kd_skpd,nm_skpd,jns_spp,keperluan,bulan,no_spd,bank,nmrekan,no_rek,jns_beban,replace(replace(npwp,'.',''),'-','')as npwp
         FROM trhspp WHERE no_spp NOT IN (SELECT no_spp FROM trhspm WHERE kd_skpd=? and (spmBatal is null or spmBatal <>'1')) AND jns_spp IN ('4','5','6') and kd_skpd = ?
         and (sp2d_batal!='1' or sp2d_batal is null) and status='0'", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]);
+
         $data = [
             'data_spp' => $data_spp,
+            'daftarAnggaran' => DB::table('tb_status_anggaran')
+                ->select('kode', 'nama')
+                ->where('status_aktif', 1)
+                ->get()
         ];
+
         return view('penatausahaan.pengeluaran.spm.create')->with($data);
     }
 
@@ -203,7 +209,14 @@ class SpmController extends Controller
         DB::beginTransaction();
         try {
 
-            $nomorSppBaru = nomorSppBaru("spm", $no_spm, $tgl_spm, $beban, $skpd);
+            $nomorSpp = nomorSppBaru("spm", $no_spm, $tgl_spm, $beban, $skpd);
+
+            $parts = explode("/", $nomorSpp);
+
+            $parts[5] = $request->statusAnggaran;
+            $parts[6] = $request->bulanInputan;
+
+            $nomorSppBaru = implode("/", $parts);
 
             $cek = DB::table('trhspm')
                 ->where(['no_spp' => $no_spp])

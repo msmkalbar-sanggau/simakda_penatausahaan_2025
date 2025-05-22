@@ -108,6 +108,10 @@ class SppLsController extends Controller
                     ->orWhereNull('sp2d_batal');
             })->first(),
             'data_opd' => DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->where('kd_skpd', $skpd)->first(),
+            'daftarAnggaran' => DB::table('tb_status_anggaran')
+                ->select('kode', 'nama')
+                ->where('status_aktif', 1)
+                ->get()
         ];
 
         return view('penatausahaan.pengeluaran.spp_ls.create')->with($data);
@@ -1081,10 +1085,19 @@ class SppLsController extends Controller
             DB::raw('LOCK TABLES trhspp WRITE');
             DB::raw('LOCK TABLES trdspp WRITE');
 
-            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
+            $nomorSpp = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
+
+            $parts = explode("/", $nomorSpp);
+
+            $parts[5] = $data['statusAnggaran'];
+            $parts[6] = $data['bulanInputan'];
+
+            $nomorSppBaru = implode("/", $parts);
+
             $cek = DB::table('trhspp')
                 ->where(['no_spp' => $nomorSppBaru, 'kd_skpd' => $data['kd_skpd']])
                 ->count();
+
             if ($cek > 0) {
                 return response()->json([
                     'message' => '2'

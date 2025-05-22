@@ -75,20 +75,53 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="mb-3 row">
+                        <label for="no_spp" class="col-md-2 col-form-label">Status Anggaran</label>
+                        <div class="col-md-4">
+                            <select class="form-control select2-multiple" style="width: 100%" id="statusAnggaran"
+                                name="statusAnggaran" data-placeholder="Silahkan Pilih">
+                                <option value="" disabled selected>Silahkan Pilih</option>
+                                @foreach ($daftarAnggaran as $anggaran)
+                                    <option value="{{ $anggaran->kode }}">
+                                        {{ $anggaran->kode }} - {{ $anggaran->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <label for="bulan" class="col-md-2 col-form-label">Bulan Inputan</label>
+                        <div class="col-md-4">
+                            <select class="form-control select2-multiple" style="width: 100%" id="bulanInputan"
+                                name="bulanInputan" data-placeholder="Silahkan Pilih">
+                                <option value="" disabled selected>Silahkan Pilih</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                    </div>
                     {{-- NO SPD dan Tanggal SPD --}}
                     <div class="mb-3 row">
                         <label for="no_spd" class="col-md-2 col-form-label">No. SPD</label>
                         <div class="col-md-4">
-                            <input class="form-control @error('no_spd') is-invalid @enderror" type="text" id="no_spd"
-                                name="no_spd" required readonly>
+                            <input class="form-control @error('no_spd') is-invalid @enderror" type="text"
+                                id="no_spd" name="no_spd" required readonly>
                             @error('no_spd')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <label for="tgl_spd" class="col-md-2 col-form-label">Tanggal SPD</label>
                         <div class="col-md-4">
-                            <input class="form-control @error('tgl_spd') is-invalid @enderror" type="date" id="tgl_spd"
-                                name="tgl_spd" required readonly>
+                            <input class="form-control @error('tgl_spd') is-invalid @enderror" type="date"
+                                id="tgl_spd" name="tgl_spd" required readonly>
                             @error('tgl_spd')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -98,16 +131,16 @@
                     <div class="mb-3 row">
                         <label for="kd_skpd" class="col-md-2 col-form-label">OPD/Unit</label>
                         <div class="col-md-4">
-                            <input class="form-control @error('kd_skpd') is-invalid @enderror" type="text" id="kd_skpd"
-                                name="kd_skpd" required readonly>
+                            <input class="form-control @error('kd_skpd') is-invalid @enderror" type="text"
+                                id="kd_skpd" name="kd_skpd" required readonly>
                             @error('kd_skpd')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <label for="bulan" class="col-md-2 col-form-label">Bulan</label>
                         <div class="col-md-4">
-                            <input class="form-control @error('bulan') is-invalid @enderror" type="text" id="bulan"
-                                name="bulan" required hidden readonly>
+                            <input class="form-control @error('bulan') is-invalid @enderror" type="text"
+                                id="bulan" name="bulan" required hidden readonly>
                             <input class="form-control @error('nm_bulan') is-invalid @enderror" type="text"
                                 id="nm_bulan" name="nm_bulan" required readonly>
                             @error('bulan')

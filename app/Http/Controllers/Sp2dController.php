@@ -80,7 +80,12 @@ class Sp2dController extends Controller
             abort(401);
         }
 
-        return view('penatausahaan.pengeluaran.sp2d.create');
+        $daftarAnggaran = DB::table('tb_status_anggaran')
+            ->select('kode', 'nama')
+            ->where('status_aktif', 1)
+            ->get();
+
+        return view('penatausahaan.pengeluaran.sp2d.create', compact('daftarAnggaran'));
     }
 
     public function cariSpm(Request $request)
@@ -537,7 +542,14 @@ class Sp2dController extends Controller
         DB::raw("LOCK TABLES nomor WRITE");
         // $nomor = DB::table('nomor')->select(DB::raw("(nosp2d+1) as nomor"))->first();
 
-        $nomorSppBaru = nomorSppBaru("sp2d", $no_sp2d, $tgl_sp2d, $beban, $kd_skpd);
+        $nomorSpp = nomorSppBaru("sp2d", $no_sp2d, $tgl_sp2d, $beban, $kd_skpd);
+
+        $parts = explode("/", $nomorSpp);
+
+        $parts[5] = $request->statusAnggaran;
+        $parts[6] = $request->bulanInputan;
+
+        $nomorSppBaru = implode("/", $parts);
 
         $cek = collect(DB::select("SELECT count(*) as a from trhsp2d where SUBSTRING(no_sp2d,12,6)= ? ", [$nomorSppBaru]))->first();
         if ($cek->a > 0) {
