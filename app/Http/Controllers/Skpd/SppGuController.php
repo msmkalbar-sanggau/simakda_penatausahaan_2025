@@ -93,6 +93,10 @@ class SppGuController extends Controller
                 ->where(['kd_skpd' => $kd_skpd])
                 ->whereRaw("(sp2d_batal is null or sp2d_batal= '0')")
                 ->first(),
+            'daftarAnggaran' => DB::table('tb_status_anggaran')
+                ->select('kode', 'nama')
+                ->where('status_aktif', 1)
+                ->get()
         ];
 
         return view('skpd.spp_gu.create')->with($data);
@@ -158,7 +162,16 @@ class SppGuController extends Controller
 
         DB::beginTransaction();
         try {
-            $nomorSppBaru = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
+            $nomorSpp = nomorSppBaru("spp", $data['no_spp'], $data['tgl_spp'], $data['beban'], $kd_skpd);
+
+            $parts = explode("/", $nomorSpp);
+
+            $parts[5] = $data['statusAnggaran'];
+            $parts[6] = $data['bulanInputan'];
+
+            $nomorSppBaru = implode("/", $parts);
+
+
             $cek = DB::table('trhspp')->where(['no_spp' => $nomorSppBaru])->count();
             if ($cek > 0) {
                 return response()->json([

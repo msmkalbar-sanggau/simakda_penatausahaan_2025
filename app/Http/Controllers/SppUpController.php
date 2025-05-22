@@ -73,7 +73,11 @@ class SppUpController extends Controller
             'data_tgl' => DB::table('trhspp')->select(DB::raw("MAX(tgl_spp) as tgl_spp"))->where(['kd_skpd' => $kd_skpd])->where(function ($query) {
                 $query->where('sp2d_batal', '')->orWhereNull('sp2d_batal');
             })->first(),
-            'tahun_anggaran' => tahun_anggaran()
+            'tahun_anggaran' => tahun_anggaran(),
+            'daftarAnggaran' => DB::table('tb_status_anggaran')
+                ->select('kode', 'nama')
+                ->where('status_aktif', 1)
+                ->get()
         ];
         return view('penatausahaan.pengeluaran.spp_up.create')->with($data);
     }
@@ -110,7 +114,15 @@ class SppUpController extends Controller
         $kd_skpd = $request->kd_skpd;
         DB::beginTransaction();
         try {
-            $nomorSppBaru = nomorSppBaru("spp", $no_spp, $tgl_spp, $beban, $kd_skpd);
+            $nomorSpp = nomorSppBaru("spp", $no_spp, $tgl_spp, $beban, $kd_skpd);
+
+            $parts = explode("/", $nomorSpp);
+
+            $parts[5] = $request->statusAnggaran;
+            $parts[6] = $request->bulanInputan;
+
+            $nomorSppBaru = implode("/", $parts);
+
             $cek = DB::table('trhspp')
                 ->select('no_spp')
                 ->where(['no_spp' => $nomorSppBaru])

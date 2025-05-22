@@ -51,6 +51,13 @@
             let nilai_up = rupiah(document.getElementById('nilai_up').value);
             let bulan = document.getElementById('bulan').value;
             let tahun_input = tgl_spp.substring(0., 4);
+
+            let statusAnggaran = document.getElementById('statusAnggaran').value;
+            let bulanInputan = document.getElementById('bulanInputan').value;
+
+            if (!statusAnggaran) return alert("Pilih status anggaran Terlebih Dahulu...!!!");
+            if (!bulanInputan) return alert("Pilih bulan inputan Terlebih Dahulu...!!!");
+
             if (!no_spp) {
                 alert('Nomor SPP wajib diisi!');
                 return;
@@ -111,6 +118,8 @@
                     nilai_up: nilai_up,
                     // no_urut: no_urut,
                     kd_skpd: kd_skpd,
+                    statusAnggaran,
+                    bulanInputan
                 },
                 success: function(data) {
                     if (data.message == '0') {

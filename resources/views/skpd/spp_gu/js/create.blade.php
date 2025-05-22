@@ -161,6 +161,9 @@
             let total = rupiah(document.getElementById('total').value);
             let tahun_input = tgl_spp.substr(0, 4);
 
+            let statusAnggaran = document.getElementById('statusAnggaran').value;
+            let bulanInputan = document.getElementById('bulanInputan').value;
+
             let detail_spp = detail.rows().data().toArray().map((value) => {
                 let data = {
                     kd_unit: value.kd_unit,
@@ -183,6 +186,9 @@
                 alert('Nomor tidak boleh kosong');
                 return;
             }
+
+            if (!statusAnggaran) return alert("Pilih status anggaran Terlebih Dahulu...!!!");
+            if (!bulanInputan) return alert("Pilih bulan inputan Terlebih Dahulu...!!!");
 
             if (!tgl_spp) {
                 alert('Tanggal tidak boleh kosong!');
@@ -260,7 +266,9 @@
                 npwp,
                 keterangan,
                 total,
-                detail_spp
+                detail_spp,
+                statusAnggaran,
+                bulanInputan
             };
 
             $('#simpan').prop('disabled', true);
