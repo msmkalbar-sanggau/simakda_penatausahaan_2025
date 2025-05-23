@@ -70,10 +70,19 @@
         <tr>
             <td style="font-size:18px;text-align:center">
                 <strong>
-                    {{ $skpd->nm_skpd }}
+                    {{ strtoupper($skpd->nm_org) }}
                 </strong>
             </td>
         </tr>
+        @if (substr($skpd->kd_skpd, -4) !== '0000')
+            <tr>
+                <td style="font-size:18px;text-align:center">
+                    <strong>
+                        {{ strtoupper($skpd->nm_skpd) }}
+                    </strong>
+                </td>
+            </tr>
+        @endif
         <tr>
             <td style="font-size:18px;text-align:center"><strong>TAHUN ANGGARAN {{ tahun_anggaran() }}</strong></td>
         </tr>
@@ -109,8 +118,15 @@
                             <tr>
                                 <td style="width: 20%">SKPD</td>
                                 <td>: </td>
-                                <td><b>{{ $data_spm->nm_skpd }}</b></td>
+                                <td><b>{{ $skpd->nm_org }}</b></td>
                             </tr>
+                            @if (substr($skpd->kd_skpd, -4) !== '0000')
+                                <tr>
+                                    <td style="width: 20%">UNIT</td>
+                                    <td>: </td>
+                                    <td><b>{{ $skpd->nm_skpd }}</b></td>
+                                </tr>
+                            @endif
                             <tr>
                                 <td>Bendahara/pihak lain</td>
                                 <td>: </td>

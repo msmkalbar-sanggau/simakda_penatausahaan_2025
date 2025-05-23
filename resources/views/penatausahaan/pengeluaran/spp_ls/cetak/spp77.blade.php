@@ -53,57 +53,116 @@
         <tr>
             <td colspan="4" style="text-align: center;border:1px solid black">{{ $jenis_spp }}</td>
         </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">1. Nama SKPD/Unit Kerja</td>
-            <td>:</td>
-            <td>{{ $skpd->nm_skpd }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">2. Kode dan Nama Sub Kegiatan</td>
-            <td>:</td>
-            <td>{{ $kd_sub_kegiatan1 }} {{ $nm_sub_kegiatan1 }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">3. Nama Pengguna Anggaran/Kuasa Pengguna Anggaran</td>
-            <td>:</td>
-            <td>{{ $cari_pa->nama }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">4. Nama PPTK</td>
-            <td>:</td>
-            <td>{{ $cari_pptk->nama }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">5. Nama Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
-            <td>:</td>
-            <td>{{ $cari_bendahara->nama }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">6. NPWP Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
-            <td>:</td>
-            <td>{{ $skpd->npwp }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">7. Nama Bank</td>
-            <td>:</td>
-            <td>{{ $bank->nama }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">8. Nomor Rekening Bank</td>
-            <td>:</td>
-            <td>{{ $data->no_rek }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">9. Untuk Keperluan</td>
-            <td>:</td>
-            <td>{{ $data->keperluan }}</td>
-        </tr>
-        <tr style="border:1px solid black">
-            <td colspan="2">10. Dasar Pengeluaran</td>
-            <td>:</td>
-            <td>SPD....Nomor: {{ $data->no_spd }} tanggal
-                {{ \Carbon\Carbon::parse($tglspd->tgl_spd)->locale('id')->isoFormat('DD MMMM Y') }}</td>
-        </tr>
+        @if (substr($skpd->kd_skpd, -4) === '0000')
+            <tr style="border:1px solid black">
+                <td colspan="2">1. Nama SKPD/Unit Kerja</td>
+                <td>:</td>
+                <td>{{ $skpd->nm_skpd }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">2. Kode dan Nama Sub Kegiatan</td>
+                <td>:</td>
+                <td>{{ $kd_sub_kegiatan1 }} {{ $nm_sub_kegiatan1 }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">3. Nama Pengguna Anggaran/Kuasa Pengguna Anggaran</td>
+                <td>:</td>
+                <td>{{ $cari_pa->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">4. Nama PPTK</td>
+                <td>:</td>
+                <td>{{ $cari_pptk->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">5. Nama Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
+                <td>:</td>
+                <td>{{ $cari_bendahara->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">6. NPWP Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
+                <td>:</td>
+                <td>{{ $skpd->npwp }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">7. Nama Bank</td>
+                <td>:</td>
+                <td>{{ $bank->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">8. Nomor Rekening Bank</td>
+                <td>:</td>
+                <td>{{ $data->no_rek }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">9. Untuk Keperluan</td>
+                <td>:</td>
+                <td>{{ $data->keperluan }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">10. Dasar Pengeluaran</td>
+                <td>:</td>
+                <td>SPD....Nomor: {{ $data->no_spd }} tanggal
+                    {{ \Carbon\Carbon::parse($tglspd->tgl_spd)->locale('id')->isoFormat('DD MMMM Y') }}</td>
+            </tr>
+        @else
+            <tr style="border:1px solid black">
+                <td colspan="2">1. Nama SKPD</td>
+                <td>:</td>
+                <td>{{ $skpd->nm_org }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">2. Nama Unit Kerja</td>
+                <td>:</td>
+                <td>{{ $skpd->nm_skpd }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">3. Kode dan Nama Sub Kegiatan</td>
+                <td>:</td>
+                <td>{{ $kd_sub_kegiatan1 }} {{ $nm_sub_kegiatan1 }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">4. Nama Pengguna Anggaran/Kuasa Pengguna Anggaran</td>
+                <td>:</td>
+                <td>{{ $cari_pa->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">5. Nama PPTK</td>
+                <td>:</td>
+                <td>{{ $cari_pptk->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">6. Nama Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
+                <td>:</td>
+                <td>{{ $cari_bendahara->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">7. NPWP Bendahara Pengeluaran/Bendahara Pengeluaran Pembantu</td>
+                <td>:</td>
+                <td>{{ $skpd->npwp }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">8. Nama Bank</td>
+                <td>:</td>
+                <td>{{ $bank->nama }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">9. Nomor Rekening Bank</td>
+                <td>:</td>
+                <td>{{ $data->no_rek }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">10. Untuk Keperluan</td>
+                <td>:</td>
+                <td>{{ $data->keperluan }}</td>
+            </tr>
+            <tr style="border:1px solid black">
+                <td colspan="2">11. Dasar Pengeluaran</td>
+                <td>:</td>
+                <td>SPD....Nomor: {{ $data->no_spd }} tanggal
+                    {{ \Carbon\Carbon::parse($tglspd->tgl_spd)->locale('id')->isoFormat('DD MMMM Y') }}</td>
+            </tr>
+        @endif
         <tr style="border:1px solid black">
             <td colspan="3"></td>
             <td>Sebesar: Rp {{ rupiah($nilaispd->nilai) }} <span

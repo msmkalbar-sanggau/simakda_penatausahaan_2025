@@ -21,7 +21,8 @@
     <table style="border-collapse:collapse;font-family: Open Sans; font-size:12px" width="100%" align="center"
         border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td rowspan="5" align="left" width="7%">
+            <td align="left" width="7%"
+                <?= substr($skpd->kd_skpd, -4) !== '0000' ? 'rowspan="6"' : 'rowspan="5"' ?>>
                 <img src="{{ asset('template/assets/images/' . $header->logo_pemda_hp) }}" width="120"
                     height="150" />
             </td>
@@ -32,8 +33,17 @@
                     {{ strtoupper($header->nm_pemda) }}</strong></td>
         </tr>
         <tr>
-            <td align="left" style="font-size:18px"><strong>{{ $skpd->nm_skpd }}</strong></td>
+            <td align="left" style="font-size:18px"><strong>{{ strtoupper($skpd->nm_org) }}</strong></td>
         </tr>
+        @if (substr($skpd->kd_skpd, -4) !== '0000')
+            <tr>
+                <td align="left" style="font-size:16px">
+                    <strong>
+                        {{ strtoupper($skpd->nm_skpd) }}
+                    </strong>
+                </td>
+            </tr>
+        @endif
         <tr>
             <td align="left" style="font-size:18px"><strong>TAHUN ANGGARAN {{ tahun_anggaran() }}</strong></td>
         </tr>

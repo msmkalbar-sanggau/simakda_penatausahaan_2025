@@ -2611,7 +2611,11 @@ class SppLsController extends Controller
         $jenis_print = $request->jenis_print;
         $tahun_anggaran = tahun_anggaran();
 
-        $skpd = DB::table('ms_skpd')->select('nm_skpd', 'kodepos', 'alamat')->where('kd_skpd', $kd_skpd)->first();
+        $skpd = DB::table('ms_skpd')
+            ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+            ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+            ->where(['kd_skpd' => $kd_skpd])
+            ->first();
         $cari_jenis = DB::table('trhspp')->select('jns_beban')->where('no_spp', $no_spp)->first();
         $jenis = $cari_jenis->jns_beban;
         $nama_skpd = $skpd->nm_skpd;
@@ -2775,7 +2779,8 @@ class SppLsController extends Controller
             ->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')
             ->first();
         $skpd = DB::table('ms_skpd')
-            ->select('nm_skpd')
+            ->select('nm_skpd', 'npwp', 'kd_skpd')
+            ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
             ->where(['kd_skpd' => $kd_skpd])
             ->first();
 
@@ -2805,7 +2810,12 @@ class SppLsController extends Controller
         $jenis_print = $request->jenis_print;
         $tahun_anggaran = tahun_anggaran();
 
-        $skpd = DB::table('ms_skpd')->select('nm_skpd', 'npwp')->where(['kd_skpd' => $kd_skpd])->first();
+        $skpd = DB::table('ms_skpd')
+            ->select('nm_skpd', 'npwp', 'kd_skpd')
+            ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+            ->where(['kd_skpd' => $kd_skpd])
+            ->first();
+
         $cari_bendahara = DB::table('ms_ttd')
             ->select('nama', 'nip', 'jabatan', 'pangkat')
             ->where(['nip' => $bendahara, 'kd_skpd' => $kd_skpd])

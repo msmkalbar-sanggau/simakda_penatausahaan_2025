@@ -622,6 +622,11 @@ class Sp2dController extends Controller
         // dd($data_sp2d);
 
         $data = [
+            'skpd' => DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'no_sp2d' => $no_sp2d,
             'sp2d' => $sp2d,
             'kop' => $kop,

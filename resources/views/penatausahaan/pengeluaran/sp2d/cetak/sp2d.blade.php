@@ -153,15 +153,36 @@
                     <td>:</td>
                     <td style="border-right: 1px solid black"></td>
                 </tr>
-                <tr>
-                    <td class="border" style="vertical-align:top">Nama SKPD</td>
-                    <td style="vertical-align: top">:</td>
-                    <td class="bottom">{{ $sp2d->kd_skpd }} {{ $sp2d->nm_skpd }}</td>
+                @if (substr($skpd->kd_skpd, -4) === '0000')
+                    <tr>
+                        <td class="border" style="vertical-align:top">Nama SKPD</td>
+                        <td style="vertical-align: top">:</td>
+                        <td class="bottom"><strong>{{ $sp2d->nm_skpd }}</strong></td>
 
-                    <td class="border" style="vertical-align: top">Tahun Anggaran</td>
-                    <td class="bottom" style="vertical-align: top">:</td>
-                    <td class="bottom1" style="vertical-align: top">{{ tahun_anggaran() }}</td>
-                </tr>
+                        <td class="border" style="vertical-align: top">Tahun Anggaran</td>
+                        <td class="bottom" style="vertical-align: top">:</td>
+                        <td class="bottom1" style="vertical-align: top">{{ tahun_anggaran() }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td style="border-left: 1px solid black">Nama SKPD</td>
+                        <td>:</td>
+                        <td><strong>{{ $skpd->nm_org }}</strong></td>
+
+                        <td style="border-left: 1px solid black">Tahun Anggaran</td>
+                        <td>:</td>
+                        <td style="border-right: 1px solid black">{{ tahun_anggaran() }}</td>
+                    </tr>
+                    <tr>
+                        <td class="border" style="vertical-align:top">Nama Unit</td>
+                        <td style="vertical-align: top">:</td>
+                        <td class="bottom"><strong>{{ $skpd->nm_skpd }}</strong></td>
+
+                        <td class="border" style="vertical-align: top"></td>
+                        <td class="bottom" style="vertical-align: top"></td>
+                        <td class="bottom1" style="vertical-align: top"></td>
+                    </tr>
+                @endif
                 <tr>
                     <td colspan="2" style="border-left: 1px solid black">Bank Pengirim
                     </td>
@@ -264,7 +285,8 @@
                     @foreach ($data_sp2d as $item)
                         @if ($item->urut == '3')
                             <tr>
-                                <td style="text-align: center;border-left:1px solid black;border-right:1px solid black">
+                                <td
+                                    style="text-align: center;border-left:1px solid black;border-right:1px solid black">
                                     {{ $loop->iteration }}</td>
                                 <td style="border-right:1px solid black">{{ dotrek($item->kd_rek) }}</td>
                                 <td style="border-right:1px solid black">{{ $item->nm_rek }}</td>

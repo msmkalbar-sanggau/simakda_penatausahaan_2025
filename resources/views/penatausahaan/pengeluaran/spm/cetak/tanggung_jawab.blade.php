@@ -21,7 +21,8 @@
     <table style="border-collapse:collapse;font-family: Open Sans; font-size:12px" width="100%" align="center"
         border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td rowspan="5" align="left" width="7%">
+            <td align="left" width="7%"
+                <?= substr($nama_skpd->kd_skpd, -4) !== '0000' ? 'rowspan="6"' : 'rowspan="5"' ?>>
                 <img src="{{ asset('template/assets/images/' . $header->logo_pemda_hp) }}" width="75"
                     height="100" />
             </td>
@@ -34,10 +35,19 @@
         <tr>
             <td align="left" style="font-size:16px">
                 <strong>
-                    {{ $nama_skpd->nm_skpd }}
+                    {{ strtoupper($nama_skpd->nm_org) }}
                 </strong>
             </td>
         </tr>
+        @if (substr($nama_skpd->kd_skpd, -4) !== '0000')
+            <tr>
+                <td align="left" style="font-size:16px">
+                    <strong>
+                        {{ strtoupper($nama_skpd->nm_skpd) }}
+                    </strong>
+                </td>
+            </tr>
+        @endif
         <tr>
             <td align="left" style="font-size:16px"><strong>TAHUN ANGGARAN {{ tahun_anggaran() }}</strong></td>
         </tr>
@@ -102,7 +112,8 @@
                     <td style="padding-left:10px;width: 5%;vertical-align:top">1.</td>
                     <td style="text-align:justify">
                         <p style="margin: 2px 0px">SPM {{ cari_jenis($beban) }} Nomor: {{ $no_spm }} tanggal
-                            {{ tanggal($data_spm->tgl_spm) }} dengan nominal sebesar Rp. {{ rupiah($data_spm->nilai) }}
+                            {{ tanggal($data_spm->tgl_spm) }} dengan nominal sebesar Rp.
+                            {{ rupiah($data_spm->nilai) }}
                             yang kami
                             ajukan untuk diterbitkan Surat Perintah Pencairan
                             Dana (SP2D), semua dokumen kelengkapannya sudah kami verifikasi dan sudah lengkap dan benar

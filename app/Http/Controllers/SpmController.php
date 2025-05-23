@@ -609,7 +609,11 @@ class SpmController extends Controller
             'daerah' => DB::table('sclient')->select('kab_kota', 'daerah')->where(['kd_skpd' => $kd_skpd])->first(),
             'spm' => DB::table('trhspm')->select('no_spp', 'tgl_spp', 'jenis_beban')->where(['no_spm' => $no_spm, 'kd_skpd' => $kd_skpd])->first(),
             'pptk' => DB::table('ms_ttd')->select('nip', 'nama', 'jabatan', 'kd_skpd', 'pangkat')->where(['kd_skpd' => $kd_skpd, 'nip' => $pptk])->whereIn('kode', ['PPK', 'PPTK'])->first(),
-            'skpd' => DB::table('trhspp')->select('nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
+            'skpd' => DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'ms_skpd' => DB::table('ms_skpd')->select('alamat', 'email', 'kodepos')->where(['kd_skpd' => $kd_skpd])->first(),
             'tahun_anggaran' => tahun_anggaran(),
             'beban' => $beban,
@@ -710,7 +714,11 @@ class SpmController extends Controller
                 FROM trhspd WHERE no_spd=a.no_spd and kd_skpd=a.kd_skpd) AS jns_beban
                 FROM trhspm a WHERE a.no_spm = ?  AND a.kd_skpd=?", [$no_spm, $kd_skpd]))->first(),
             'no_spm' => $no_spm,
-            'skpd' => DB::table('ms_skpd')->select('nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
+            'skpd' => DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'daerah' => DB::table('sclient')->select('kab_kota', 'daerah')->where(['kd_skpd' => $kd_skpd])->first(),
             // 'bendahara' => DB::table('ms_ttd')
             //     ->select('nama', 'nip', 'jabatan', 'pangkat')
@@ -837,7 +845,11 @@ class SpmController extends Controller
             }
         }
         $data = [
-            'skpd' => DB::table('ms_skpd')->select('nm_skpd', 'alamat', 'kodepos')->where(['kd_skpd' => $kd_skpd])->first(),
+            'skpd' =>  DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'pa_kpa' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PA', 'KPA'])->first(),
             'pptk' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pptk, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PPTK', 'PPK'])->first(),
             'ppkd' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $ppkd, 'kd_skpd' => $kd_skpd, 'kode' => 'PPKD'])->first(),
@@ -887,7 +899,11 @@ class SpmController extends Controller
         $data = [
             'daerah' => DB::table('sclient')->select('kab_kota', 'daerah')->where(['kd_skpd' => $kd_skpd])->first(),
             'data_skpd' => DB::table('ms_skpd')->select('alamat', 'kodepos')->where(['kd_skpd' => $kd_skpd])->first(),
-            'nama_skpd' => DB::table('trhspp')->select('nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
+            'nama_skpd' => DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'pa_kpa' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PA', 'KPA'])->first(),
             'data_spm' => DB::table('trhspm')->select('tgl_spm', 'nilai')->where(['kd_skpd' => $kd_skpd, 'no_spm' => $no_spm])->first(),
             'tahun_anggaran' => tahun_anggaran(),
@@ -1000,7 +1016,11 @@ class SpmController extends Controller
 
         $data = [
             'data_skpd' => DB::table('ms_skpd')->select('alamat', 'kodepos')->where(['kd_skpd' => $kd_skpd])->first(),
-            'nama_skpd' => DB::table('trhspp')->select('nm_skpd')->where(['kd_skpd' => $kd_skpd])->first(),
+            'nama_skpd' => DB::table('ms_skpd')
+                ->select('nm_skpd', 'npwp', 'kd_skpd', 'kodepos', 'alamat')
+                ->selectRaw("(select a.nm_org from ms_organisasi a where a.kd_org=left(kd_skpd,17)) as nm_org")
+                ->where(['kd_skpd' => $kd_skpd])
+                ->first(),
             'daerah' => DB::table('sclient')->select('kab_kota', 'daerah')->where(['kd_skpd' => $kd_skpd])->first(),
             'data_spm' => DB::table('trhspm')->select('no_spp', 'tgl_spp', 'jenis_beban')->where(['no_spm' => $no_spm, 'kd_skpd' => $kd_skpd])->first(),
             'pa_kpa' => DB::table('ms_ttd')->select('nama', 'nip', 'jabatan', 'pangkat')->where(['nip' => $pa_kpa, 'kd_skpd' => $kd_skpd])->whereIn('kode', ['PA', 'KPA'])->first(),

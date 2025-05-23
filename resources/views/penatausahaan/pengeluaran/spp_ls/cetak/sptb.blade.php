@@ -21,7 +21,9 @@
     <table style="border-collapse:collapse;font-family: Open Sans; font-size:12px" width="100%" align="center"
         border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td rowspan="5" align="left" width="7%">
+            <td align="left" width="7%"
+                <?= substr($skpd->kd_skpd, -4) !== '0000' ? 'rowspan="6"' : 'rowspan="5"' ?>>
+                <!-- isi sel -->
                 <img src="{{ asset('template/assets/images/' . $header->logo_pemda_hp) }}" width="75"
                     height="100" />
             </td>
@@ -35,15 +37,30 @@
             <td align="left" style="font-size:16px">
                 <strong>
                     @if ($beban == '4')
-                        {{ $skpd->nm_skpd }}
+                        {{ strtoupper($skpd->nm_org) }}
                     @elseif($beban == '5')
-                        {{ $skpd->nm_skpd }}
+                        {{ strtoupper($skpd->nm_org) }}
                     @elseif ($beban == '6')
-                        SKPD {{ $skpd->nm_skpd }}
+                        SKPD {{ strtoupper($skpd->nm_org) }}
                     @endif
                 </strong>
             </td>
         </tr>
+        @if (substr($skpd->kd_skpd, -4) !== '0000')
+            <tr>
+                <td align="left" style="font-size:16px">
+                    <strong>
+                        @if ($beban == '4')
+                            {{ strtoupper($skpd->nm_skpd) }}
+                        @elseif($beban == '5')
+                            {{ strtoupper($skpd->nm_skpd) }}
+                        @elseif ($beban == '6')
+                            UNIT {{ strtoupper($skpd->nm_skpd) }}
+                        @endif
+                    </strong>
+                </td>
+            </tr>
+        @endif
         <tr>
             <td align="left" style="font-size:16px"><strong>TAHUN ANGGARAN {{ tahun_anggaran() }}</strong></td>
         </tr>
@@ -142,7 +159,7 @@
                     <td>3. Tanggal/NO.DPA</td>
                     <td>:</td>
                     <td>
-                        {{ $data_dpa->tgl_dpa == ''? 'Belum ada Tanggal DPA': \Carbon\Carbon::parse($data_dpa->tgl_dpa)->locale('id')->isoFormat('DD MMMM Y') }}
+                        {{ $data_dpa->tgl_dpa == '' ? 'Belum ada Tanggal DPA' : \Carbon\Carbon::parse($data_dpa->tgl_dpa)->locale('id')->isoFormat('DD MMMM Y') }}
                         - {{ $data_dpa->no_dpa }}
                     </td>
                 </tr>
