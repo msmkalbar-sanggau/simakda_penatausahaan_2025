@@ -1306,21 +1306,21 @@ function nama_beban($beban, $jenis)
             case '1': //UP
                 $nama = "Gaji dan Tunjangan";
                 break;
-                // case '2': //GU
-                //     $nama = "LS Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $nama = "LS Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $nama = "LS Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $nama = "LS Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $nama = "LS Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+            // case '2': //GU
+            //     $nama = "LS Uang Kespeg";
+            //     break;
+            // case '3': //TU
+            //     $nama = "LS Uang Makan";
+            //     break;
+            // case '4': //TU
+            //     $nama = "LS Upah Pungut";
+            //     break;
+            // case '5': //TU
+            //     $nama = "LS Upah Pungut PBB";
+            //     break;
+            // case '6': //TU
+            //     $nama = "LS Upah Pungut PBB-KB PKB & BBN-KB ";
+            //     break;
             case '7': //TU
                 $nama = "Tambahan/Kekurangan Gaji & Tunjangan";
                 break;
@@ -1405,21 +1405,21 @@ function nama_spm($beban, $jenis)
             case '1': //UP
                 $nama = "Langsung (SPP - LS Gaji dan Tunjangan)";
                 break;
-                // case '2': //GU
-                //     $nama = "Langsung (SPP - LS Uang Kespeg)";
-                //     break;
-                // case '3': //TU
-                //     $nama = "Langsung (SPP - LS Uang Makan)";
-                //     break;
-                // case '4': //TU
-                //     $nama = "Langsung (SPP - LS Upah Pungut)";
-                //     break;
-                // case '5': //TU
-                //     $nama = "Langsung (SPP - LS Upah Pungut PBB)";
-                //     break;
-                // case '6': //TU
-                //     $nama = "Langsung (SPP - LS Upah Pungut PBB-KB PKB & BBN-KB)";
-                //     break;
+            // case '2': //GU
+            //     $nama = "Langsung (SPP - LS Uang Kespeg)";
+            //     break;
+            // case '3': //TU
+            //     $nama = "Langsung (SPP - LS Uang Makan)";
+            //     break;
+            // case '4': //TU
+            //     $nama = "Langsung (SPP - LS Upah Pungut)";
+            //     break;
+            // case '5': //TU
+            //     $nama = "Langsung (SPP - LS Upah Pungut PBB)";
+            //     break;
+            // case '6': //TU
+            //     $nama = "Langsung (SPP - LS Upah Pungut PBB-KB PKB & BBN-KB)";
+            //     break;
             case '7': //TU
                 $nama = "Langsung (SPP - LS Gaji & Tunjangan)";
                 break;
@@ -1478,21 +1478,21 @@ function nama_spm1($beban, $jenis)
             case '1': //UP
                 $nama = "Langsung (LS) Gaji dan Tunjangan";
                 break;
-                // case '2': //GU
-                //     $nama = "Langsung (LS) Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $nama = "Langsung (LS) Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $nama = "Langsung (LS) Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $nama = "Langsung (LS) Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $nama = "Langsung (LS) Upah Pungut PBB-KB PKB & BBN-KB";
-                //     break;
+            // case '2': //GU
+            //     $nama = "Langsung (LS) Uang Kespeg";
+            //     break;
+            // case '3': //TU
+            //     $nama = "Langsung (LS) Uang Makan";
+            //     break;
+            // case '4': //TU
+            //     $nama = "Langsung (LS) Upah Pungut";
+            //     break;
+            // case '5': //TU
+            //     $nama = "Langsung (LS) Upah Pungut PBB";
+            //     break;
+            // case '6': //TU
+            //     $nama = "Langsung (LS) Upah Pungut PBB-KB PKB & BBN-KB";
+            //     break;
             case '7': //TU
                 $nama = "Langsung (LS) Gaji & Tunjangan";
                 break;
@@ -1570,21 +1570,21 @@ function nama_beban2($beban, $jenis)
             case '1': //UP
                 $nama = "LS Gaji dan Tunjangan";
                 break;
-                // case '2': //GU
-                //     $nama = "LS Uang Kespeg";
-                //     break;
-                // case '3': //TU
-                //     $nama = "LS Uang Makan";
-                //     break;
-                // case '4': //TU
-                //     $nama = "LS Upah Pungut";
-                //     break;
-                // case '5': //TU
-                //     $nama = "LS Upah Pungut PBB";
-                //     break;
-                // case '6': //TU
-                //     $nama = "LS Upah Pungut PBB-KB PKB & BBN-KB ";
-                //     break;
+            // case '2': //GU
+            //     $nama = "LS Uang Kespeg";
+            //     break;
+            // case '3': //TU
+            //     $nama = "LS Uang Makan";
+            //     break;
+            // case '4': //TU
+            //     $nama = "LS Upah Pungut";
+            //     break;
+            // case '5': //TU
+            //     $nama = "LS Upah Pungut PBB";
+            //     break;
+            // case '6': //TU
+            //     $nama = "LS Upah Pungut PBB-KB PKB & BBN-KB ";
+            //     break;
             case '7': //TU
                 $nama = "LS Gaji & Tunjangan";
                 break;
@@ -2929,25 +2929,25 @@ function load_spd($kd_sub_kegiatan, $kd_skpd, $kd_rekening)
 
     $revisi1 = DB::table('trhspd')
         ->select(DB::raw("MAX(revisi_ke) as revisi"))
-        ->whereRaw('LEFT(kd_skpd,22) = LEFT(?,22)', [$kd_skpd])
+        ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '3'])
         ->first();
 
     $revisi2 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
-        ->whereRaw('LEFT(kd_skpd,22) = LEFT(?,22)', [$kd_skpd])
+        ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '6'])
         ->first();
 
     $revisi3 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
-        ->whereRaw('LEFT(kd_skpd,22) = LEFT(?,22)', [$kd_skpd])
+        ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '9'])
         ->first();
 
     $revisi4 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
-        ->whereRaw('LEFT(kd_skpd,22) = LEFT(?,22)', [$kd_skpd])
+        ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '12'])
         ->first();
 
