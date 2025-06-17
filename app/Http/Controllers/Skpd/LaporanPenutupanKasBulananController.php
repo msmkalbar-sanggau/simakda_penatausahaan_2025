@@ -635,7 +635,7 @@ class LaporanPenutupanKasBulananController extends Controller
         $saldobank  = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
                         -- SP2D Terima
                         SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd = ?
-                        AND  MONTH(a.tgl_kas)< ? and a.status='1' and a.jns_spp='1'
+                        AND  MONTH(a.tgl_kas)< ? and a.status='1' and a.jns_spp in ('1','2')
 
                         UNION ALL
                         SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
@@ -686,7 +686,7 @@ class LaporanPenutupanKasBulananController extends Controller
         $terimakeluarbank = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
                 -- SP2 Terima
                 SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
-                AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp='1'
+                AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2')
 
                 UNION ALL
                 SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
