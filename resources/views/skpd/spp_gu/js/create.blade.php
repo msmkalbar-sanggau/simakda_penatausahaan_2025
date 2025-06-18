@@ -266,9 +266,9 @@
                 npwp,
                 keterangan,
                 total,
-                detail_spp,
                 statusAnggaran,
-                bulanInputan
+                bulanInputan,
+                detail_spp,
             };
 
             $('#simpan').prop('disabled', true);
