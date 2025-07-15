@@ -1079,6 +1079,13 @@ class SppLsController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $nama = Auth::user()->nama;
 
+        if ($data['jenis'] == "0") {
+            return response()->json([
+                'message' => '0',
+                'error' => "Jenis Belum Dipilih",
+            ]);
+        }
+
         try {
             DB::beginTransaction();
 
