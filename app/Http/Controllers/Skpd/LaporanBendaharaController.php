@@ -30,7 +30,7 @@ class LaporanBendaharaController extends Controller
             'jns_anggaran2' => jenis_anggaran(),
             'blud'  => DB::table('ms_skpd_blud')->select('kd_skpd', 'nm_skpd')->first(),
         ];
-         //dd($data);
+        //dd($data);
         // return;
 
         return view('skpd.laporan_bendahara.index')->with($data);
@@ -44,9 +44,9 @@ class LaporanBendaharaController extends Controller
         $kd_skpd    = $request->kd_skpd;
         $kd_org     = substr($kd_skpd, 0, 17);
         if ($type == '1') {
-                $data   = DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->orderBy('kd_skpd')->get();
+            $data   = DB::table('ms_skpd')->select('kd_skpd', 'nm_skpd')->orderBy('kd_skpd')->get();
         } else {
-                $data   = DB::table('ms_skpd')->where(DB::raw("LEFT(kd_skpd,22)"), '=', $kd_skpd)->select('kd_skpd', 'nm_skpd')->get();
+            $data   = DB::table('ms_skpd')->where(DB::raw("LEFT(kd_skpd,22)"), '=', $kd_skpd)->select('kd_skpd', 'nm_skpd')->get();
         }
         return response()->json($data);
     }
@@ -149,8 +149,8 @@ class LaporanBendaharaController extends Controller
                 DB::raw("'' AS st"),
                 'jns_trans'
             )
-             // ->where(DB::raw("month(tgl_kas)"), '<', $bulan)
-             ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal) {
+            // ->where(DB::raw("month(tgl_kas)"), '<', $bulan)
+            ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal) {
                 if ($pilihan_bku == 'bulan') {
                     $query->whereRaw("month(tgl_kas)<'$bulan'");
                 } else {
@@ -198,7 +198,7 @@ class LaporanBendaharaController extends Controller
             ->first();
 
 
-            // RINCIAN
+        // RINCIAN
         $rincian1 = DB::table('trhrekal as a')
             ->select(
                 'kd_skpd',
@@ -213,14 +213,14 @@ class LaporanBendaharaController extends Controller
                 DB::raw("'' AS st"),
                 'jns_trans'
             )
-           //->where(DB::raw("month(tgl_kas)"), '=', $bulan)
-           ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal, $tanggalakhir) {
-            if ($pilihan_bku == 'bulan') {
-                $query->whereRaw("month(tgl_kas)='$bulan'");
-            } else {
-                $query->whereRaw("tgl_kas between '$tanggalawal' and '$tanggalakhir'");
-            }
-        })
+            //->where(DB::raw("month(tgl_kas)"), '=', $bulan)
+            ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal, $tanggalakhir) {
+                if ($pilihan_bku == 'bulan') {
+                    $query->whereRaw("month(tgl_kas)='$bulan'");
+                } else {
+                    $query->whereRaw("tgl_kas between '$tanggalawal' and '$tanggalakhir'");
+                }
+            })
             ->where(DB::raw("YEAR(tgl_kas)"), $tahun_anggaran)
             ->where('kd_skpd', $kd_skpd);
 
@@ -229,14 +229,14 @@ class LaporanBendaharaController extends Controller
                 $join->on('a.no_kas', '=', 'b.no_kas');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
             })
-           //->where(DB::raw("month(b.tgl_kas)"), '=', $bulan)
-           ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal, $tanggalakhir) {
-            if ($pilihan_bku == 'bulan') {
-                $query->whereRaw("month(tgl_kas)='$bulan'");
-            } else {
-                $query->whereRaw("tgl_kas between '$tanggalawal' and '$tanggalakhir'");
-            }
-        })
+            //->where(DB::raw("month(b.tgl_kas)"), '=', $bulan)
+            ->where(function ($query) use ($pilihan_bku, $bulan, $tanggalawal, $tanggalakhir) {
+                if ($pilihan_bku == 'bulan') {
+                    $query->whereRaw("month(tgl_kas)='$bulan'");
+                } else {
+                    $query->whereRaw("tgl_kas between '$tanggalawal' and '$tanggalakhir'");
+                }
+            })
             ->where(DB::raw("YEAR(b.tgl_kas)"), $tahun_anggaran)
             ->where('b.kd_skpd', $kd_skpd)->select(
                 'b.kd_skpd',
@@ -263,25 +263,26 @@ class LaporanBendaharaController extends Controller
             ->mergeBindings($rincian2)
             ->get();
 
-            if ($pilihan_bku == 'bulan') {
-                $periodeClause = 'MONTH(a.tgl_kas)=?';
-                $binding = [$kd_skpd, $bulan];
-            } else {
-                $periodeClause = 'tgl_kas <= ?';
-                $binding = [$kd_skpd, $tanggalakhir];
-            }
+        if ($pilihan_bku == 'bulan') {
+            $periodeClause = 'MONTH(a.tgl_kas)=?';
+            $binding = [$kd_skpd, $bulan];
+        } else {
+            $periodeClause = 'tgl_kas between ? and ? ';
+            $binding = [$kd_skpd, $tanggalawal, $tanggalakhir];
+        }
         $hasil_bku = collect(DB::select("SELECT sum(b.terima) as terima , sum(b.keluar) as keluar from trhrekal a inner join trdrekal b on a.kd_skpd = b.kd_skpd and a.no_kas = b.no_kas
         where a.kd_skpd=? and $periodeClause", $binding))->first();
 
         // SALDO TUNAI
         // DB::select('exec my_stored_procedure(?,?,..)',array($Param1,$param2));
         if ($pilihan_bku == 'bulan') {
-        $tunai_lalu = DB::select("exec kas_tunai_lalu ?,?", array($kd_skpd, $bulan));
-        $tunai      = DB::select("exec kas_tunai ?,?", array($kd_skpd, $bulan));
-    } else {
-        $tunai_lalu = DB::select("exec kas_tunai_tgl_lalu ?,?", array($kd_skpd, $tanggalakhir));
-        $tunai      = DB::select("exec kas_tunai_tgl ?,?,?", array($kd_skpd, $tanggalawal, $tanggalakhir));
-    }
+            $tunai_lalu = DB::select("exec kas_tunai_lalu ?,?", array($kd_skpd, $bulan));
+            $tunai      = DB::select("exec kas_tunai ?,?", array($kd_skpd, $bulan));
+        } else {
+            $tunai_lalu = DB::select("exec kas_tunai_tgl_lalu ?,?", array($kd_skpd, $tanggalawal));
+            $tunai      = DB::select("exec kas_tunai_tgl ?,?,?", array($kd_skpd, $tanggalawal, $tanggalakhir));
+        }
+
 
         $terima_lalu = 0;
         $keluar_lalu = 0;
@@ -314,7 +315,7 @@ class LaporanBendaharaController extends Controller
         //     })
         //     ->first();
 
-         if ($pilihan_bku == 'bulan') {
+        if ($pilihan_bku == 'bulan') {
             $periodeClause2 = 'MONTH(tgl_terima) <= ?';
             $periodeClause3 = 'MONTH(tgl_kas) > ?';
             $binding = [$kd_skpd, $bulan, $bulan];
@@ -444,8 +445,6 @@ class LaporanBendaharaController extends Controller
             'cari_pa_kpa'       => $cari_pakpa,
             'cari_bendahara'    => $cari_bendahara
         ];
-
-
 
         $view =  view('skpd.laporan_bendahara.cetak.bku')->with($data);
         if ($cetak == '1') {
@@ -726,7 +725,7 @@ class LaporanBendaharaController extends Controller
                     WHERE
                     b.tgl_sp3b BETWEEN ? AND ? AND a.kd_skpd= ? ) c
                     GROUP BY kd_rek6, nm_rek6 ) xxx
-                    WHERE real_pen <> 0  OR real_bel <> 0 ORDER BY kd_pen DESC', [$tanggalb1, $tanggalb2, $kd_skpd_blud ]);
+                    WHERE real_pen <> 0  OR real_bel <> 0 ORDER BY kd_pen DESC', [$tanggalb1, $tanggalb2, $kd_skpd_blud]);
 
         $tandatangan    = collect(DB::select('SELECT nip, nama, pangkat, jabatan FROM ms_ttd WHERE nip = ?', [$ttdb]))->first();
         // dd($tandatangan);
@@ -737,7 +736,7 @@ class LaporanBendaharaController extends Controller
             'tgl1'      => $tanggalb1,
             'tgl2'      => $tanggalb2,
             'nmskpd'    => $nm_skpd_blud,
-            'pendapatan'=> $pendapatan,
+            'pendapatan' => $pendapatan,
             'belanja'   => $belanja,
             'sld_awal'  => $sld_awal1,
             'tgl_ttd'   => $tgl_ttdb,

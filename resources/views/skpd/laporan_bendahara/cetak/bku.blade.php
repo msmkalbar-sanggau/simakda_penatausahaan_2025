@@ -35,12 +35,10 @@
 </head>
 
 <body onload="window.print()">
-    <table style="border-collapse:collapse;font-family: Open Sans; font-size:12px" width="100%" align="center"
-        border="0" cellspacing="0" cellpadding="0">
+    <table style="border-collapse:collapse;font-family: Open Sans; font-size:12px" width="100%" align="center" border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td rowspan="5" align="left" width="7%">
-                <img src="{{ asset('template/assets/images/' . $header->logo_pemda_hp) }}" width="75"
-                    height="100" />
+                <img src="{{ asset('template/assets/images/' . $header->logo_pemda_hp) }}" width="75" height="100" />
             </td>
             <td align="left" style="font-size:16px" width="93%">&nbsp;</td>
         </tr>
@@ -59,8 +57,7 @@
         </tr>
     </table>
     {{-- <hr> --}}
-    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" width="100%"
-        align="center" border="0" cellspacing="0" cellpadding="0">
+    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" width="100%" align="center" border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td style="text-align: center"><b>BUKU KAS UMUM PENGELUARAN</b></td>
         </tr>
@@ -70,8 +67,7 @@
     </table>
     <br>
 
-    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" border="1"
-        id="rincian">
+    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" border="1" id="rincian">
         <thead>
             <td align="center" bgcolor="#CCCCCC" width="3%" style="font-size:14px;font-weight:bold;">No</td>
             <td align="center" bgcolor="#CCCCCC" width="10%" style="font-size:14px;font-weight:bold">Tanggal</td>
@@ -108,31 +104,20 @@
             <tbody>
                 {{-- SALDO AWAL --}}
                 <tr>
-                    <td width="5%" align="center"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
-                    <td width="10%" align="center"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
-                    <td width="13%" align="center"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
-                    <td width="20%" align="left"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black">Saldo Lalu</td>
-                    <td width="13%" align="right"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
-                    <td width="13%" align="right"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
-                    <td width="13%" align="right"
-                        style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black">
+                    <td width="5%" align="center" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
+                    <td width="10%" align="center" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
+                    <td width="13%" align="center" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
+                    <td width="20%" align="left" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black">Saldo Lalu</td>
+                    <td width="13%" align="right" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
+                    <td width="13%" align="right" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black"></td>
+                    <td width="13%" align="right" style="font-size:14px;border-bottom:solid 1px gray;border-top:solid 1px black">
                         {{ rupiah($data_sawal->terima - $data_sawal->keluar + $data_tahun_lalu->sld_awalpajak + $data_tahun_lalu->nilai) }}
                     </td>
                 </tr>
                 </tr>
 
                 @php
-                    $lhasil =
-                        $data_sawal->terima -
-                        $data_sawal->keluar +
-                        $data_tahun_lalu->sld_awalpajak +
-                        $data_tahun_lalu->nilai;
+                    $lhasil = $data_sawal->terima - $data_sawal->keluar + $data_tahun_lalu->sld_awalpajak + $data_tahun_lalu->nilai;
                     $totkeluar = 0;
                     $totterima = 0;
                     $lcno = 0;
@@ -155,65 +140,50 @@
                                 $lcno = $lcno + 1;
                                 $no_bku = $data->no_kas;
                             @endphp
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
                                 {{ $lcno }}</td>
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
                                 {{ $tanggal }}</td>
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:solid 1px gray">
                                 {{ $no_bku }}</td>
-                            <td align="left"
-                                style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                            <td align="left" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                 {{ $data->uraian }}</td>
 
                             @if (empty($data->terima) or $data->terima == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                 </td>
                             @else
                                 @php
                                     $lcterima = $lcterima + $data->terima;
                                 @endphp
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                     {{ rupiah($data->terima) }}</td>
                             @endif
                             @if (empty($data->keluar) or $data->keluar == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                 </td>
                             @else
                                 @php
                                     $lckeluar = $lckeluar + $data->keluar;
                                 @endphp
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                     {{ rupiah($data->keluar) }}</td>
                             @endif
                             @if (empty($data->terima) and empty($data->keluar) or $data->terima == 0 and $data->keluar == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                 </td>
                             @else
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:solid 1px gray">
                                     {{ rupiah($lhasil) }}</td>
                             @endif
                         @else
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray">&nbsp;</td>
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray">&nbsp;</td>
-                            <td align="center"
-                                style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray"></td>
-                            <td align="left"
-                                style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray">&nbsp;</td>
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray">&nbsp;</td>
+                            <td align="center" style="font-size:14px;border-bottom:none 1px gray;border-top:none 1px gray"></td>
+                            <td align="left" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                 {{ $data->uraian }}</td>
                             @if (empty($data->terima) or $data->terima == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                 </td>
                             @else
                                 @php
@@ -223,14 +193,12 @@
                                         $lcterima = $lcterima + $data->terima;
                                     }
                                 @endphp
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                     {{ rupiah($data->terima) }}</td>
                             @endif
 
                             @if (empty($data->keluar) or $data->keluar == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                 </td>
                             @else
                                 @php
@@ -240,18 +208,15 @@
                                         $lckeluar = $lckeluar + $data->keluar;
                                     }
                                 @endphp
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                     {{ rupiah($data->keluar) }}</td>
                             @endif
 
                             @if (empty($data->terima) and empty($data->keluar) or $data->terima == 0 and $data->keluar == 0)
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                 </td>
                             @else
-                                <td align="right"
-                                    style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
+                                <td align="right" style="font-size:14px;border-bottom:dashed 1px gray;border-top:dashed 1px gray">
                                     {{ rupiah($lhasil) }}</td>
                             @endif
                     </tr>
@@ -260,8 +225,7 @@
 
             </tbody>
     </table>
-    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" border="0"
-        id="rincian">
+    <table style="width: 100%;font-family:'Open Sans', Helvetica,Arial,sans-serif;text-align:center" border="0" id="rincian">
         <thead>
             <td align="center" width="5%" style="font-size:14px;font-weight:bold;"></td>
             <td align="center" width="10%" style="font-size:14px;font-weight:bold"></td>
@@ -269,7 +233,7 @@
             </td>
             <td align="center" width="40%" style="font-size:14px;font-weight:bold"></td>
             <td width="13%" style="font-size:14px;font-weight:bold">
-                {{ rupiah($hasil->terima + $data_sawal->terima - $data_sawal->keluar + $data_tahun_lalu->sld_awalpajak + $data_tahun_lalu->nilai) }}
+                {{ rupiah($hasil->terima + $data_sawal->terima - $data_sawal->keluar + $data_tahun_lalu->sld_awalpajak + $data_tahun_lalu->nilai) }}</br>
             </td>
             <td width="13%" style="font-size:14px;font-weight:bold"> {{ rupiah($hasil->keluar) }}
             </td>
@@ -283,8 +247,7 @@
         }
     @endphp --}}
     <br>
-    <table style="border-collapse:collapse; border-color: black;font-family:Open Sans" width="100%" align="center"
-        border="0" cellspacing="1" cellpadding="1">
+    <table style="border-collapse:collapse; border-color: black;font-family:Open Sans" width="100%" align="center" border="0" cellspacing="1" cellpadding="1">
         <tr>
             <td colspan="14" align="left" style="font-size:14px;border: solid 1px white;">Saldo Kas di Bendahara
                 Pengeluaran/Bendahara Pengeluaran Pembantu bulan {{ strtolower(bulan($bulan)) }} </td>
