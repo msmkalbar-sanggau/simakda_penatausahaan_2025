@@ -716,6 +716,7 @@ class LaporanPenutupanKasBulananController extends Controller
                 ) a
                 WHERE a.kd_skpd= ?
 
+
                 -- DROPPING KELUAR
                 UNION ALL
                 SELECT 0 as masuk, SUM(z.sd_bln_ini) as keluar from(
@@ -730,7 +731,12 @@ class LaporanPenutupanKasBulananController extends Controller
                         WHERE kd_skpd_sumber= ?
                         )z
 
-                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+
+                union all
+
+                select 0 as terima , sum(nilai) as keluar from tr_panjar a where MONTH(tgl_panjar)= ? and kd_skpd = ? 
+
+                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
 
 
 
