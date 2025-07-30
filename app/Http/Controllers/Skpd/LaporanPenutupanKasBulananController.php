@@ -731,12 +731,16 @@ class LaporanPenutupanKasBulananController extends Controller
                         WHERE kd_skpd_sumber= ?
                         )z
 
-
                 union all
 
                 select 0 as terima , sum(nilai) as keluar from tr_panjar a where MONTH(tgl_panjar)= ? and kd_skpd = ? 
 
-                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+                union all
+
+                SELECT SUM(b.nilai) as terima,SUM(b.nilai) as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
+                AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2') and b.nm_rek6='Belanja Dana Operasional KDH/WKDH'
+
+                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
 
 
 
