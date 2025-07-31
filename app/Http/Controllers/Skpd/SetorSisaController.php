@@ -20,7 +20,7 @@ class SetorSisaController extends Controller
     {
         $kd_skpd    = Auth::user()->kd_skpd;
         $skpd       = collect(DB::select('SELECT kd_skpd, nm_skpd FROM ms_skpd WHERE kd_skpd = ?', [$kd_skpd]))->first();
-        $ttdbd      = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kd_skpd,'BK']);
+        $ttdbd      = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kd_skpd, 'BK']);
         $ttdpag     = DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kd_skpd, 'KPA']);
 
         $data = [
@@ -42,10 +42,10 @@ class SetorSisaController extends Controller
             ->orderBy(DB::raw("CAST(no_sts as INT)"))
             ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
-            if($row->status != '1'){
+            if ($row->status != '1') {
                 $btn = '<a href="' . route("skpd.setor_sisa.edit", Crypt::encryptString($row->no_sts)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="fa fa-edit"></i></a>';
                 $btn .= '<a href="javascript:void(0);" onclick="hapusSetor(' . $row->no_sts . ', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>';
-            }else{
+            } else {
                 $btn = '<a href="' . route("skpd.setor_sisa.edit", Crypt::encryptString($row->no_sts)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="fa fa-edit"></i></a>';
             }
             return $btn;
@@ -187,7 +187,7 @@ class SetorSisaController extends Controller
          GROUP BY a.tgl_sts,a.no_sts, a.keterangan,a.kd_skpd
          ) a
          where  kode= ? ) a", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]);
-         foreach ($kas as $kas) {
+        foreach ($kas as $kas) {
             $kas             = $kas->saldo_lalu;
         }
         // dd($sisa_bank);
@@ -243,7 +243,7 @@ class SetorSisaController extends Controller
                 select a.tgl_bukti [tgl],a.no_bukti [bku],a.ket [ket],0 as masuk,nilai AS keluar,a.kd_skpd [kode] from trhstrpot a
                 where a.kd_skpd=? and (a.pay='' OR a.pay='TUNAI') and jns_spp in ('1','2','3')
 
-                ) a where kode=?",[$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd]))->first();
+                ) a where kode=?", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]))->first();
         $sisa_tunai = $sisa_tunai->terima - $sisa_tunai->keluar;
 
 
@@ -316,7 +316,6 @@ class SetorSisaController extends Controller
                 ->select('sub.*', DB::raw("nilai - isnull(transaksi,0) - isnull(cp,0) as sisa"))
                 ->mergeBindings($data1)
                 ->get();
-
         } else {
             $data = DB::table('ms_rek6')
                 ->select('kd_rek6', 'nm_rek6')
@@ -328,7 +327,7 @@ class SetorSisaController extends Controller
         return response()->json($data);
     }
 
-       public function cekSimpan(Request $request)
+    public function cekSimpan(Request $request)
     {
         $no_kas = $request->no_kas;
         $data = DB::table('trhkasin_pkd')->where('no_sts', $no_kas)->count();
@@ -339,6 +338,8 @@ class SetorSisaController extends Controller
     {
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
+
+        $current_date = date('Y-m-d H:i:s');
 
         DB::beginTransaction();
         try {
@@ -368,6 +369,8 @@ class SetorSisaController extends Controller
                     'no_sp2d' => $data['no_sp2d'],
                     'jns_cp' => $data['jns_cp'],
                     'bank' => $data['pembayaran'],
+                    'username_created' => Auth::user()->nama,
+                    'created_at' => $current_date,
                 ]);
             } else {
                 DB::table('trhkasin_pkd')->insert([
@@ -387,6 +390,8 @@ class SetorSisaController extends Controller
                     'no_sp2d' => $data['no_sp2d'],
                     'jns_cp' => $data['jns_cp'],
                     'bank' => $data['pembayaran'],
+                    'username_created' => Auth::user()->nama,
+                    'created_at' => $current_date,
                 ]);
             }
 
@@ -444,26 +449,23 @@ class SetorSisaController extends Controller
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
 
+        $current_date = date('Y-m-d H:i:s');
+
         DB::beginTransaction();
         try {
-
-            DB::table('trhkasin_pkd')->where(['kd_skpd' => $kd_skpd, 'no_sts' => $data['no_kas']])->delete();
 
             DB::table('trhju_pkd')->where(['kd_skpd' => $kd_skpd, 'no_voucher' => $data['no_kas']])->delete();
 
             DB::table('trhju')->where(['kd_skpd' => $kd_skpd, 'no_voucher' => $data['no_kas']])->delete();
             // Setor Sisa Kas/CP
-            if ($data['jenis_transaksi'] == '5') {
-                DB::table('trhkasin_pkd')->insert([
-                    'no_kas' => $data['no_kas'],
-                    'no_sts' => $data['no_kas'],
-                    'kd_skpd' => $data['kd_skpd'],
+
+            DB::table("trhkasin_pkd")->where(['kd_skpd' => $kd_skpd, 'no_sts' => $data['no_kas']])
+                ->update([
                     'tgl_sts' => $data['tgl_kas'],
                     'tgl_kas' => $data['tgl_kas'],
                     'keterangan' => $data['uraian'],
                     'total' => $data['jumlah'],
                     'kd_bank' => '',
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
                     'jns_trans' => $data['jenis_transaksi'],
                     'rek_bank' => '',
                     'sumber' => '0',
@@ -471,27 +473,9 @@ class SetorSisaController extends Controller
                     'no_sp2d' => $data['no_sp2d'],
                     'jns_cp' => $data['jns_cp'],
                     'bank' => $data['pembayaran'],
+                    'username_updated' => Auth::user()->nama,
+                    'updated_at' => $current_date,
                 ]);
-            } else {
-                DB::table('trhkasin_pkd')->insert([
-                    'no_kas' => $data['no_kas'],
-                    'no_sts' => $data['no_kas'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'tgl_sts' => $data['tgl_kas'],
-                    'tgl_kas' => $data['tgl_kas'],
-                    'keterangan' => $data['uraian'],
-                    'total' => $data['jumlah'],
-                    'kd_bank' => '',
-                    'kd_sub_kegiatan' => isset($data['kd_sub_kegiatan']) ? $data['kd_sub_kegiatan'] : '',
-                    'jns_trans' => $data['jenis_transaksi'],
-                    'rek_bank' => '',
-                    'sumber' => '0',
-                    'pot_khusus' => '0',
-                    'no_sp2d' => $data['no_sp2d'],
-                    'jns_cp' => $data['jns_cp'],
-                    'bank' => $data['pembayaran'],
-                ]);
-            }
 
             DB::table('trdkasin_pkd')->where(['no_sts' => $data['no_kas'], 'kd_skpd' => $kd_skpd])->delete();
 
@@ -559,7 +543,7 @@ class SetorSisaController extends Controller
         $tgl1       = $request->tgl1;
         $tgl2       = $request->tgl2;
         $tglttd     = $request->tgl_ttd;
-        $ttdbend    = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kdskpd,'BK']))->first();
+        $ttdbend    = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode=?', [$kdskpd, 'BK']))->first();
         $ttdpa      = collect(DB::select('SELECT nip, nama, jabatan, pangkat FROM ms_ttd WHERE kd_skpd = ? AND kode = ?', [$kdskpd, 'KPA']))->first();
         $jns_print  = $request->jenis_print;
 
@@ -587,7 +571,7 @@ class SetorSisaController extends Controller
         ];
 
         $view = view('skpd.setor_sisa_kas.cetak')->with($data);
-        if ($jns_print =='pdf') {
+        if ($jns_print == 'pdf') {
             $pdf = PDF::loadHtml($view)->setOrientation('landscape')->setPaper('a4');
             return $pdf->stream('laporan.pdf');
         } else {

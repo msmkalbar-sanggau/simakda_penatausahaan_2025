@@ -5,8 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <a href="{{ route('sppup.create') }}" id="tambah_spp_ls" class="btn btn-primary"
-                        style="float: right;">Tambah</a>
+                    <a href="{{ route('sppup.create') }}" id="tambah_spp_ls" class="btn btn-primary" style="float: right;">Tambah</a>
                 </div>
                 <div class="card-body">
                     <div class="table-rep-plugin">
@@ -146,17 +145,13 @@
                     <div class="mb-3 row">
                         <label for="pengantar" class="col-md-2 col-form-label">Pengantar</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md pengantar" data-jenis="pdf"
-                                name="pengantar_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md pengantar" data-jenis="layar"
-                                name="pengantar_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md pengantar" data-jenis="pdf" name="pengantar_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md pengantar" data-jenis="layar" name="pengantar_layar">Layar</button>
                         </div>
                         <label for="ringkasan" class="col-md-2 col-form-label">Ringkasan</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md ringkasan" data-jenis="pdf"
-                                name="ringkasan_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md ringkasan" data-jenis="layar"
-                                name="ringkasan_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md ringkasan" data-jenis="pdf" name="ringkasan_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md ringkasan" data-jenis="layar" name="ringkasan_layar">Layar</button>
                         </div>
 
                     </div>
@@ -164,17 +159,13 @@
                     <div class="mb-3 row">
                         <label for="rincian" class="col-md-2 col-form-label">Rincian</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md rincian" data-jenis="pdf"
-                                name="rincian_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md rincian" data-jenis="layar"
-                                name="rincian_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md rincian" data-jenis="pdf" name="rincian_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md rincian" data-jenis="layar" name="rincian_layar">Layar</button>
                         </div>
                         <label for="pernyataan" class="col-md-2 col-form-label">Pernyataan</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md pernyataan" data-jenis="pdf"
-                                name="pernyataan_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md pernyataan" data-jenis="layar"
-                                name="pernyataan_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md pernyataan" data-jenis="pdf" name="pernyataan_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md pernyataan" data-jenis="layar" name="pernyataan_layar">Layar</button>
                         </div>
                     </div>
                     <div class="mb-1 row">
@@ -185,23 +176,18 @@
                     <div class="mb-3 row">
                         <label for="spp" class="col-md-2 col-form-label">SPP</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md spp" data-jenis="pdf"
-                                name="spp_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md spp" data-jenis="layar"
-                                name="spp_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md spp" data-jenis="pdf" name="spp_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md spp" data-jenis="layar" name="spp_layar">Layar</button>
                         </div>
                         <label for="rincian77" class="col-md-2 col-form-label">Rincian</label>
                         <div class="col-md-4">
-                            <button type="button" class="btn btn-danger btn-md rincian77" data-jenis="pdf"
-                                name="rincian77_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md rincian77" data-jenis="layar"
-                                name="rincian77_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md rincian77" data-jenis="pdf" name="rincian77_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md rincian77" data-jenis="layar" name="rincian77_layar">Layar</button>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-md btn-secondary"
-                                data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         </div>
                     </div>
                 </div>
@@ -222,8 +208,7 @@
                         <label for="no_spp_batal" class="col-md-2 col-form-label">No SPP</label>
                         <div class="col-md-12">
                             <input type="text" readonly class="form-control" id="no_spp_batal" name="no_spp_batal">
-                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal"
-                                hidden>
+                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal" hidden>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -234,10 +219,8 @@
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i
-                                    class="uil-ban"></i>Batal SPP</button>
-                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i
-                                    class="fa fa-undo"></i>Keluar</button>
+                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i class="uil-ban"></i>Batal SPP</button>
+                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i class="fa fa-undo"></i>Keluar</button>
                         </div>
                     </div>
                 </div>
