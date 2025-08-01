@@ -672,6 +672,8 @@ class PenyetoranController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $detail_sts = json_decode($data['detail_sts'], true);
 
+        $current_date = date('Y-m-d H:i:s');
+
         DB::beginTransaction();
         try {
             $nomorUrut = DB::table('trhkasin_pkd')
@@ -729,7 +731,9 @@ class PenyetoranController extends Controller
                     'no_sp2d' => '',
                     'jns_cp' => '',
                     'no_terima' => '',
-                    'urut' => $nomorUrut
+                    'urut' => $nomorUrut,
+                    'username_created' => Auth::user()->nama,
+                    'created_at' => $current_date,
                 ]);
 
             $jumlah = DB::table('ms_skpd')
@@ -884,6 +888,8 @@ class PenyetoranController extends Controller
         $data = $request->data;
         $kd_skpd = Auth::user()->kd_skpd;
 
+        $current_date = date('Y-m-d H:i:s');
+
         DB::beginTransaction();
         try {
             // $cek1 = DB::table('tr_kunci')
@@ -923,31 +929,17 @@ class PenyetoranController extends Controller
 
             $nomor = $data['no_kas'];
 
-            DB::table('trhkasin_pkd')
-                ->where([
-                    'kd_skpd' => $data['kd_skpd'],
-                    'no_sts' => $data['no_simpan']
-                ])
-                ->delete();
-
-            DB::table('trhkasin_pkd')
-                ->insert([
-                    'no_sts' => $nomorSetor,
-                    'tgl_sts' => $data['tgl_sts'],
-                    'kd_skpd' => $data['kd_skpd'],
-                    'keterangan' => isset($data['keterangan']) ? $data['keterangan'] : '',
-                    'total' => $data['total'],
-                    'kd_bank' => '',
-                    'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
-                    'jns_trans' => '4',
-                    'rek_bank' => '',
-                    'sumber' => '',
-                    'pot_khusus' => '0',
-                    'no_sp2d' => '',
-                    'jns_cp' => '',
-                    'no_terima' => '',
-                    'urut' => $dataSetor->urut
-                ]);
+            DB::table("trhkasin_pkd")->where([
+                'kd_skpd' => $data['kd_skpd'],
+                'no_sts' => $data['no_simpan']
+            ])->update([
+                'no_sts' => $nomorSetor,
+                'tgl_sts' => $data['tgl_sts'],
+                'keterangan' => isset($data['keterangan']) ? $data['keterangan'] : '',
+                'urut' => $dataSetor->urut,
+                'username_updated' => Auth::user()->nama,
+                'updated_at' => $current_date,
+            ]);
 
             $jumlah = DB::table('ms_skpd')
                 ->where([

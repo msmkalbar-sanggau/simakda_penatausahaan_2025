@@ -70,6 +70,8 @@ class PenerimaanController extends Controller
         $nama = Auth::user()->nama;
         $jns_pembayaran = $data['jns_pembayaran'];
 
+        $current_date = date('Y-m-d H:i:s');
+
         DB::beginTransaction();
         try {
             if ($jns_pembayaran == 'TUNAI') {
@@ -127,7 +129,9 @@ class PenerimaanController extends Controller
                     'no_terima' => $data['no_terima'],
                     // 'sumber' => '',
                     'user_name' => Auth::user()->nama,
-                    'bank' => ''
+                    'bank' => '',
+                    'username_created' => Auth::user()->nama,
+                    'created_at' => $current_date,
                 ]);
 
                 DB::table('trdkasin_pkd')->insert([
@@ -187,6 +191,7 @@ class PenerimaanController extends Controller
     public function simpanEditPenerimaanLalu(Request $request)
     {
         $data = $request->data;
+
         $kd_skpd = Auth::user()->kd_skpd;
 
         DB::beginTransaction();
