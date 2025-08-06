@@ -162,10 +162,13 @@
                 alert('Silahkan pilih tanggal SPM!');
                 return;
             }
-            if (tgl_spm < tgl_spm_lalu) {
-                alert('Tanggal SPM tidak boleh kurang dari SPM Lalu...!!!');
-                return;
-            }
+
+            //#INFO:: Dimatikan sementara karena pemakaian SIPD (console.log)
+            // if (tgl_spm < tgl_spm_lalu) {
+            //     alert('Tanggal SPM tidak boleh kurang dari SPM Lalu...!!!');
+            //     return;
+            // }
+
             if (tahun_input != tahun_anggaran) {
                 alert('Tahun tidak sama dengan tahun Anggaran');
                 return;
