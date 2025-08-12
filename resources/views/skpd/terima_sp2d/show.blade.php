@@ -19,12 +19,10 @@
                             <a href="{{ route('terima_sp2d.index') }}" class="btn btn-warning btn-md">Kembali</a>
                             @if ($sp2d->status == '1')
                             @elseif ($sp2d->status_terima == '1')
-                                <button class="btn btn-md btn-primary" id="batal_terima"
-                                    style="border: 1px solid black">BATAL
+                                <button class="btn btn-md btn-primary" id="batal_terima" style="border: 1px solid black">BATAL
                                     TERIMA</button>
                             @else
-                                <button class="btn btn-md btn-primary" id="terima_sp2d"
-                                    style="border: 1px solid black">TERIMA SP2D</button>
+                                <button class="btn btn-md btn-primary" id="terima_sp2d" style="border: 1px solid black">TERIMA SP2D</button>
                             @endif
                         </div>
                     </div>
@@ -33,47 +31,38 @@
                         <label for="no_terima" class="col-md-2 col-form-label">Nomor Terima</label>
                         <div class="col-md-4">
                             @if ($sp2d->status_terima == '1')
-                                <input type="text" class="form-control" id="no_terima"
-                                    value="{{ !empty($sp2d->no_terima) ? $sp2d->no_terima : no_urut($kd_skpd) }}"
-                                    name="no_terima" readonly>
+                                <input type="text" class="form-control" id="no_terima" value="{{ !empty($sp2d->no_terima) ? $sp2d->no_terima : no_urut($kd_skpd) }}" name="no_terima"
+                                    readonly>
                             @else
-                                <input type="text" class="form-control" id="no_terima"
-                                    value="{{ !empty($sp2d->no_terima) ? $sp2d->no_terima : no_urut($kd_skpd) }}"
+                                <input type="text" class="form-control" id="no_terima" value="{{ !empty($sp2d->no_terima) ? $sp2d->no_terima : no_urut($kd_skpd) }}"
                                     name="no_terima">
                             @endif
                         </div>
                         <label for="tgl_terima" class="col-md-2 col-form-label">Tanggal Terima</label>
                         <div class="col-md-4">
-                            <input type="date" class="form-control" id="tgl_terima" readonly
-                                value="{{ $sp2d->tgl_kas_bud }}" name="tgl_terima">
+                            <input type="date" class="form-control" id="tgl_terima" readonly value="{{ $sp2d->tgl_kas_bud }}" name="tgl_terima">
                         </div>
                     </div>
                     {{-- No SP2D --}}
                     <div class="mb-3 row">
                         <label for="no_sp2d" class="col-md-2 col-form-label">No SP2D</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" id="no_sp2d" name="no_sp2d"
-                                value="{{ $sp2d->no_sp2d }}" readonly>
-                            <input type="text" class="form-control" id="nocek" name="nocek"
-                                value="{{ $sp2d->nocek }}" readonly hidden>
-                            <input type="text" class="form-control" id="kd_skpd" name="kd_skpd"
-                                value="{{ $sp2d->kd_skpd }}" readonly hidden>
+                            <input type="text" class="form-control" id="no_sp2d" name="no_sp2d" value="{{ $sp2d->no_sp2d }}" readonly>
+                            <input type="text" class="form-control" id="nocek" name="nocek" value="{{ $sp2d->nocek }}" readonly hidden>
+                            <input type="text" class="form-control" id="kd_skpd" name="kd_skpd" value="{{ $sp2d->kd_skpd }}" readonly hidden>
                         </div>
                     </div>
                     {{-- Jenis & Beban --}}
                     <div class="mb-3 row">
                         <label for="jenis" class="col-md-2 col-form-label">Jenis</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="nm_jenis" name="nm_jenis"
-                                value="{{ jenis($sp2d->jns_spp, $sp2d->jenis_beban) }}" readonly>
+                            <input type="text" class="form-control" id="nm_jenis" name="nm_jenis" value="{{ jenis($sp2d->jns_spp, $sp2d->jenis_beban) }}" readonly>
                             <input type="text" id="jenis" value="{{ $sp2d->jenis_beban }}" hidden>
                         </div>
                         <label for="beban" class="col-md-2 col-form-label">Beban</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="nm_beban" name="beban"
-                                value="{{ beban($sp2d->jns_spp) }}" readonly>
-                            <input type="text" class="form-control" id="beban" name="beban"
-                                value="{{ $sp2d->jns_spp }}" readonly hidden>
+                            <input type="text" class="form-control" id="nm_beban" name="beban" value="{{ beban($sp2d->jns_spp) }}" readonly>
+                            <input type="text" class="form-control" id="beban" name="beban" value="{{ $sp2d->jns_spp }}" readonly hidden>
                         </div>
 
                     </div>

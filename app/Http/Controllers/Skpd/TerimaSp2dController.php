@@ -297,17 +297,18 @@ class TerimaSp2dController extends Controller
             ]);
         }
     }
-      //created by calvin
-      public function cekTerima(){
+    //created by calvin
+    public function cekTerima()
+    {
         $kd_skpd = Auth::user()->kd_skpd;
-        $skpd = collect(DB::select("SELECT kd_skpd, nm_skpd from ms_skpd where kd_skpd = ?",[$kd_skpd]))->first();
+        $skpd = collect(DB::select("SELECT kd_skpd, nm_skpd from ms_skpd where kd_skpd = ?", [$kd_skpd]))->first();
 
         $data =
-        [
-            'header' => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
-            'detail' => DB::select("SELECT no_sp2d, tgl_sp2d,tgl_kas_bud, no_spm, nm_skpd, keperluan, nilai from trhsp2d where status_bud = '1' and status_terima = '0' and kd_skpd = ? order by no_sp2d",[$kd_skpd]),
-            'skpd' => $skpd->nm_skpd
-        ];
+            [
+                'header' => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
+                'detail' => DB::select("SELECT no_sp2d, tgl_sp2d,tgl_kas_bud, no_spm, nm_skpd, keperluan, nilai from trhsp2d where status_bud = '1' and status_terima = '0' and kd_skpd = ? order by no_sp2d", [$kd_skpd]),
+                'skpd' => $skpd->nm_skpd
+            ];
         //dd($data['detail']);
         return view('skpd.terima_sp2d.cekterima')->with($data)->with('_blank');;
     }
