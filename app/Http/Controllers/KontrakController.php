@@ -119,7 +119,7 @@ class KontrakController extends Controller
         $data = [
             'data' => $data_awal,
             'skpd' => DB::table('ms_skpd')->where('kd_skpd', $data_awal->kd_skpd)->first(),
-            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, 'kd_skpd' => $kd_skpd])->first(),
+            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, "rekening" => $data_awal->no_rekening, 'kd_skpd' => $kd_skpd])->first(),
             'tgl_kerja' => date('d M Y', strtotime($data_awal->tgl_kerja))
         ];
         return view('master.kontrak.show')->with($data);
@@ -142,7 +142,7 @@ class KontrakController extends Controller
             'data_kontrak' => $data_awal,
             'daftar_rekening' => DB::table('ms_rekening_bank_online')->where('kd_skpd', $data_awal->kd_skpd)->get(),
             'skpd' => DB::table('ms_skpd')->select('nm_skpd', 'kd_skpd')->where('kd_skpd', $data_awal->kd_skpd)->first(),
-            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, 'kd_skpd' => $data_awal->kd_skpd])->first(),
+            'data_rekening' => DB::table('ms_rekening_bank_online')->where(['nm_rekening' => $data_awal->nm_rekening, "rekening" => $data_awal->no_rekening,  'kd_skpd' => $data_awal->kd_skpd])->first(),
         ];
 
         return view('master.kontrak.edit')->with($data);
