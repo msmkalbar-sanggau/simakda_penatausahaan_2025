@@ -21,17 +21,29 @@ class DaftarPengujiController extends Controller
         return view('penatausahaan.pengeluaran.daftar_penguji.index')->with($data);
     }
 
-    public function loadData()
+    public function loadData(Request $request)
     {
+        $search = $request->search["value"];
+
         $data = DB::table('trhuji as a')
             ->select('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
             ->selectRaw("(select count(*)as nilai from trduji where no_uji=a.no_uji and status='3') as status_dorman")
+            ->selectRaw("STRING_AGG(b.no_sp2d, ', ') AS no_sp2d")
+            ->join("trduji as b", function ($join) {
+                $join->on("a.no_uji", "=", "b.no_uji");
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->orWhere('b.no_sp2d', 'like', '%' . $search . '%')
+                        ->orWhere('a.no_uji', 'like', '%' . $search . '%');
+                });
+            })
             ->groupBy('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
             ->orderBy('a.tgl_uji')
             ->orderByRaw("cast(left(a.no_uji,len(a.no_uji)-11) as int)")
             ->get();
 
-        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
+        return DataTables::of($data)->filter(function () {}, true)->addIndexColumn()->addColumn('aksi', function ($row) {
             if ($row->status_bank == 0 || $row->status_bank == null) {
                 $btn = '<a href="' . route("daftar_penguji.tampil", Crypt::encryptString($row->no_uji)) . '" class="btn btn-warning btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Daftar Penguji"><i class="uil-edit"></i></a>';
                 if ($row->sp2d_online == '1') {

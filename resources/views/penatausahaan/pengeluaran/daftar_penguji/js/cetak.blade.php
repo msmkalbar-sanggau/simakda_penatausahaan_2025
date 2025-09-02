@@ -16,17 +16,11 @@
             ordering: false,
             serverSide: true,
             processing: true,
-            lengthMenu: [5, 10],
+            lengthMenu: [5, 10, 50],
             ajax: {
                 "url": "{{ route('daftar_penguji.load_data') }}",
                 "type": "POST",
             },
-            // createdRow: function(row, data, index) {
-            //     if (data.status == 1) {
-            //         $(row).css("background-color", "#4bbe68");
-            //         $(row).css("color", "white");
-            //     }
-            // },
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
@@ -46,12 +40,16 @@
                     width: 100,
                     className: "text-center",
                 },
-            ],
-            drawCallback: function (settings) {
-                console.log('drawCallback');
-                $('[data-bs-toggle="tooltip"]').tooltip();
+                {
+                    data: 'no_sp2d',
+                    name: 'no_sp2d',
+                    visible: false,
+                    searchable: true
                 }
-
+            ],
+            drawCallback: function(settings) {
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            }
         });
 
         // cetak penguji

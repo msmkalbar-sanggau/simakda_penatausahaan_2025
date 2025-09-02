@@ -5,8 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <a href="{{ route('daftar_penguji.create') }}" id="tambah_sp2d" class="btn btn-primary"
-                        style="float: right;">Tambah</a>
+                    <a href="{{ route('daftar_penguji.create') }}" id="tambah_sp2d" class="btn btn-primary" style="float: right;">Tambah</a>
                 </div>
                 <div class="card-body">
                     <div class="table-rep-plugin">
@@ -18,29 +17,11 @@
                                         <th style="width: 50px;text-align:center">No Penguji</th>
                                         <th style="width: 50px;text-align:center">Tanggal</th>
                                         <th style="width: 150px;text-align:center">Aksi</th>
+                                        <th style="width: 150px;text-align:center">SP2D</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @php
-                                        $no = 1;
-                                    @endphp
-                                    @foreach ($daftar_penguji->chunk(5) as $data)
-                                        @foreach ($data as $penguji)
-                                            <tr>
-                                                <td>{{ $no++ }}</td>
-                                                <td>{{ $penguji->no_uji }}</td>
-                                                <td>{{ tanggal($penguji->tgl_uji) }}</td>
-                                                <td style="text-align: center">
-                                                    <a href="{{ route('daftar_penguji.tampil', $penguji->no_uji) }}"
-                                                        class="btn btn-info btn-sm"><i class="uil-eye"></i></a>
-                                                    <button type="button" onclick="hapusData('{{ $penguji->no_uji }}')"
-                                                        class="btn btn-danger btn-sm"><i class="uil-trash"></i></button>
-                                                    <button type="button" onclick="cetak('{{ $penguji->no_uji }}')"
-                                                        class="btn btn-dark btn-sm"><i class="uil-print"></i></button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endforeach --}}
                                 </tbody>
                             </table>
                         </div>
@@ -81,12 +62,9 @@
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-dark btn-md cetak_penguji"
-                                data-jenis="layar"><b>Layar</b></button>
-                            <button type="button" class="btn btn-md lampiran orange cetak_penguji"
-                                data-jenis="pdf"><b>PDF</b></button>
-                            <button type="button" class="btn btn-md btn-secondary"
-                                data-bs-dismiss="modal"><b>Tutup</b></button>
+                            <button type="button" class="btn btn-dark btn-md cetak_penguji" data-jenis="layar"><b>Layar</b></button>
+                            <button type="button" class="btn btn-md lampiran orange cetak_penguji" data-jenis="pdf"><b>PDF</b></button>
+                            <button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal"><b>Tutup</b></button>
                         </div>
                     </div>
                 </div>
