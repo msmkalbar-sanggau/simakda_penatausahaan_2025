@@ -370,8 +370,7 @@
             }
 
             if (nilai == 0) {
-                alert('Nilai Nol.....!!!, Cek Lagi...!!!');
-                return;
+                alert('Nilai Nol.....!!!, Anda yakin lanjut...!!!');
             }
 
             let tampungan = rincian_inputan.rows().data().toArray().map((value) => {
@@ -532,8 +531,7 @@
             }
 
             if (nilai == 0) {
-                alert('Nilai Nol.....!!!, Cek Lagi...!!!');
-                return;
+                alert('Nilai Nol.....!!!, Anda yakin lanjut...!!!');
             }
 
             if (nilai > (sisa_angkas + nilai_atas)) {
