@@ -25,28 +25,23 @@
                     <div class="mb-3 row">
                         <label for="kd_skpd" class="col-md-2 col-form-label">SKPD</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="kd_skpd" name="kd_skpd" required readonly
-                                value="{{ $lpj->kd_skpd }}">
+                            <input class="form-control" type="text" id="kd_skpd" name="kd_skpd" required readonly value="{{ $lpj->kd_skpd }}">
                         </div>
                         <label for="nm_skpd" class="col-md-2 col-form-label">Nama SKPD</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="nm_skpd" name="nm_skpd" required readonly
-                                value="{{ nama_skpd($lpj->kd_skpd) }}">
-                            <input class="form-control" type="text" id="tahun_anggaran" name="tahun_anggaran" required
-                                readonly hidden value="{{ tahun_anggaran() }}">
+                            <input class="form-control" type="text" id="nm_skpd" name="nm_skpd" required readonly value="{{ nama_skpd($lpj->kd_skpd) }}">
+                            <input class="form-control" type="text" id="tahun_anggaran" name="tahun_anggaran" required readonly hidden value="{{ tahun_anggaran() }}">
                         </div>
                     </div>
                     {{-- NO LPJ dan Tanggal LPJ --}}
                     <div class="mb-3 row">
                         <label for="no_lpj" class="col-md-2 col-form-label">No. LPJ</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="no_lpj" name="no_lpj" required readonly
-                                value="{{ $lpj->no_lpj }}">
+                            <input class="form-control" type="text" id="no_lpj" name="no_lpj" required readonly value="{{ $lpj->no_lpj }}">
                         </div>
                         <label for="tgl_lpj" class="col-md-2 col-form-label">Tanggal LPJ</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="date" id="tgl_lpj" name="tgl_lpj" required readonly
-                                value="{{ $lpj->tgl_lpj }}">
+                            <input class="form-control" type="date" id="tgl_lpj" name="tgl_lpj" required readonly value="{{ $lpj->tgl_lpj }}">
                         </div>
                     </div>
                     {{-- Keterangan --}}
@@ -109,8 +104,7 @@
                     <div class="mb-2 mt-2 row">
                         <label for="total" class="col-md-8 col-form-label" style="text-align: right">Total</label>
                         <div class="col-md-4">
-                            <input type="text" style="text-align: right;background-color:white;border:none;" readonly
-                                class="form-control" id="total" name="total"
+                            <input type="text" style="text-align: right;background-color:white;border:none;" readonly class="form-control" id="total" name="total"
                                 value="{{ rupiah($total_detail->nilai) }}">
                         </div>
                     </div>

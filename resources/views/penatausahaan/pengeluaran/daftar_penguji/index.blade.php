@@ -18,7 +18,6 @@
                                         <th style="width: 50px;text-align:center">Tanggal</th>
                                         <th style="width: 150px;text-align:center">Aksi</th>
                                         <th style="width: 150px;text-align:center">SP2D</th>
-
                                     </tr>
                                 </thead>
                                 <tbody>

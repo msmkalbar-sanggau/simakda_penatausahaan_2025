@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 use function PHPUnit\Framework\isEmpty;
@@ -1880,7 +1881,7 @@ class LPJController extends Controller
     public function loadValidasiLpj()
     {
         $kd_skpd = Auth::user()->kd_skpd;
-        $data = DB::table('trhlpj as a')
+        $data = DB::table('trhlpj_unit as a')
             ->selectRaw("a.*,(SELECT nm_skpd FROM ms_skpd WHERE kd_skpd = a.kd_skpd) as nm_skpd")
             ->where(['a.jenis' => '1'])
             ->whereRaw("left(kd_skpd,17)=left(?,17)", [$kd_skpd])
@@ -1888,12 +1889,12 @@ class LPJController extends Controller
             ->orderBy('a.no_lpj')
             ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
-            $btn = '<a href="' . route("pengesahan_lpj_upgu.edit", ['no_lpj' => Crypt::encrypt($row->no_lpj), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-primary btn-sm"  style="margin-right:4px"><i class="uil-eye"></i></a>';
+            $btn = '<a href="' . route("lpj.validasi.edit", ['no_lpj' => Crypt::encrypt($row->no_lpj), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-primary btn-sm"  style="margin-right:4px"><i class="uil-eye"></i></a>';
             if ($row->status == '2') {
                 $btn .= "";
                 $btn .= '<a href="javascript:void(0);" style="margin-right:4px" onclick="cetak(\'' . $row->no_lpj . '\',\'' . $row->jenis . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm"><i class="uil-print"></i></a>';
             } else {
-                $btn = '<a href="' . route("pengesahan_lpj_upgu.edit", ['no_lpj' => Crypt::encrypt($row->no_lpj), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-primary btn-sm"  style="margin-right:4px"><i class="uil-eye"></i></a>';
+                $btn = '<a href="' . route("lpj.validasi.edit", ['no_lpj' => Crypt::encrypt($row->no_lpj), 'kd_skpd' => Crypt::encrypt($row->kd_skpd)]) . '" class="btn btn-primary btn-sm"  style="margin-right:4px"><i class="uil-eye"></i></a>';
                 $btn .= '<a href="javascript:void(0);" style="margin-right:4px" onclick="cetak(\'' . $row->no_lpj . '\',\'' . $row->jenis . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm"><i class="uil-print"></i></a>';
             }
             return $btn;
@@ -1906,21 +1907,21 @@ class LPJController extends Controller
         $kd_skpd = Crypt::decrypt($kd_skpd);
 
         $data = [
-            'lpj' => DB::table('trhlpj as a')
+            'lpj' => DB::table('trhlpj_unit as a')
                 ->selectRaw("a.*,(SELECT nm_skpd FROM ms_skpd WHERE kd_skpd = a.kd_skpd) as nm_skpd")
                 ->where(['a.jenis' => '1', 'a.no_lpj' => $no_lpj, 'a.kd_skpd' => $kd_skpd])
                 ->first(),
-            'detail_lpj' => DB::table('trhlpj as a')
+            'detail_lpj' => DB::table('trhlpj_unit as a')
                 ->join('trlpj as b', function ($join) {
-                    $join->on('a.no_lpj', '=', 'b.no_lpj');
+                    $join->on('a.no_lpj', '=', 'b.no_lpj_unit');
                     $join->on('a.kd_skpd', '=', 'b.kd_skpd');
                 })
                 ->select('b.*')
                 ->where(['a.no_lpj' => $no_lpj, 'a.kd_skpd' => $kd_skpd, 'a.jenis' => '1'])
                 ->get(),
-            'total_detail' => DB::table('trhlpj as a')
+            'total_detail' => DB::table('trhlpj_unit as a')
                 ->join('trlpj as b', function ($join) {
-                    $join->on('a.no_lpj', '=', 'b.no_lpj');
+                    $join->on('a.no_lpj', '=', 'b.no_lpj_unit');
                     $join->on('a.kd_skpd', '=', 'b.kd_skpd');
                 })
                 ->selectRaw("SUM(b.nilai) as nilai")
@@ -1969,10 +1970,9 @@ class LPJController extends Controller
         $kd_skpd = $request->kd_skpd;
         $nama = Auth::user()->nama;
 
-
         DB::beginTransaction();
         try {
-            DB::table('trhlpj')
+            DB::table('trhlpj_unit')
                 ->where(['no_lpj' => $no_lpj, 'kd_skpd' => $kd_skpd])
                 ->update([
                     'status' => '1',
@@ -1985,8 +1985,13 @@ class LPJController extends Controller
             return response()->json([
                 'message' => '1'
             ]);
-        } catch (Exception $e) {
+        } catch (Exception $th) {
             DB::rollBack();
+            Log::error('Exception caught: ' . $th->getMessage(), [
+                'exception' => get_class($th),  // Type of exception
+                'file' => $th->getFile(),       // File where it occurred
+                'line' => $th->getLine(),       // Line number where it occurred
+            ]);
             return response()->json([
                 'message' => '0'
             ]);
@@ -2013,7 +2018,7 @@ class LPJController extends Controller
                     'message' => '2'
                 ]);
             }
-            DB::table('trhlpj')
+            DB::table('trhlpj_unit')
                 ->where(['no_lpj' => $no_lpj, 'kd_skpd' => $kd_skpd])
                 ->update([
                     'status' => '0',
