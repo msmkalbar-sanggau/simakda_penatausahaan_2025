@@ -848,7 +848,7 @@ class LPJController extends Controller
                     'keterangan' => $data['keterangan'],
                     'tgl_awal' => '',
                     'tgl_akhir' => '',
-                    'status' => '0',
+                    'status' => '1',
                     'jenis' => '1',
                 ]);
 
