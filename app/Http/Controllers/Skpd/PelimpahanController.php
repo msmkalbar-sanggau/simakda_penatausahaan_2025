@@ -92,7 +92,7 @@ class PelimpahanController extends Controller
         where jns_trans IN ('5') and bank='BNK' and a.kd_skpd=?
         GROUP BY a.tgl_sts,a.no_sts, a.keterangan,a.kd_skpd
 
-        ) a where kode=?",[$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd]))->first();
+        ) a where kode=?", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]))->first();
         $sisa = $kas->terima - $kas->keluar;
 
         $data = [
@@ -217,7 +217,7 @@ class PelimpahanController extends Controller
         where jns_trans IN ('5') and bank='BNK' and a.kd_skpd=?
         GROUP BY a.tgl_sts,a.no_sts, a.keterangan,a.kd_skpd
 
-        ) a where kode=?",[$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd]))->first();
+        ) a where kode=?", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]))->first();
         $sisa = $kas->terima - $kas->keluar;
 
         $data = [
@@ -323,12 +323,14 @@ class PelimpahanController extends Controller
         $kd_skpd = Auth::user()->kd_skpd;
         $skpd = substr($kd_skpd, 0, 17);
 
+        $sisa_bank = json_decode(sisa_bank()->getContent());
+
         $data = [
             'tujuan_skpd' => DB::table('ms_skpd')->select(DB::raw("SUBSTRING(kd_skpd,1,4)+SUBSTRING(kd_skpd,15,8) as kd_ringkas"), 'kd_skpd', 'nm_skpd', DB::raw("'$kd_skpd' as skpd"))->whereRaw("LEFT(kd_skpd,17) = ?", $skpd)->whereNotIn('kd_skpd', [$kd_skpd])->orderBy('kd_skpd')->get(),
             'tahun_anggaran' => tahun_anggaran(),
             'rekening_bendahara' => DB::table('ms_skpd')->select('rekening')->where(['kd_skpd' => $kd_skpd])->orderBy('kd_skpd')->first(),
             'rekening_tujuan' => DB::table('ms_rekening_bank_online as a')->select('a.rekening', 'a.nm_rekening', 'a.bank', 'a.keterangan', 'a.kd_skpd', 'a.jenis', DB::raw("(SELECT nama FROM ms_bank WHERE kode=a.bank) as nm_bank"))->where(['a.kd_skpd' => $kd_skpd])->orderBy('a.nm_rekening')->get(),
-            'sisa_bank' => sisa_bank()
+            'sisa_bank' => $sisa_bank
         ];
 
         return view('skpd.pelimpahan_gu.create')->with($data);
@@ -855,7 +857,7 @@ class PelimpahanController extends Controller
         where jns_trans IN ('5') and bank='BNK' and a.kd_skpd=?
         GROUP BY a.tgl_sts,a.no_sts, a.keterangan,a.kd_skpd
 
-        ) a where kode=?",[$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd]))->first();
+        ) a where kode=?", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]))->first();
         $sisa = $kas->terima - $kas->keluar;
         $data = [
             'sisa_bank' => $sisa,
@@ -931,7 +933,7 @@ class PelimpahanController extends Controller
         where jns_trans IN ('5') and bank='BNK' and a.kd_skpd=?
         GROUP BY a.tgl_sts,a.no_sts, a.keterangan,a.kd_skpd
 
-        ) a where kode=?",[$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd,$kd_skpd]))->first();
+        ) a where kode=?", [$kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd, $kd_skpd]))->first();
         $sisa = $kas->terima - $kas->keluar;
         $data = [
             'daftar_transaksi' => DB::table('tr_setorpelimpahan_bank_cms as a')->leftJoin('trdupload_cmsbank_bidang as b', function ($join) {
