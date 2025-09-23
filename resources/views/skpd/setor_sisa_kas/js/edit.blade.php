@@ -19,6 +19,10 @@
                     name: 'nm_rek6',
                 },
                 {
+                    data: 'sumber',
+                    name: 'sumber',
+                },
+                {
                     data: 'rupiah',
                     name: 'rupiah',
                 },
@@ -41,6 +45,7 @@
 
         $('#tambah_sts').on('click', function() {
             $('#kd_rek6').empty();
+            $('#sdana').empty();
             $('#nm_rek6').val(null);
             $('#nilai').val(null);
             let jenis_transaksi = document.getElementById('jenis_transaksi').value;
@@ -211,13 +216,18 @@
 
         $('#kd_rek6').on('select2:select', function() {
             let nm_rek6 = $(this).find(':selected').data('nm_rek6');
+            let kd_rek6 = this.value;
             $('#nm_rek6').val(nm_rek6);
+
+            cari_sumber(kd_rek6);
+
         });
 
         $('#simpan_detail').on('click', function() {
             let jenis_transaksi = document.getElementById('jenis_transaksi').value;
             let kd_rek6 = document.getElementById('kd_rek6').value;
             let nm_rek6 = document.getElementById('nm_rek6').value;
+            let sdana = document.getElementById('sdana').value;
             let nilai = angka(document.getElementById('nilai').value);
             let jumlah = rupiah(document.getElementById('jumlah').value);
             let pembayaran = document.getElementById('pembayaran').value;
@@ -267,6 +277,7 @@
             detail_sts.row.add({
                 'kd_rek6': kd_rek6,
                 'nm_rek6': nm_rek6,
+                'sumber': sdana,
                 'rupiah': new Intl.NumberFormat('id-ID', {
                     minimumFractionDigits: 2
                 }).format(nilai),
@@ -305,6 +316,7 @@
                 let result = {
                     kd_rek6: value.kd_rek6,
                     nm_rek6: value.nm_rek6,
+                    sumber: value.sumber,
                     rupiah: rupiah(value.rupiah),
                 };
                 return result;
@@ -516,5 +528,30 @@
         } else {
             return false;
         }
+    }
+
+    function cari_sumber(kd_rek6) {
+        $.ajax({
+            url: "{{ route('skpd.transaksi_cms.sumber') }}",
+            type: "POST",
+            dataType: 'json',
+            data: {
+                kd_rek6: kd_rek6,
+                kd_skpd: document.getElementById('kd_skpd').value,
+                kd_sub_kegiatan: document.getElementById('kd_sub_kegiatan').value,
+                no_sp2d: document.getElementById('no_sp2d').value,
+                beban: "",
+            },
+            success: function(data) {
+                $('#sdana').empty();
+                $('#sdana').append(
+                    `<option value="" disabled selected>Pilih Sumber Dana</option>`);
+                $.each(data, function(index, data) {
+                    $('#sdana').append(
+                        `<option value="${data.sumber_dana}" data-anggaran="${data.nilai}">${data.sumber_dana}</option>`
+                    );
+                })
+            }
+        })
     }
 </script>

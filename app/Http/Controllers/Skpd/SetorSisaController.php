@@ -405,6 +405,7 @@ class SetorSisaController extends Controller
                         'rupiah' => $value['rupiah'],
                         'kd_sub_kegiatan' => $data['kd_sub_kegiatan'],
                         'kd_skpd' => $kd_skpd,
+                        'sumber' => $value['sumber']
                     ];
                 }, $data['detail']));
             }
@@ -435,10 +436,15 @@ class SetorSisaController extends Controller
                 $join->on('a.no_sts', '=', 'b.no_sts');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
             })->select('a.*')->where(['a.no_sts' => $no_sts, 'a.kd_skpd' => $kd_skpd])->first(),
-            'data_list' => DB::table('trhkasin_pkd as a')->join('trdkasin_pkd as b', function ($join) {
-                $join->on('a.no_sts', '=', 'b.no_sts');
-                $join->on('a.kd_skpd', '=', 'b.kd_skpd');
-            })->select('b.*')->where(['a.no_sts' => $no_sts, 'a.kd_skpd' => $kd_skpd])->get(),
+            'data_list' => DB::table('trhkasin_pkd as a')
+                ->join('trdkasin_pkd as b', function ($join) {
+                    $join->on('a.no_sts', '=', 'b.no_sts');
+                    $join->on('a.kd_skpd', '=', 'b.kd_skpd');
+                })
+                ->join('ms_rek6 as c', function ($join) {
+                    $join->on('b.kd_rek6', '=', 'c.kd_rek6');
+                })
+                ->selectRaw('b.*,c.nm_rek6')->where(['a.no_sts' => $no_sts, 'a.kd_skpd' => $kd_skpd])->get(),
         ];
 
         return view('skpd.setor_sisa_kas.edit')->with($data);

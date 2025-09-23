@@ -14,10 +14,8 @@
                     <div class="mb-3 row">
                         <label for="no_kas" class="col-md-2 col-form-label">No Kas</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="no_kas" name="no_kas" required
-                                value="{{ $no_urut }}">
-                            <input class="form-control" type="text" id="tahun_anggaran" name="tahun_anggaran" required
-                                readonly hidden value="{{ tahun_anggaran() }}">
+                            <input class="form-control" type="text" id="no_kas" name="no_kas" required value="{{ $no_urut }}">
+                            <input class="form-control" type="text" id="tahun_anggaran" name="tahun_anggaran" required readonly hidden value="{{ tahun_anggaran() }}">
                         </div>
                         <label for="tgl_kas" class="col-md-2 col-form-label">Tanggal Kas</label>
                         <div class="col-md-4">
@@ -28,13 +26,11 @@
                     <div class="mb-3 row">
                         <label for="kd_skpd" class="col-md-2 col-form-label">SKPD</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="kd_skpd" name="kd_skpd" required readonly
-                                value="{{ $skpd->kd_skpd }}">
+                            <input class="form-control" type="text" id="kd_skpd" name="kd_skpd" required readonly value="{{ $skpd->kd_skpd }}">
                         </div>
                         <label for="nm_skpd" class="col-md-2 col-form-label">Nama SKPD</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="nm_skpd" name="nm_skpd" required readonly
-                                value="{{ $skpd->nm_skpd }}">
+                            <input class="form-control" type="text" id="nm_skpd" name="nm_skpd" required readonly value="{{ $skpd->nm_skpd }}">
                         </div>
                     </div>
                     {{-- Uraian --}}
@@ -48,8 +44,7 @@
                     <div class="mb-3 row">
                         <label for="pembayaran" class="col-md-2 col-form-label">Pembayaran</label>
                         <div class="col-md-10">
-                            <select class="form-control select2-multiple" style="width: 100%" id="pembayaran"
-                                name="pembayaran">
+                            <select class="form-control select2-multiple" style="width: 100%" id="pembayaran" name="pembayaran">
                                 <option value="" disabled selected>Silahkan Pilih</option>
                                 <option value="BNK">BANK</option>
                                 <option value="TNK">TUNAI</option>
@@ -60,8 +55,7 @@
                     <div class="mb-3 row">
                         <label for="jenis_transaksi" class="col-md-2 col-form-label">Jenis Transaksi</label>
                         <div class="col-md-10">
-                            <select class="form-control select2-multiple" style="width: 100%" id="jenis_transaksi"
-                                name="jenis_transaksi">
+                            <select class="form-control select2-multiple" style="width: 100%" id="jenis_transaksi" name="jenis_transaksi">
                                 <option value="" disabled selected>Silahkan Pilih</option>
                                 <option value="5">Belanja</option>
                                 <option value="1">Rekening Kas</option>
@@ -85,15 +79,13 @@
                     <div class="mb-3 row">
                         <label for="kd_sub_kegiatan" class="col-md-2 col-form-label">Kegiatan</label>
                         <div class="col-md-4">
-                            <select class="form-control select2-multiple" style="width: 100%" id="kd_sub_kegiatan"
-                                name="kd_sub_kegiatan">
+                            <select class="form-control select2-multiple" style="width: 100%" id="kd_sub_kegiatan" name="kd_sub_kegiatan">
                                 <option value="" disabled selected>Silahkan Pilih</option>
                             </select>
                         </div>
                         <label for="nm_sub_kegiatan" class="col-md-2 col-form-label">Nama Kegiatan</label>
                         <div class="col-md-4">
-                            <input class="form-control" type="text" id="nm_sub_kegiatan" name="nm_sub_kegiatan"
-                                required readonly>
+                            <input class="form-control" type="text" id="nm_sub_kegiatan" name="nm_sub_kegiatan" required readonly>
                         </div>
                     </div>
                     <br>
@@ -102,11 +94,9 @@
                         <div class="col-md-12">
                             <input type="checkbox" id="hkpg_tahun_ini" name="hkpg_tahun_ini" value="Bike">
                             <label for="hkpg_tahun_ini">HKPG Tahun Ini</label>
-                            <input type="checkbox" id="hkpg_tahun_lalu" name="hkpg_tahun_lalu" value="Bike"
-                                style="margin-left: 10px">
+                            <input type="checkbox" id="hkpg_tahun_lalu" name="hkpg_tahun_lalu" value="Bike" style="margin-left: 10px">
                             <label for="hkpg_tahun_lalu">HKPG Tahun Lalu</label>
-                            <input type="checkbox" id="pemotongan_lainnya" name="pemotongan_lainnya" value="Bike"
-                                style="margin-left: 10px">
+                            <input type="checkbox" id="pemotongan_lainnya" name="pemotongan_lainnya" value="Bike" style="margin-left: 10px">
                             <label for="pemotongan_lainnya">Pemotongan Lainnya</label>
                         </div>
                     </div>
@@ -126,8 +116,7 @@
             <div class="card">
                 <div class="card-header">
                     Detail STS
-                    <button type="button" style="float: right" id="tambah_sts"
-                        class="btn btn-primary btn-sm">Tambah</button>
+                    <button type="button" style="float: right" id="tambah_sts" class="btn btn-primary btn-sm">Tambah</button>
                 </div>
                 <div class="card-body table-responsive">
                     <table id="detail_sts" class="table" style="width: 100%">
@@ -135,6 +124,7 @@
                             <tr>
                                 <th>Nomor Rekening</th>
                                 <th>Nama Rekening</th>
+                                <th>S. Dana</th>
                                 <th>Rupiah</th>
                                 <th>Aksi</th>
                             </tr>
@@ -148,9 +138,8 @@
                                 <tr>
                                     <td style="padding-left: 600px">Jumlah</td>
                                     <td>:</td>
-                                    <td style="text-align: right"><input type="text"
-                                            style="border:none;background-color:white;text-align:right"
-                                            class="form-control" readonly id="jumlah">
+                                    <td style="text-align: right"><input type="text" style="border:none;background-color:white;text-align:right" class="form-control" readonly
+                                            id="jumlah">
                                     </td>
                                 </tr>
                             </tbody>
@@ -173,8 +162,7 @@
                     <div class="mb-3 row">
                         <label for="kd_rek6" class="col-md-2 col-form-label">Kode Rekening</label>
                         <div class="col-md-10">
-                            <select class="form-control select2-modal1" style=" width: 100%;" id="kd_rek6"
-                                name="kd_rek6">
+                            <select class="form-control select2-modal1" style=" width: 100%;" id="kd_rek6" name="kd_rek6">
                                 <option value="" disabled selected>Silahkan Pilih</option>
                             </select>
                         </div>
@@ -186,12 +174,21 @@
                             <input type="text" class="form-control" name="nm_rek6" id="nm_rek6" readonly>
                         </div>
                     </div>
+                    <!-- Kode Rekening -->
+                    <div class="mb-3 row">
+                        <label for="sdana" class="col-md-2 col-form-label">Sumber Dana</label>
+                        <div class="col-md-10">
+                            <select class="form-control select2-modal1" style=" width: 100%;" id="sdana" name="sdana">
+                                <option value="" disabled selected>Silahkan Pilih</option>
+                            </select>
+                        </div>
+                    </div>
+
                     {{-- Sisa Kas Tunai --}}
                     <div class="mb-3 row">
                         <label for="sisa_kas_tunai" class="col-md-2 col-form-label">Sisa Kas Tunai</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" name="sisa_kas_tunai" id="sisa_kas_tunai"
-                                readonly>
+                            <input type="text" class="form-control" name="sisa_kas_tunai" id="sisa_kas_tunai" readonly>
                         </div>
                     </div>
                     {{-- Sisa Kas Bank --}}
@@ -205,8 +202,8 @@
                     <div class="mb-3 row">
                         <label for="nilai" class="col-md-2 col-form-label">Nilai</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" name="nilai" id="nilai"
-                                style="text-align: right" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency">
+                            <input type="text" class="form-control" name="nilai" id="nilai" style="text-align: right" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$"
+                                data-type="currency">
                         </div>
                     </div>
                     {{-- Simpan --}}
