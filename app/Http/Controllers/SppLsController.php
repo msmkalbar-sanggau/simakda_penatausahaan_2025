@@ -385,9 +385,17 @@ class SppLsController extends Controller
             $join->on('a.kd_skpd', '=', 'b.kd_skpd');
         })->where(['a.kd_sub_kegiatan' => $kdgiat, 'a.kd_rek6' => $kdrek, 'a.kd_skpd' => $skpd, 'b.status_validasi' => '0'])->unionAll($query4);
 
+        /*================== STS KAS SUDAH VALIDASI KASDA =====================*/
+        $sql_sts = DB::table('trdkasin_pkd as c')->join('trhkasin_ppkd as d', function ($join) {
+            $join->on('c.no_sts', '=', 'd.no_sts');
+            $join->on('c.kd_skpd', '=', 'd.kd_skpd');
+        })->where(['c.kd_sub_kegiatan' => $kdgiat, 'd.kd_skpd' => $skpd, 'c.kd_rek6' => $kdrek])
+            ->select(DB::raw("SUM(ISNULL(rupiah,0))*-1 as nilai"))->unionAll($query5);
+        /*================== END STS KAS SUDAH VALIDASI KASDA =====================*/
+
         $result = DB::table(DB::raw("({$query5->toSql()}) AS sub"))
             ->select(DB::raw("SUM(nilai) as rektotal_spp_lalu"))
-            ->mergeBindings($query5)
+            ->mergeBindings($sql_sts)
             ->first();
 
         $rektotal = DB::table('trdrka')->select(DB::raw("SUM(nilai) as rektotal"))->where(['kd_rek6' => $kdrek, 'kd_sub_kegiatan' => $kdgiat, 'jns_ang' => $status_anggaran->jns_ang, 'kd_skpd' => $skpd])->first();
@@ -717,12 +725,20 @@ class SppLsController extends Controller
             $join->on('t.kd_skpd', '=', 'u.kd_skpd');
         })->where(['t.kd_sub_kegiatan' => $kdgiat, 't.kd_rek' => $kdrek, 'u.kd_skpd' => $skpd])->whereNotIn('u.no_bukti', $no_bukti)->unionAll($realisasi4);
 
+        /*================== STS KAS SUDAH VALIDASI KASDA =====================*/
+        $sql_sts = DB::table('trdkasin_pkd as c')->join('trhkasin_ppkd as d', function ($join) {
+            $join->on('c.no_sts', '=', 'd.no_sts');
+            $join->on('c.kd_skpd', '=', 'd.kd_skpd');
+        })->where(['c.kd_sub_kegiatan' => $kdgiat, 'd.kd_skpd' => $skpd, 'c.kd_rek6' => $kdrek])
+            ->select(DB::raw("SUM(ISNULL(rupiah,0))*-1 as nilai"))->unionAll($realisasi5);
+        /*================== END STS KAS SUDAH VALIDASI KASDA =====================*/
+
         // $sql = $realisasi5->toSql();
         // dd($sql);
         // return;
-        $result = DB::table(DB::raw("({$realisasi5->toSql()}) AS sub"))
+        $result = DB::table(DB::raw("({$sql_sts->toSql()}) AS sub"))
             ->select(DB::raw("SUM(nilai) as total"))
-            ->mergeBindings($realisasi5)
+            ->mergeBindings($sql_sts)
             ->first();
         return response()->json($result);
     }
