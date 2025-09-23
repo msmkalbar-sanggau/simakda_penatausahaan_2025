@@ -42,7 +42,7 @@ class SetorSisaController extends Controller
             ->orderBy(DB::raw("CAST(no_sts as INT)"))
             ->get();
         return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
-            if ($row->status != '1') {
+            if (rtrim($row->status) != '1') {
                 $btn = '<a href="' . route("skpd.setor_sisa.edit", Crypt::encryptString($row->no_sts)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="fa fa-edit"></i></a>';
                 $btn .= '<a href="javascript:void(0);" onclick="hapusSetor(' . $row->no_sts . ', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></a>';
             } else {
