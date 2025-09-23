@@ -167,6 +167,14 @@ class PenagihanController extends Controller
                         AND kd_skpd = a.kd_skpd
                         AND kd_rek6 = a.kd_rek6
                         -- tambahan tampungan
+                        union all
+                        /*================== STS KAS SUDAH VALIDASI KASDA =====================*/
+                        SELECT SUM(rupiah)*-1 as nilai from trhkasin_ppkd e 
+                        join trdkasin_pkd f on e.no_sts=f.no_sts and e.kd_skpd=f.kd_skpd 
+                        where f.kd_sub_kegiatan=a.kd_sub_kegiatan 
+                        AND f.kd_skpd = a.kd_skpd
+                        AND f.kd_rek6 = a.kd_rek6
+                        /*================== END STS KAS SUDAH VALIDASI KASDA =====================*/
                         )r) AS lalu,
                     0 AS sp2d,a.nilai AS anggaran"))->leftJoin('ms_rek6 as e', 'a.kd_rek6', '=', 'e.kd_rek6')->where(['a.kd_sub_kegiatan' => $kd_sub_kegiatan, 'a.jns_ang' => $status_anggaran->jns_ang, 'a.kd_skpd' => $kd_skpd, 'a.status_aktif' => '1'])->get();
         return response()->json($daftar_rekening);
@@ -633,17 +641,34 @@ class PenagihanController extends Controller
         //     ->mergeBindings($data2)
         //     ->get();
 
-        $data = DB::select("SELECT oke.sumber as kd_sumber, (select sumber_dana from ms_sumber_dana c where c.kd_dana = oke.sumber) as nm_sumber, SUM (nilai) AS nilai,SUM (sd) AS sd FROM
-        (
-            SELECT * FROM (SELECT sumber, sum(total) as nilai, 0 as sd from trdpo where kd_sub_kegiatan = ? and kd_rek6 = ? and kd_skpd = ? and jns_ang = ? GROUP BY sumber)z
-            UNION ALL
-            SELECT sumber,nilai,sd FROM (
-            SELECT c.sumber,0 AS nilai,SUM (c.nilai) AS sd FROM trdtransout_cmsbank c LEFT JOIN trhtransout_cmsbank d ON c.no_voucher =d.no_voucher AND c.kd_skpd =d.kd_skpd WHERE c.kd_sub_kegiatan =? AND LEFT (d.kd_skpd,22)=LEFT (?,22) AND c.kd_rek6 =? AND d.status_validasi='0' GROUP BY c.sumber UNION ALL
-            SELECT c.sumber, 0 AS nilai,SUM (c.nilai) AS sd FROM trdtransout c LEFT JOIN trhtransout d ON c.no_bukti =d.no_bukti AND c.kd_skpd =d.kd_skpd WHERE c.kd_sub_kegiatan =? AND LEFT (d.kd_skpd,22)=LEFT (?,22) AND c.kd_rek6 =? AND d.jns_spp in ('1')  GROUP BY c.sumber UNION ALL
-            SELECT x.sumber, 0 AS nilai,SUM (x.nilai) AS sd FROM trdspp x INNER JOIN trhspp y ON x.no_spp=y.no_spp AND x.kd_skpd=y.kd_skpd WHERE x.kd_sub_kegiatan =? AND LEFT (x.kd_skpd,22)=LEFT (?,22) AND x.kd_rek6 =? AND y.jns_spp IN ('3','4','5','6') AND (sp2d_batal IS NULL OR sp2d_batal='' OR sp2d_batal='0') GROUP BY x.sumber UNION ALL
-            SELECT t.sumber,0 AS nilai,SUM (t.nilai) AS sd FROM trdtagih t INNER JOIN trhtagih u ON t.no_bukti=u.no_bukti AND t.kd_skpd=u.kd_skpd WHERE t.kd_sub_kegiatan =? AND u.kd_skpd =? AND t.kd_rek =? AND u.no_bukti NOT IN (
-            SELECT no_tagih FROM trhspp WHERE kd_skpd=?) GROUP BY t.sumber) r
-            ) oke GROUP BY oke.sumber", [$giat, $rek, $kode, $status_anggaran, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $kode]);
+        $data = DB::select(
+            "SELECT oke.sumber as kd_sumber, 
+            (select sumber_dana from ms_sumber_dana c where c.kd_dana = oke.sumber) as nm_sumber, 
+            SUM (nilai) AS nilai,SUM (sd) AS sd FROM (
+                SELECT * FROM (
+                    SELECT sumber, sum(total) as nilai, 0 as sd from 
+                    trdpo where kd_sub_kegiatan = ? and kd_rek6 = ? and kd_skpd = ? and jns_ang = ? GROUP BY sumber
+                )z
+                UNION ALL
+                SELECT sumber,nilai,sd FROM (
+                    SELECT c.sumber,0 AS nilai,SUM (c.nilai) AS sd FROM trdtransout_cmsbank c LEFT JOIN trhtransout_cmsbank d ON c.no_voucher =d.no_voucher AND c.kd_skpd =d.kd_skpd WHERE c.kd_sub_kegiatan =? AND LEFT (d.kd_skpd,22)=LEFT (?,22) AND c.kd_rek6 =? AND d.status_validasi='0' GROUP BY c.sumber 
+                    UNION ALL
+                    SELECT c.sumber, 0 AS nilai,SUM (c.nilai) AS sd FROM trdtransout c LEFT JOIN trhtransout d ON c.no_bukti =d.no_bukti AND c.kd_skpd =d.kd_skpd WHERE c.kd_sub_kegiatan =? AND LEFT (d.kd_skpd,22)=LEFT (?,22) AND c.kd_rek6 =? AND d.jns_spp in ('1')  GROUP BY c.sumber 
+                    UNION ALL
+                    SELECT x.sumber, 0 AS nilai,SUM (x.nilai) AS sd FROM trdspp x INNER JOIN trhspp y ON x.no_spp=y.no_spp AND x.kd_skpd=y.kd_skpd WHERE x.kd_sub_kegiatan =? AND LEFT (x.kd_skpd,22)=LEFT (?,22) AND x.kd_rek6 =? AND y.jns_spp IN ('3','4','5','6') AND (sp2d_batal IS NULL OR sp2d_batal='' OR sp2d_batal='0') GROUP BY x.sumber 
+                    UNION ALL
+                    SELECT t.sumber,0 AS nilai,SUM (t.nilai) AS sd FROM trdtagih t INNER JOIN trhtagih u ON t.no_bukti=u.no_bukti AND t.kd_skpd=u.kd_skpd WHERE t.kd_sub_kegiatan =? AND u.kd_skpd =? AND t.kd_rek =? AND u.no_bukti NOT IN (
+                        SELECT no_tagih FROM trhspp WHERE kd_skpd=?
+                    ) GROUP BY t.sumber
+                    union all 
+                    select f.sumber,0 as nilai, sum(rupiah)*-1 as sd from trhkasin_ppkd e 
+                    join trdkasin_pkd f on e.no_sts=f.no_sts and e.kd_skpd=f.kd_skpd 
+                    where f.kd_sub_kegiatan=?  and f.kd_rek6=? and f.kd_skpd=?
+                    group by f.sumber
+                ) r
+            ) oke GROUP BY oke.sumber",
+            [$giat, $rek, $kode, $status_anggaran, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $giat, $kode, $rek, $kode, $giat, $rek, $kode]
+        );
         return response()->json($data);
     }
 
@@ -706,7 +731,15 @@ class PenagihanController extends Controller
             ->whereIn('a.jns_spp', ['1'])
             ->first();
 
-        $realisasi = $tagih_lalu->nilai + $spplalu->nilai + $upgulalucms->nilai + $upgulalu->nilai;
+        /*================== STS KAS SUDAH VALIDASI KASDA =====================*/
+        $sql_sts = DB::table('trdkasin_pkd as c')->join('trhkasin_ppkd as d', function ($join) {
+            $join->on('c.no_sts', '=', 'd.no_sts');
+            $join->on('c.kd_skpd', '=', 'd.kd_skpd');
+        })->where(['c.kd_sub_kegiatan' => $kd_sub_kegiatan, 'd.kd_skpd' => $kd_skpd, 'c.kd_rek6' => $kd_rek6, 'c.sumber' => $sumber])
+            ->select(DB::raw("SUM(ISNULL(rupiah,0)) as nilai"))->first();
+        /*================== END STS KAS SUDAH VALIDASI KASDA =====================*/
+
+        $realisasi = $tagih_lalu->nilai + $spplalu->nilai + $upgulalucms->nilai + $upgulalu->nilai - $sql_sts->nilai;
         return response()->json($realisasi);
     }
 
