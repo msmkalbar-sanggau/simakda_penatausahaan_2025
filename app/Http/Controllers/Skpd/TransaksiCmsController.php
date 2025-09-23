@@ -486,9 +486,17 @@ class TransaksiCmsController extends Controller
                 $join->on('c.kd_skpd', '=', 'd.kd_skpd');
             })->where(['c.kd_sub_kegiatan' => $kd_sub_kegiatan, 'd.kd_skpd' => $kd_skpd, 'c.kd_rek6' => $kd_rekening])->whereRaw('d.no_bukti NOT IN (SELECT no_tagih FROM trhspp WHERE kd_skpd=?)', [$kd_skpd])->select(DB::raw("SUM(ISNULL(nilai,0)) as nilai"))->unionAll($data3);
 
-            $data = DB::table(DB::raw("({$data4->toSql()}) AS sub"))
+            /*================== STS KAS SUDAH VALIDASI KASDA =====================*/
+            $sql_sts = DB::table('trdkasin_pkd as c')->join('trhkasin_ppkd as d', function ($join) {
+                $join->on('c.no_sts', '=', 'd.no_sts');
+                $join->on('c.kd_skpd', '=', 'd.kd_skpd');
+            })->where(['c.kd_sub_kegiatan' => $kd_sub_kegiatan, 'd.kd_skpd' => $kd_skpd, 'c.kd_rek6' => $kd_rekening])
+                ->select(DB::raw("SUM(ISNULL(rupiah,0))*-1 as nilai"))->unionAll($data4);
+            /*================== END STS KAS SUDAH VALIDASI KASDA =====================*/
+
+            $data = DB::table(DB::raw("({$sql_sts->toSql()}) AS sub"))
                 ->select(DB::raw("SUM(nilai) as total"))
-                ->mergeBindings($data4)
+                ->mergeBindings($sql_sts)
                 ->first();
         } else {
             // $spp         = $this->tukd_model->get_nama($this->input->post('nosp2d'),'no_spp','trhsp2d','no_sp2d');
@@ -508,7 +516,6 @@ class TransaksiCmsController extends Controller
             AND d.kd_skpd = ?
             AND c.kd_rek6 = ?
             AND d.jns_spp in ('3','4','5','6')
-            AND c.sumber=?
             AND d.no_sp2d=?
             UNION ALL
             -- transaksi UP/GU CMS BANK Belum Validasi
@@ -521,7 +528,6 @@ class TransaksiCmsController extends Controller
             AND c.kd_rek6=?
             AND d.jns_spp in ('1')
             AND (d.status_validasi='0' OR d.status_validasi is null)
-            AND c.sumber=?
             UNION ALL
             -- Penagihan yang belum jadi SPP
             SELECT SUM(isnull(nilai,0)) as nilai, SUM(isnull(nilai,0)) as nilai_lalu FROM trdtagih t
@@ -532,8 +538,7 @@ class TransaksiCmsController extends Controller
             AND u.kd_skpd = ?
             AND u.no_bukti
             NOT IN (select no_tagih FROM trhspp WHERE kd_skpd=?)
-            AND t.sumber=?
-            )r", [$kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber, $no_sp2d, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $sumber, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $kd_skpd, $sumber]))->first();
+            )r", [$kd_sub_kegiatan, $kd_skpd, $kd_rekening, $no_sp2d, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $kd_sub_kegiatan, $kd_skpd, $kd_rekening, $kd_skpd]))->first();
         }
 
         return response()->json($data);

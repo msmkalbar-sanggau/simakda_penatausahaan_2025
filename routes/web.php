@@ -726,6 +726,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
                 Route::get('create', [SetorSisaController::class, 'create'])->name('skpd.setor_sisa.create');
                 Route::post('cek_simpan', [SetorSisaController::class, 'cekSimpan'])->name('skpd.setor_sisa.cek_simpan');
                 Route::post('simpan', [SetorSisaController::class, 'simpan'])->name('skpd.setor_sisa.simpan');
+                // TODO:: EDIT BELUM BENAR, CEK LAGI (FEDY-23092025)
                 Route::get('edit/{no_sts?}', [SetorSisaController::class, 'edit'])->where('no_sts', '(.*)')->name('skpd.setor_sisa.edit');
                 Route::post('update', [SetorSisaController::class, 'update'])->name('skpd.setor_sisa.update');
                 Route::post('hapus', [SetorSisaController::class, 'hapus'])->name('skpd.setor_sisa.hapus');
@@ -1449,6 +1450,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::get('cetak', [PenerimaanController::class, 'cetakPenerimaanKas'])->name('penerimaan_kas.cetak');
             Route::get('cekvalidasi', [PenerimaanController::class, 'cekDataValidasi'])->name('penerimaan_kas.cekvalidasi');
         });
+
         // Koreksi Pendapatan
         Route::group(['prefix' => 'koreksi_pendapatan'], function () {
             Route::get('', [PenerimaanController::class, 'indexKoreksi'])->name('koreksi_pendapatan.index');
