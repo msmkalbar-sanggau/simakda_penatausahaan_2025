@@ -919,7 +919,7 @@
                         `<option value="" disabled selected>Silahkan Pilih</option>`);
                     $.each(data, function(index, data) {
                         $('#sumber_koreksi').append(
-                            `<option value="${data.nm_sumber}" data-nilai="${data.nilai_sumber}">${data.nm_sumber} | ${data.nilai_sumber}</option>`
+                            `<option value="${data.sumber}" data-nilai="${data.nilai_sumber}">${data.nm_sumber} | ${data.nilai_sumber}</option>`
                         );
                     })
                 }

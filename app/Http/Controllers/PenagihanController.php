@@ -753,7 +753,7 @@ class PenagihanController extends Controller
     public function cariNamaSumber2(Request $request)
     {
         $sumber_dana = $request->sumber_dana;
-        $data = DB::table('sumber_dana')->select('nm_sumber_dana1', 'kd_sumber_dana1')->where('nm_sumber_dana1', $sumber_dana)->first();
+        $data = DB::table('sumber_dana')->select('nm_sumber_dana1', 'kd_sumber_dana1')->where('kd_sumber_dana1', $sumber_dana)->first();
         return response()->json($data);
     }
 
