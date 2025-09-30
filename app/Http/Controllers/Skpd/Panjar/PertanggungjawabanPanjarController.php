@@ -39,7 +39,7 @@ class PertanggungjawabanPanjarController extends Controller
 
         $data = [
             'daftar_panjar' => DB::table('tr_panjar')
-                ->where(['status' => '0', 'kd_skpd' => $kd_skpd])
+                ->where(['status' => '0', 'kd_skpd' => $kd_skpd, 'jns' => 1])
                 ->get(),
             'no_urut' => no_urut_tukd()
         ];
