@@ -633,15 +633,21 @@ class LaporanPenutupanKasBulananController extends Controller
             ->first();
 
         $saldobank  = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
-                        -- SP2D Terima
-                        SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd = ?
+                        /* SP2D Terima */
+                        SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp 
+                        INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd = ?
                         AND  MONTH(a.tgl_kas)< ? and a.status='1' and a.jns_spp in ('1','2')
 
                         UNION ALL
                         SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
                         AND  MONTH(a.tgl_kas)< ?
 
-                        --DROPPING TERIMA
+                        /* PANJAR TERIMA */
+                        UNION ALL
+                        select sum(nilai) as masuk, 0 as keluar 
+                        from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)<?
+
+                        /* DROPPING TERIMA */
                         UNION ALL
                         SELECT sum(x.sd_bln_ini) terima, 0 keluar from(
                         select SUM(CASE WHEN MONTH(tgl_kas)< ? THEN nilai ELSE 0 END) as sd_bln_ini
@@ -663,7 +669,7 @@ class LaporanPenutupanKasBulananController extends Controller
                         ) a
                         WHERE a.kd_skpd= ?
 
-                        -- DROPPING KELUAR
+                        /* DROPPING KELUAR */
                         UNION ALL
                         SELECT 0 as masuk, SUM(z.sd_bln_ini) as keluar from(
                                 select
@@ -676,23 +682,34 @@ class LaporanPenutupanKasBulananController extends Controller
                                 from tr_setorpelimpahan
                                 WHERE kd_skpd_sumber= ?
                                 )z
-
-                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd]);
+                        /* PANJAR KELUAR */  
+                        UNION ALL                        
+                        select 0 as masuk, sum(nilai) as keluar 
+                        from tr_panjar where kd_skpd=? and jns='1' and MONTH(tgl_kas)<?
+                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
         foreach ($saldobank as $sawalbank) {
             $saldoawalbank   = $sawalbank->terima - $sawalbank->keluar;
         }
 
 
         $terimakeluarbank = DB::select("SELECT sum(terima) as terima , sum(keluar) as keluar from (
-                -- SP2 Terima
-                SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
-                AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2')
+                /* SP2 Terima */
+                SELECT SUM(b.nilai) as terima,0 as keluar  FROM trhsp2d a 
+                INNER JOIN trdspp b ON a.no_spp = b.no_spp 
+                INNER JOIN trhspp c ON a.no_spp = c.no_spp 
+                WHERE a.kd_skpd =  ? AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2')
 
                 UNION ALL
+
                 SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
                 AND  MONTH(a.tgl_kas)= ?
 
-                --DROPPING TERIMA
+                /* PANJAR TERIMA */
+                UNION ALL
+                select 0 as masuk, sum(nilai)*-1 as keluar 
+                from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)=?
+
+                /* DROPPING TERIMA */
                 UNION ALL
                 SELECT sum(x.sd_bln_ini) terima, 0 keluar from(
                 select SUM(CASE WHEN MONTH(tgl_kas)= ? THEN nilai ELSE 0 END) as sd_bln_ini
@@ -710,14 +727,15 @@ class LaporanPenutupanKasBulananController extends Controller
                 SELECT 0 as terima , sum(gaji_ini)+ sum(brg_ini)+sum(up_ini)as keluar from
 
                 (
-                    select a.kd_skpd, 0 as gaji_ini, 0 as brg_ini, isnull(a.nilai,0) as up_ini, 0 as gaji_lalu, 0 as brg_lalu, 0 as up_lalu from trdtransout a join trhtransout b on a.no_bukti=b.no_bukti and a.kd_skpd=b.kd_skpd where MONTH(b.tgl_bukti)= ?
+                    select a.kd_skpd, 0 as gaji_ini, 0 as brg_ini, isnull(a.nilai,0) as up_ini, 0 as gaji_lalu, 0 as brg_lalu, 0 as up_lalu 
+                    from trdtransout a join trhtransout b on a.no_bukti=b.no_bukti and a.kd_skpd=b.kd_skpd where MONTH(b.tgl_bukti)= ?
                     and jns_spp in (1,2,3) and pay not in ('PANJAR')
 
                 ) a
                 WHERE a.kd_skpd= ?
 
 
-                -- DROPPING KELUAR
+                /* DROPPING KELUAR */
                 UNION ALL
                 SELECT 0 as masuk, SUM(z.sd_bln_ini) as keluar from(
                         select
@@ -733,14 +751,14 @@ class LaporanPenutupanKasBulananController extends Controller
 
                 union all
 
-                select 0 as terima , sum(nilai) as keluar from tr_panjar a where MONTH(tgl_panjar)= ? and kd_skpd = ? 
+                select 0 as terima , sum(nilai) as keluar from tr_panjar a where MONTH(tgl_panjar)= ? and kd_skpd = ?  and jns='1'
 
-                union all
+                union all 
 
                 SELECT SUM(b.nilai) as terima,SUM(b.nilai) as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
                 AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2') and b.nm_rek6='Belanja Dana Operasional KDH/WKDH'
 
-                        )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
+                        )zzz", [$kd_skpd, $bulan,  $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
 
 
 
