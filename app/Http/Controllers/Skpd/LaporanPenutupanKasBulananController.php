@@ -707,7 +707,7 @@ class LaporanPenutupanKasBulananController extends Controller
                 union all
 
                 /** Pengembalian Panjar */
-                select sum(nilai) as masuk,0 as keluar 
+                select sum(nilai) as masuk,sum(nilai)  as keluar 
                 from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)=?  and jns='2'
 
                 /* PANJAR TERIMA */
