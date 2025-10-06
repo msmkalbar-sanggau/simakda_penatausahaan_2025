@@ -704,10 +704,16 @@ class LaporanPenutupanKasBulananController extends Controller
                 SELECT SUM(a.nilai) as terima,SUM(a.nilai) as terima  FROM tr_ambilsimpanan a WHERE a.kd_skpd =  ?
                 AND  MONTH(a.tgl_kas)= ?
 
+                union all
+
+                /** Pengembalian Panjar */
+                select sum(nilai) as masuk,0 as keluar 
+                from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)=?  and jns='2'
+
                 /* PANJAR TERIMA */
                 UNION ALL
                 select 0 as masuk, sum(nilai)*-1 as keluar 
-                from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)=?
+                from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)=?  and jns='1'
 
                 /* DROPPING TERIMA */
                 UNION ALL
@@ -755,10 +761,10 @@ class LaporanPenutupanKasBulananController extends Controller
 
                 union all 
 
-                SELECT SUM(b.nilai) as terima,SUM(b.nilai) as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
+                SELECT /*SUM(b.nilai)*/ 0 as terima,/*SUM(b.nilai)*/ 0 as keluar  FROM trhsp2d a INNER JOIN trdspp b ON a.no_spp = b.no_spp INNER JOIN trhspp c ON a.no_spp = c.no_spp WHERE a.kd_skpd =  ?
                 AND  MONTH(a.tgl_kas)= ? and a.status='1' and a.jns_spp in ('1','2') and b.nm_rek6='Belanja Dana Operasional KDH/WKDH'
 
-                        )zzz", [$kd_skpd, $bulan,  $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
+                        )zzz", [$kd_skpd, $bulan,  $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
 
 
 
