@@ -645,7 +645,7 @@ class LaporanPenutupanKasBulananController extends Controller
                         /* PANJAR TERIMA */
                         UNION ALL
                         select sum(nilai) as masuk, 0 as keluar 
-                        from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)<?
+                        from tr_jpanjar where kd_skpd=? and MONTH(tgl_kas)<? and jns='1'
 
                         /* DROPPING TERIMA */
                         UNION ALL
@@ -686,6 +686,8 @@ class LaporanPenutupanKasBulananController extends Controller
                         UNION ALL                        
                         select 0 as masuk, sum(nilai) as keluar 
                         from tr_panjar where kd_skpd=? and jns='1' and MONTH(tgl_kas)<?
+                
+
                         )zzz", [$kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $bulan, $kd_skpd, $kd_skpd, $bulan]);
         foreach ($saldobank as $sawalbank) {
             $saldoawalbank   = $sawalbank->terima - $sawalbank->keluar;
