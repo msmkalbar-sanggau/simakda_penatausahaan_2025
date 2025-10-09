@@ -781,7 +781,7 @@
                     return;
                 }
             } else {
-                if (nomor.length != 50) {
+                if (nomor.length != 50 || nomor.length != 51) {
                     alert('Format Nomor SPD Belum Lengkap');
                     return;
                 }
