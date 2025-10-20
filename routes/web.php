@@ -109,6 +109,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\Akuntansi\LraperdaController;
 use App\Http\Controllers\Akuntansi\RekalController;
 use App\Http\Controllers\Akuntansi\pengesahan_spj\PengesahanSPJController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\KoreksiDataController;
 
 // Route::get('/simakda_2023', function () {
@@ -134,6 +135,8 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
 
     Route::group(['prefix' => 'master'], function () {
         Route::resource('penerima', PenerimaController::class);
+
+
         Route::get('penerima/show/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'showPenerima'])->name('penerima.show_penerima');
         Route::get('penerima/edit/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'editPenerima'])->name('penerima.edit_penerima');
         Route::put('penerima/update/{rekening?}/{kd_skpd?}/{npwp?}', [PenerimaController::class, 'updatePenerima'])->name('penerima.update_penerima');
@@ -472,6 +475,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
                 Route::post('show_load_data', [SPDBelanjaController::class, 'ShowloadData'])->name('spd.spd_belanja.show_load_data');
                 Route::post('cek_skpd', [SPDBelanjaController::class, 'cekSkpd'])->name('spd.spd_belanja.cek_skpd');
                 Route::post('cek_angkas', [SPDBelanjaController::class, 'cekAngkas'])->name('spd.spd_belanja.cek_angkas');
+                Route::put('update_admin', [SPDBelanjaController::class, 'updateAdmin'])->name('spd.spd_belanja.update_admin');
             });
 
             // register spd
@@ -1759,6 +1763,13 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
         Route::get('', [KoreksiDataController::class, 'index'])->name('koreksi_data.index');
         Route::post('simpan', [KoreksiDataController::class, 'simpan'])->name('koreksi_data.simpan');
         Route::post('sp2d', [KoreksiDataController::class, 'sp2d'])->name('koreksi_data.sp2d');
+    });
+
+    Route::group(['prefix' => 'bank'], function () {
+        Route::get('', [BankController::class, 'index'])->name('bank.index');
+        Route::post('load', [BankController::class, 'load'])->name('bank.load');
+        Route::post('nomor', [BankController::class, 'nomor'])->name('bank.nomor');
+        Route::post('simpan', [BankController::class, 'simpan'])->name('bank.simpan');
     });
 });
 
