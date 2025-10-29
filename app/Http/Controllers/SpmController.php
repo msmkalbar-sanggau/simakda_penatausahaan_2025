@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PDF;
 
@@ -40,10 +41,10 @@ class SpmController extends Controller
             $btn = '<a href="' . route("spm.tambah_potongan", Crypt::encryptString($row->no_spm)) . '" class="btn btn-secondary btn-sm" id="tambah_potongan" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Input Potongan & Pajak"><i class="uil-percentage"></i></a>';
             $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak SPM" style="margin-right:4px"><i class="uil-print"></i></a>';
             $btn .= '<a href="' . route("spm.tampil", Crypt::encryptString($row->no_spm)) . '" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Lihat" style="margin-right:4px"><i class="uil-eye"></i></a>';
+
             if ($row->status != 3 && $row->spmBatal <> '1') {
                 $btn .= '<a href="javascript:void(0);" onclick="batal_spm(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Batal SPM" style="margin-right:4px"><i class="uil-ban"></i></a>';
-                // } else if ($row->status == 0 && $row->sp2d_batal != 1) {
-                //     $btn .= '<a href="javascript:void(0);" onclick="batal_spm(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Batal SPM" style="margin-right:4px"><i class="uil-ban"></i></a>';
+                $btn .= '<a href="javascript:void(0);" onclick="deleteData(\'' . $row->no_spm . '\',\'' . Crypt::encryptString($row->no_spm) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPM" style="margin-right:4px"><i class="uil-trash"></i></a>';
             } else {
                 $btn .= '';
             }
@@ -1256,5 +1257,37 @@ class SpmController extends Controller
 
         $nilai = DB::table('trdspp')->select(DB::raw("SUM(nilai) as nilai"))->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->first();
         return response()->json($nilai->nilai);
+    }
+
+
+    public function hapusSPM(Request $request)
+    {
+        $no_spm = Crypt::decryptString($request->no_spm);
+        $kd_skpd = Crypt::decryptString($request->kd_skpd);
+        $user = Auth::user()->nama;
+
+        $trhspm = DB::table('trhspm')->where(['no_spm' => $no_spm, 'kd_skpd' => $kd_skpd])->first();
+
+        if ($trhspm->status == '3')
+            return response()->json(['message' => 'No SPM ' . $no_spm . ' Gagal Dihapus. Sudah Dibuat SP2D'], 400);
+
+        DB::beginTransaction();
+        try {
+            DB::table('trhspm')->where(['no_spm' => $no_spm])->delete();
+
+            DB::table('trhspp')->where(['no_spp' => $trhspm->no_spp])->update(['status' => '0']);
+
+            DB::commit();
+
+            return response()->json(['message' => 'No SPM ' . $no_spm . ' Berhasil Dihapus '], 200);
+        } catch (Exception $th) {
+            DB::rollBack();
+            Log::error('Exception caught: ' . $th->getMessage(), [
+                'exception' => get_class($th),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
+            ]);
+            return response()->json(['message' => 'No SPM ' . $no_spm . ' Gagal Dihapus '], 500);
+        }
     }
 }

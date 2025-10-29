@@ -304,6 +304,7 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
             Route::get('ringkasan_gu', [SpmController::class, 'cetakRingkasanGu'])->name('spm.ringkasan_gu');
             Route::get('ringkasan_tu', [SpmController::class, 'cetakRingkasanTu'])->name('spm.ringkasan_tu');
             Route::post('batal_spm', [SpmController::class, 'batalSpmSpp'])->name('spm.batal_spm');
+            Route::delete('hapus_spm', [SpmController::class, 'hapusSPM'])->name('spm.hapus_spm');
         });
 
         // SPM BARU (1 billing bisa multi akun pajak)

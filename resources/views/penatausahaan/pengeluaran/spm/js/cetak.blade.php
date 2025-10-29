@@ -2,6 +2,8 @@
     $('[data-bs-toggle="tooltip"]').tooltip();
 </script>
 <script>
+    let table_spm = "";
+
     $(document).ready(function() {
 
         $.ajaxSetup({
@@ -10,7 +12,7 @@
             }
         });
 
-        $('#spm').DataTable({
+        table_spm = $('#spm').DataTable({
             responsive: true,
             ordering: false,
             serverSide: true,
@@ -661,25 +663,26 @@
         $('#spm_batal').modal('show');
     }
 
-    function deleteData(no_spp) {
-        let tanya = confirm('Apakah anda yakin untuk menghapus dengan Nomor SPP : ' + no_spp)
+    function deleteData(no_spm, no_spm_encrypt, kd_skpd_encrypt) {
+        let tanya = confirm('Apakah anda yakin untuk menghapus dengan Nomor SPM : ' + no_spm)
         if (tanya == true) {
             $.ajax({
-                url: "{{ route('sppls.hapus_sppls') }}",
+                url: "{{ route('spm.hapus_spm') }}",
                 type: "DELETE",
                 dataType: 'json',
                 data: {
-                    no_spp: no_spp
+                    no_spm: no_spm_encrypt,
+                    kd_skpd: kd_skpd_encrypt
                 },
                 success: function(data) {
-                    if (data.message == '1') {
-                        alert('Data berhasil dihapus!');
-                        location.reload();
-                    } else {
-                        alert('Data gagal dihapus!');
-                        location.reload();
-                    }
-                }
+                    alert(data.message);
+                    table_spm.ajax.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    response = jqXHR.responseJSON;
+                    alert(response.message);
+                },
+                complete: function(data) {},
             })
         } else {
             return false;
