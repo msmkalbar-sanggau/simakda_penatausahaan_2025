@@ -36,15 +36,20 @@ class SpmController extends Controller
     public function loadData()
     {
         $kd_skpd = Auth::user()->kd_skpd;
+        $role = Auth::user()->role;
+        $peran = DB::table("peran")->select("role")->where("id", $role)->first();
+
         $data = DB::table('trhspm as a')->join('trhspp as b', 'a.no_spp', '=', 'b.no_spp')->where(['a.kd_skpd' => $kd_skpd])->select('a.*', DB::raw("ISNULL(b.sp2d_batal,'') as sp2d_batal"), DB::raw("ISNULL(b.ket_batal,'') as ket_batal"))->orderBy('a.no_spm', 'asc')->orderBy('a.kd_skpd', 'asc')->get();
-        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
+        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) use ($peran) {
             $btn = '<a href="' . route("spm.tambah_potongan", Crypt::encryptString($row->no_spm)) . '" class="btn btn-secondary btn-sm" id="tambah_potongan" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Input Potongan & Pajak"><i class="uil-percentage"></i></a>';
             $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak SPM" style="margin-right:4px"><i class="uil-print"></i></a>';
             $btn .= '<a href="' . route("spm.tampil", Crypt::encryptString($row->no_spm)) . '" class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Lihat" style="margin-right:4px"><i class="uil-eye"></i></a>';
 
             if ($row->status != 3 && $row->spmBatal <> '1') {
                 $btn .= '<a href="javascript:void(0);" onclick="batal_spm(\'' . $row->no_spm . '\',\'' . $row->jns_spp . '\',\'' . $row->kd_skpd . '\',\'' . $row->no_spp . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Batal SPM" style="margin-right:4px"><i class="uil-ban"></i></a>';
-                $btn .= '<a href="javascript:void(0);" onclick="deleteData(\'' . $row->no_spm . '\',\'' . Crypt::encryptString($row->no_spm) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPM" style="margin-right:4px"><i class="uil-trash"></i></a>';
+
+                if ($peran->role == "super")
+                    $btn .= '<a href="javascript:void(0);" onclick="deleteData(\'' . $row->no_spm . '\',\'' . Crypt::encryptString($row->no_spm) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPM" style="margin-right:4px"><i class="uil-trash"></i></a>';
             } else {
                 $btn .= '';
             }
