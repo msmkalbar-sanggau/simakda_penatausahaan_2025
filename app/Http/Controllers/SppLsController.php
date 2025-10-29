@@ -1337,11 +1337,16 @@ class SppLsController extends Controller
         if ($cek > 0)
             return response()->json(['message' => 'No SPP ' . $no_spp . ' Gagal Dihapus. Sudah Dibuat SPM'], 400);
 
+        $spp = DB::table('trhspp')->select('no_tagih', "jns_spp")->where(['no_spp' => $no_spp])->first();
+
         DB::beginTransaction();
         try {
             DB::table('trhspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
 
             DB::table('trdspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
+
+            if ($spp->jns_spp == "6")
+                DB::table('trhtagih')->where(['no_bukti' => $spp->no_tagih])->update(['sts_tagih' => '0']);
 
             DB::commit();
             return response()->json(['message' => 'No SPP ' . $no_spp . ' Berhasil Dihapus '], 200);
