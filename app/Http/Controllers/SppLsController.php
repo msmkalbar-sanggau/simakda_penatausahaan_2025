@@ -56,8 +56,11 @@ class SppLsController extends Controller
     public function loadData()
     {
         $kd_skpd = Auth::user()->kd_skpd;
+        $role = Auth::user()->role;
+        $peran = DB::table("peran")->select("role")->where("id", $role)->first();
+
         $data = DB::table('trhspp')->where('kd_skpd', $kd_skpd)->whereNotIn('jns_spp', ['1', '2', '3'])->orderByRaw("tgl_spp ASC, no_spp ASC,CAST(urut AS INT) ASC")->get();
-        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) {
+        return DataTables::of($data)->addIndexColumn()->addColumn('aksi', function ($row) use ($peran) {
             $btn = '<a href="' . route("sppls.show", Crypt::encryptString($row->no_spp)) . '" class="btn btn-info btn-sm" style="margin-right:4px"><i class="fas fa-info-circle"></i></a>';
             $btn .= '<a href="' . route("sppls.edit", Crypt::encryptString($row->no_spp)) . '" class="btn btn-warning btn-sm" style="margin-right:4px"><i class="fa fa-edit"></i></a>';
             $btn .= '<a href="javascript:void(0);" style="margin-right:4px" onclick="cetak(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-success btn-sm"><i class="uil-print"></i></a>';
@@ -66,7 +69,9 @@ class SppLsController extends Controller
                 $btn .= "";
             } else {
                 $btn .= '<a href="javascript:void(0);" onclick="batal_spp(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-ban"></i></a>';
-                $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_spp . '\',\'' . Crypt::encryptString($row->no_spp) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPM" style="margin-right:4px"><i class="uil-trash"></i></a>';
+
+                if ($peran->role == "super")
+                    $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_spp . '\',\'' . Crypt::encryptString($row->no_spp) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPP" style="margin-right:4px"><i class="uil-trash"></i></a>';
             }
 
             return $btn;
