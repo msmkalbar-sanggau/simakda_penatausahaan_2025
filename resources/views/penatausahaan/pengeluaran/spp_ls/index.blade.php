@@ -8,8 +8,7 @@
                     <p>List SPP LS</p>
                     <p style="float: left; color: red;" {{ $kunci === '0' ? 'hidden' : '' }}>Saat ini inputan SPP LS
                         sedang dikunci. Untuk info lebih lanjut silahkan hubungi Perben.</p>
-                    <a href="{{ route('sppls.create') }}" id="tambah_spp_ls" class="btn btn-primary" style="float: right;"
-                        {{ $kunci === '1' ? 'hidden' : '' }}>Tambah</a>
+                    <a href="{{ route('sppls.create') }}" id="tambah_spp_ls" class="btn btn-primary" style="float: right;" {{ $kunci === '1' ? 'hidden' : '' }}>Tambah</a>
                     {{-- <a href="{{ route('sppls.create') }}" id="tambah_spp_ls"
                         class="btn btn-primary {{ $cek['selisih_angkas'] > 0 ? 'disabled' : '' }} {{ $cek['status_angkas'] == '0' ? 'disabled' : '' }}"
                         style="float: right;" {{ $kunci == 1 ? 'hidden' : '' }}>Tambah</a> --}}
@@ -161,8 +160,7 @@
                     <div class="mb-3 row">
                         <label for="spasi" class="col-md-2 col-form-label">Spasi</label>
                         <div class="col-md-6">
-                            <input type="number" value="1" min="1" class="form-control" id="spasi"
-                                name="spasi">
+                            <input type="number" value="1" min="1" class="form-control" id="spasi" name="spasi">
                         </div>
                     </div>
                     {{-- Pengantar, Ringkasan dan Format Permandagri 77 --}}
@@ -188,17 +186,13 @@
                     <div class="mb-3 row">
                         <label for="spp" class="col-md-2 col-form-label">SPP</label>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-md spp_layar" data-jenis="pdf"
-                                name="spp_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md spp_layar" data-jenis="layar"
-                                name="spp_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md spp_layar" data-jenis="pdf" name="spp_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md spp_layar" data-jenis="layar" name="spp_layar">Layar</button>
                         </div>
                         <label for="rincian77" class="col-md-2 col-form-label">Rincian</label>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-md rincian77_layar" data-jenis="pdf"
-                                name="rincian77_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md rincian77_layar" data-jenis="layar"
-                                name="rincian77_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md rincian77_layar" data-jenis="pdf" name="rincian77_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md rincian77_layar" data-jenis="layar" name="rincian77_layar">Layar</button>
                         </div>
                         {{--  <label for="rincian" class="col-md-2 col-form-label">Rincian</label>
                         <div class="col-md-2">
@@ -209,10 +203,8 @@
                         </div>  --}}
                         <label for="pernyataan" class="col-md-2 col-form-label">Pernyataan</label>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-md pernyataan_layar" data-jenis="pdf"
-                                name="pernyataan_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md pernyataan_layar" data-jenis="layar"
-                                name="pernyataan_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md pernyataan_layar" data-jenis="pdf" name="pernyataan_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md pernyataan_layar" data-jenis="layar" name="pernyataan_layar">Layar</button>
                         </div>
 
                     </div>
@@ -227,17 +219,14 @@
                         </div> --}}
                         <label for="sptb" class="col-md-2 col-form-label">SPTB</label>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-danger btn-md sptb_layar" data-jenis="pdf"
-                                name="sptb_pdf">PDF</button>
-                            <button type="button" class="btn btn-dark btn-md sptb_layar" data-jenis="layar"
-                                name="sptb_layar">Layar</button>
+                            <button type="button" class="btn btn-danger btn-md sptb_layar" data-jenis="pdf" name="sptb_pdf">PDF</button>
+                            <button type="button" class="btn btn-dark btn-md sptb_layar" data-jenis="layar" name="sptb_layar">Layar</button>
                         </div>
 
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-md btn-secondary"
-                                data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         </div>
                     </div>
                 </div>
@@ -259,8 +248,7 @@
                         <label for="no_spp_batal" class="col-md-2 col-form-label">No SPP</label>
                         <div class="col-md-12">
                             <input type="text" readonly class="form-control" id="no_spp_batal" name="no_spp_batal">
-                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal"
-                                hidden>
+                            <input type="text" readonly class="form-control" id="beban_batal" name="beban_batal" hidden>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -271,10 +259,8 @@
                     </div>
                     <div class="mb-3 row">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i
-                                    class="uil-ban"></i>Batal SPP</button>
-                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i
-                                    class="fa fa-undo"></i>Keluar</button>
+                            <button type="button" class="btn btn-md btn-danger" id="batal_sppls"><i class="uil-ban"></i>Batal SPP</button>
+                            <button type="button" class="btn btn-md btn-warning" data-bs-dismiss="modal"><i class="fa fa-undo"></i>Keluar</button>
                         </div>
                     </div>
                 </div>
@@ -284,6 +270,8 @@
 @endsection
 @section('js')
     <script>
+        let table_spp = "";
+
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -300,7 +288,8 @@
                 alert('Masih ada ' + selisih_angkas +
                     ' Selisih antara Anggaran dan Anggaran Kas, Anda tidak bisa melanjutkan transaksi');
             }
-            $('#spp_ls').DataTable({
+
+            table_spp = $('#spp_ls').DataTable({
                 responsive: true,
                 ordering: false,
                 serverSide: true,
@@ -818,29 +807,26 @@
             }
         }
 
-        function hapus(no_spp, kd_skpd) {
+        function hapus(no_spp, no_spp_encrypt, kd_skpd_encrypt) {
             let tanya = confirm('Apakah anda yakin untuk menghapus data dengan Nomor SPP : ' + no_spp);
             if (tanya == true) {
                 $.ajax({
                     url: "{{ route('sppls.hapus_sppls') }}",
-                    type: "POST",
+                    type: "delete",
                     dataType: 'json',
                     data: {
-                        no_spp: no_spp,
-                        kd_skpd: kd_skpd,
+                        no_spp: no_spp_encrypt,
+                        kd_skpd: kd_skpd_encrypt,
                     },
                     success: function(data) {
-                        if (data.message == '1') {
-                            alert('Proses Hapus Berhasil');
-                            window.location.reload();
-                        } else if (data.message == '2') {
-                            alert('SPP telah jadi SPM!Tidak dapat dihapus!');
-                            return;
-                        } else {
-                            alert('Proses Hapus Gagal...!!!');
-                            return;
-                        }
-                    }
+                        alert(data.message);
+                        table_spp.ajax.reload();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        response = jqXHR.responseJSON;
+                        alert(response.message);
+                    },
+                    complete: function(data) {},
                 })
             } else {
                 return false;

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use PDF;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -65,6 +66,7 @@ class SppLsController extends Controller
                 $btn .= "";
             } else {
                 $btn .= '<a href="javascript:void(0);" onclick="batal_spp(\'' . $row->no_spp . '\', \'' . $row->jns_spp . '\', \'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-ban"></i></a>';
+                $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_spp . '\',\'' . Crypt::encryptString($row->no_spp) . '\',\'' . Crypt::encryptString($row->kd_skpd) . '\');" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus SPM" style="margin-right:4px"><i class="uil-trash"></i></a>';
             }
 
             return $btn;
@@ -1319,47 +1321,33 @@ class SppLsController extends Controller
 
     public function hapusSppLs(Request $request)
     {
-        $no_spp = $request->no_spp;
-        $kd_skpd = Auth::user()->kd_skpd;
+        $no_spp = Crypt::decryptString($request->no_spp);
+        $kd_skpd = Crypt::decryptString($request->kd_skpd);
+
+        $cek = DB::table('trhspm')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])
+            ->where(function ($query) {
+                $query->where('spmBatal', '')->orWhereNull('spmBatal');
+            })->count();
+
+        if ($cek > 0)
+            return response()->json(['message' => 'No SPP ' . $no_spp . ' Gagal Dihapus. Sudah Dibuat SPM'], 400);
 
         DB::beginTransaction();
         try {
-            $cek = DB::table('trhspm')
-                ->where([
-                    'no_spp' => $no_spp,
-                    'kd_skpd' => $kd_skpd
-                ])
-                ->where(function ($query) {
-                    $query->where('spmBatal', '')->orWhereNull('spmBatal');
-                })
-                ->count();
+            DB::table('trhspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
 
-            if ($cek > 0) {
-                return response()->json([
-                    'message' => '2'
-                ]);
-            }
+            DB::table('trdspp')->where(['no_spp' => $no_spp, 'kd_skpd' => $kd_skpd])->delete();
 
-            DB::table('trhspp')
-                ->where([
-                    'no_spp' => $no_spp,
-                    'kd_skpd' => $kd_skpd
-                ])
-                ->delete();
-            DB::table('trdspp')
-                ->where([
-                    'no_spp' => $no_spp,
-                    'kd_skpd' => $kd_skpd
-                ])
-                ->delete();
             DB::commit();
-            return response()->json([
-                'message' => '1'
+            return response()->json(['message' => 'No SPP ' . $no_spp . ' Berhasil Dihapus '], 200);
+        } catch (Exception $th) {
+            DB::rollBack();
+            Log::error('Exception caught: ' . $th->getMessage(), [
+                'exception' => get_class($th),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
             ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => '0'
-            ]);
+            return response()->json(['message' => 'No SPP ' . $no_spp . ' Gagal Dihapus '], 500);
         }
     }
 
