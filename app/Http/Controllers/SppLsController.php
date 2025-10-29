@@ -1337,7 +1337,7 @@ class SppLsController extends Controller
         if ($cek > 0)
             return response()->json(['message' => 'No SPP ' . $no_spp . ' Gagal Dihapus. Sudah Dibuat SPM'], 400);
 
-        $spp = DB::table('trhspp')->select('no_tagih', "jns_spp")->where(['no_spp' => $no_spp])->first();
+        $spp = DB::table('trhspp')->select('no_tagih', "jns_spp")->where(['no_spp' => $no_spp, "kd_skpd" => $kd_skpd])->first();
 
         DB::beginTransaction();
         try {
