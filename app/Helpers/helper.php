@@ -3006,24 +3006,28 @@ function load_spd($kd_sub_kegiatan, $kd_skpd, $kd_rekening)
         ->select(DB::raw("MAX(revisi_ke) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '3'])
+        ->where('status',1)
         ->first();
 
     $revisi2 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '6'])
+        ->where('status',1)
         ->first();
 
     $revisi3 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '9'])
+        ->where('status',1)
         ->first();
 
     $revisi4 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '12'])
+        ->where('status',1)
         ->first();
 
 
