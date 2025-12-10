@@ -3006,28 +3006,28 @@ function load_spd($kd_sub_kegiatan, $kd_skpd, $kd_rekening)
         ->select(DB::raw("MAX(revisi_ke) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '3'])
-        ->where('status',1)
+        ->where('status', 1)
         ->first();
 
     $revisi2 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '6'])
-        ->where('status',1)
+        ->where('status', 1)
         ->first();
 
     $revisi3 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '9'])
-        ->where('status',1)
+        ->where('status', 1)
         ->first();
 
     $revisi4 = DB::table('trhspd')
         ->select(DB::raw("ISNULL(MAX(revisi_ke),0) as revisi"))
         ->whereRaw('LEFT(kd_skpd,17) = LEFT(?,17)', [$kd_skpd])
         ->where(['bulan_akhir' => '12'])
-        ->where('status',1)
+        ->where('status', 1)
         ->first();
 
 
@@ -3935,15 +3935,13 @@ function status_angkas1($skpd)
                 UNION ALL
                 select '37'as urut,'nilai_ubah',ubah from status_angkas where kd_skpd ='$skpd'
                 UNION ALL
-                select '38'as urut,'nilai_ubah1',ubah1 from status_angkas where kd_skpd ='$skpd'
+                select '38'as urut,'nilai_ubah2',ubah2 from status_angkas where kd_skpd ='$skpd'
                 UNION ALL
-                select '39'as urut,'nilai_ubah2',ubah2 from status_angkas where kd_skpd ='$skpd'
+                select '39'as urut,'nilai_ubah3',ubah3 from status_angkas where kd_skpd ='$skpd'
                 UNION ALL
-                select '40'as urut,'nilai_ubah3',ubah3 from status_angkas where kd_skpd ='$skpd'
+                select '40'as urut,'nilai_ubah4',ubah4 from status_angkas where kd_skpd ='$skpd'
                 UNION ALL
-                select '41'as urut,'nilai_ubah4',ubah4 from status_angkas where kd_skpd ='$skpd'
-                UNION ALL
-                select '42'as urut,'nilai_ubah5',ubah5 from status_angkas where kd_skpd ='$skpd'
+                select '41'as urut,'nilai_ubah5',ubah5 from status_angkas where kd_skpd ='$skpd'
                 )zz where nilai='1' ORDER BY cast(urut as int) DESC"))->first();
 
     return $data->status;
@@ -3951,7 +3949,7 @@ function status_angkas1($skpd)
 
 function status_angkas($skpd)
 {
-    
+
     $urut1 = DB::table('status_angkas')
         ->select(DB::raw("'1' AS urut"), DB::raw("'murni' AS status"), 'murni as nilai')
         ->where(['kd_skpd' => $skpd, 'murni' => '1']);
