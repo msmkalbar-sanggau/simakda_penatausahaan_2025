@@ -111,6 +111,7 @@ use App\Http\Controllers\Akuntansi\RekalController;
 use App\Http\Controllers\Akuntansi\pengesahan_spj\PengesahanSPJController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\KoreksiDataController;
+use App\Http\Controllers\UploadPendapatanController;
 
 // Route::get('/simakda_2023', function () {
 //     return view('auth.login');
@@ -1252,6 +1253,12 @@ Route::group(['middleware' => 'auth', 'auth.session'], function () {
                 Route::post('hapus', [PenyetoranController::class, 'hapusPenyetoranIni'])->name('penyetoran_ini.hapus');
                 Route::get('cek', [PenyetoranController::class, 'cekPenyetoranIni'])->name('penyetoran_ini.cek');
                 Route::post('validasi', [PenyetoranController::class, 'validasiPenyetoranIni'])->name('penyetoran_ini.validasi');
+            });
+
+
+            Route::group(['prefix' => 'upload_pendapatan'], function () {
+                Route::get('', [UploadPendapatanController::class, 'index'])->name('upload_pendapatan.index');
+                Route::post('simpan', [UploadPendapatanController::class, 'store'])->name('upload_pendapatan.simpan');
             });
         });
         // LPJ
