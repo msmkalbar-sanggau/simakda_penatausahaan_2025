@@ -101,7 +101,7 @@ class UploadPendapatanController extends Controller
 
             //============================================== End Validasi Double
 
-
+            DB::beginTransaction();
             //================================================= Penerimaan Tahun ini
             $rows = $sheets[1];
 
@@ -126,7 +126,7 @@ class UploadPendapatanController extends Controller
                 $keterangan  = str_replace('.', '', trim($rows[$i][11] ?? ''));
                 $jns_pembayaran  = str_replace('.', '', trim($rows[$i][18] ?? ''));
 
-                DB::beginTransaction();
+
 
                 if ($no_terima != "") {
                     DB::table("excel_terima")->where("no_terima", $no_terima)->delete();
@@ -164,8 +164,6 @@ class UploadPendapatanController extends Controller
                         'status_setor' => 'Dengan Setor',
                         'jns_pembayaran' => $jns_pembayaran,
                     ]);
-
-                    DB::commit();
                 }
             }
 
@@ -195,8 +193,6 @@ class UploadPendapatanController extends Controller
                 $total =  preg_replace('/[^0-9.]/', '', $rows[$i][6] ?? 0);
 
                 if ($no_sts != "") {
-                    DB::beginTransaction();
-
                     DB::table("excel_setor")->where("no_sts", $no_sts)->delete();
                     DB::table("excel_setor")->insert([
                         'no_sts' => $no_sts,
@@ -211,10 +207,10 @@ class UploadPendapatanController extends Controller
 
                     DB::table("trdkasin_pkd")->where("no_sts", $no_sts)->delete();
                     DB::table("trhkasin_pkd")->where("no_sts", $no_sts)->delete();
-
-                    DB::commit();
                 }
             }
+
+            DB::commit();
 
             DB::beginTransaction();
 
