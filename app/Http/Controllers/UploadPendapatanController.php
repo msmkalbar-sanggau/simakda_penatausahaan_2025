@@ -76,8 +76,6 @@ class UploadPendapatanController extends Controller
             $duplicates = array_keys(array_filter($counts, fn($c) => $c > 1));
 
             if (!empty($duplicates)) {
-                // STOP sebelum simpan
-
                 return response()->json(['message' => 'Ada no_terima duplikat di Sheet Penerimaan Tahun ini Excel: ' . implode(', ', $duplicates)], 400);
             }
 
@@ -106,7 +104,6 @@ class UploadPendapatanController extends Controller
 
             //================================================= Penerimaan Tahun ini
             $rows = $sheets[1];
-
 
             for ($i = 1; $i < count($rows); $i++) {
 
@@ -229,13 +226,13 @@ class UploadPendapatanController extends Controller
             );
 
             DB::statement(
-                "INSERT into trhkasin_pkd (no_sts, kd_skpd, tgl_sts, keterangan, total, kd_sub_kegiatan, jns_trans, no_cek, pot_khusus, username_created, created_at)
+                "INSERT into trhkasin_pkd (no_sts, kd_skpd, tgl_sts, keterangan, total, kd_sub_kegiatan, jns_trans, pot_khusus, username_created, created_at)
             select a.no_sts, a.kd_skpd, a.tgl_sts, 
             (select STRING_AGG(CAST(keterangan AS VARCHAR(MAX)), ', ') from (
                 SELECT no_sts, keterangan from excel_setor b 
                 group by no_sts, keterangan 
             )as c where c.no_sts=a.no_sts) as keterangan,
-            (select sum(b.rupiah) from trdkasin_pkd b where b.no_sts=a.no_sts) as total, a.kd_sub_kegiatan, '4' as jns_trans, '1' no_cek, '0' as pot_khusus, 
+            (select sum(b.rupiah) from trdkasin_pkd b where b.no_sts=a.no_sts) as total, a.kd_sub_kegiatan, '4' as jns_trans, '0' as pot_khusus, 
             :username as username_created, GETDATE()
             from excel_setor a where a.no_sts not in (select no_sts from trhkasin_pkd)
             group by a.no_sts, a.kd_skpd, a.tgl_sts, a.kd_sub_kegiatan",
