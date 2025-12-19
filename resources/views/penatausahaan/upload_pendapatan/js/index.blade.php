@@ -1,5 +1,4 @@
 <script>
-    console.log("b");
     $(document).ready(function() {
         $.ajaxSetup({
             headers: {
@@ -7,6 +6,11 @@
             }
         });
 
+        document.getElementById('file').value = "";
+
+        $('.select2-multiple').select2({
+            theme: 'bootstrap-5'
+        });
 
         $("#form").on('submit', function(e) {
             e.preventDefault();
@@ -21,15 +25,27 @@
                 dataType: "json",
                 processData: false,
                 contentType: false,
-                beforeSend: function() {},
+                beforeSend: function() {
+                    $("#loading").modal('show');
+                },
                 data: formdata,
                 success: function(response) {
-                    alert(response.message);
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                    })
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     response = jqXHR.responseJSON;
+                    Swal.fire({
+                        icon: 'error',
+                        text: response.message,
+                    })
+                    // $("#loading").modal('hide');
                 },
-                complete: function(data) {},
+                complete: function(data) {
+                    $("#loading").modal('hide');
+                },
             });
         });
     });

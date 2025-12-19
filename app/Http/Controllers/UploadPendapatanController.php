@@ -60,8 +60,53 @@ class UploadPendapatanController extends Controller
             $sheets = Excel::toArray([], $request->file('file'));
 
 
+
+            //============================================== Validasi Double
+            $rows = $sheets[1];
+
+            $noList = [];
+
+            for ($i = 1; $i < count($rows); $i++) {
+                $no_terima = trim(($rows[$i][1] ?? '')); // kolom A = no_terimaa
+                if ($no_terima !== '') $noList[] = $no_terima;
+            }
+
+            $counts = array_count_values($noList);
+
+            $duplicates = array_keys(array_filter($counts, fn($c) => $c > 1));
+
+            if (!empty($duplicates)) {
+                // STOP sebelum simpan
+
+                return response()->json(['message' => 'Ada no_terima duplikat di Sheet Penerimaan Tahun ini Excel: ' . implode(', ', $duplicates)], 400);
+            }
+
+            //==========================
+
+            $rows = $sheets[2];
+
+            $noList = [];
+
+            for ($i = 1; $i < count($rows); $i++) {
+                $no_terima  = trim($rows[$i][2] ?? '');
+
+                if ($no_terima !== '') $noList[] = $no_terima;
+            }
+
+            $counts = array_count_values($noList);
+
+            $duplicates = array_keys(array_filter($counts, fn($c) => $c > 1));
+
+            if (!empty($duplicates)) {
+                return response()->json(['message' => 'Ada no_terima duplikat di Sheet Penyetoran Tahun ini Excel: ' . implode(', ', $duplicates)], 400);
+            }
+
+            //============================================== End Validasi Double
+
+
             //================================================= Penerimaan Tahun ini
             $rows = $sheets[1];
+
 
             for ($i = 1; $i < count($rows); $i++) {
 
@@ -86,43 +131,45 @@ class UploadPendapatanController extends Controller
 
                 DB::beginTransaction();
 
-                DB::table("excel_terima")->where("no_terima", $no_terima)->delete();
+                if ($no_terima != "") {
+                    DB::table("excel_terima")->where("no_terima", $no_terima)->delete();
 
-                DB::table("excel_terima")->insert([
-                    'no_terima' => $no_terima,
-                    'tgl_terima' => $tgl_terima,
-                    'kd_skpd' => $kd_skpd,
-                    'kd_sub_kegiatan' => $kd_sub_kegiatan,
-                    'kd_rek6' => $kd_rek6,
-                    'kd_rek_lo' => $kd_rek_lo,
-                    'nilai' => $nilai,
-                    'keterangan' => $keterangan,
-                    'jns_pembayaran' => $jns_pembayaran,
-                    'created_at' => now(),
-                ]);
+                    DB::table("excel_terima")->insert([
+                        'no_terima' => $no_terima,
+                        'tgl_terima' => $tgl_terima,
+                        'kd_skpd' => $kd_skpd,
+                        'kd_sub_kegiatan' => $kd_sub_kegiatan,
+                        'kd_rek6' => $kd_rek6,
+                        'kd_rek_lo' => $kd_rek_lo,
+                        'nilai' => $nilai,
+                        'keterangan' => $keterangan,
+                        'jns_pembayaran' => $jns_pembayaran,
+                        'created_at' => now(),
+                    ]);
 
 
-                DB::table("tr_terima")->where("no_terima", $no_terima)->delete();
+                    DB::table("tr_terima")->where("no_terima", $no_terima)->delete();
 
-                DB::table("tr_terima")->insert([
-                    'no_terima' => $no_terima,
-                    'tgl_terima' => $tgl_terima,
-                    "sts_tetap" => 0,
-                    'kd_skpd' => $kd_skpd,
-                    'kd_sub_kegiatan' => $kd_sub_kegiatan,
-                    'kd_rek6' => $kd_rek6,
-                    'kd_rek_lo' => $kd_rek_lo,
-                    'nilai' => $nilai,
-                    'keterangan' => $keterangan,
-                    'jenis' => 1,
-                    'user_name' => Auth::user()->nama,
-                    'sumber' => 1,
-                    'kunci' => 1,
-                    'status_setor' => 'Dengan Setor',
-                    'jns_pembayaran' => $jns_pembayaran,
-                ]);
+                    DB::table("tr_terima")->insert([
+                        'no_terima' => $no_terima,
+                        'tgl_terima' => $tgl_terima,
+                        "sts_tetap" => 0,
+                        'kd_skpd' => $kd_skpd,
+                        'kd_sub_kegiatan' => $kd_sub_kegiatan,
+                        'kd_rek6' => $kd_rek6,
+                        'kd_rek_lo' => $kd_rek_lo,
+                        'nilai' => $nilai,
+                        'keterangan' => $keterangan,
+                        'jenis' => 1,
+                        'user_name' => Auth::user()->nama,
+                        'sumber' => 1,
+                        'kunci' => 1,
+                        'status_setor' => 'Dengan Setor',
+                        'jns_pembayaran' => $jns_pembayaran,
+                    ]);
 
-                DB::commit();
+                    DB::commit();
+                }
             }
 
 
@@ -150,24 +197,26 @@ class UploadPendapatanController extends Controller
 
                 $total =  preg_replace('/[^0-9.]/', '', $rows[$i][6] ?? 0);
 
-                DB::beginTransaction();
+                if ($no_sts != "") {
+                    DB::beginTransaction();
 
-                DB::table("excel_setor")->where("no_sts", $no_sts)->delete();
-                DB::table("excel_setor")->insert([
-                    'no_sts' => $no_sts,
-                    'no_terima' => $no_terima,
-                    'kd_skpd' => $kd_skpd,
-                    'tgl_sts' => $tgl_sts,
-                    'keterangan' => $keterangan,
-                    'total' => $total,
-                    'kd_sub_kegiatan' => $kd_sub_kegiatan,
-                    'created_at' => now(),
-                ]);
+                    DB::table("excel_setor")->where("no_sts", $no_sts)->delete();
+                    DB::table("excel_setor")->insert([
+                        'no_sts' => $no_sts,
+                        'no_terima' => $no_terima,
+                        'kd_skpd' => $kd_skpd,
+                        'tgl_sts' => $tgl_sts,
+                        'keterangan' => $keterangan,
+                        'total' => $total,
+                        'kd_sub_kegiatan' => $kd_sub_kegiatan,
+                        'created_at' => now(),
+                    ]);
 
-                DB::table("trdkasin_pkd")->where("no_sts", $no_sts)->delete();
-                DB::table("trhkasin_pkd")->where("no_sts", $no_sts)->delete();
+                    DB::table("trdkasin_pkd")->where("no_sts", $no_sts)->delete();
+                    DB::table("trhkasin_pkd")->where("no_sts", $no_sts)->delete();
 
-                DB::commit();
+                    DB::commit();
+                }
             }
 
             DB::beginTransaction();
@@ -176,17 +225,17 @@ class UploadPendapatanController extends Controller
                 "INSERT into trdkasin_pkd (kd_skpd, no_sts, kd_rek6, rupiah, kd_sub_kegiatan, no_terima, sumber)
             select a.kd_skpd, a.no_sts, b.kd_rek6, b.nilai, a.kd_sub_kegiatan, a.no_terima,'-' from excel_setor a 
             join excel_terima b on a.no_terima=b.no_terima
-            where no_sts not in (select no_sts from trdkasin_pkd)"
+            where no_sts not in (select no_sts from trhkasin_pkd)"
             );
 
             DB::statement(
-                "INSERT into trhkasin_pkd (no_sts, kd_skpd, tgl_sts, keterangan, total, kd_sub_kegiatan, jns_trans, no_cek, status, pot_khusus, username_created, created_at)
+                "INSERT into trhkasin_pkd (no_sts, kd_skpd, tgl_sts, keterangan, total, kd_sub_kegiatan, jns_trans, no_cek, pot_khusus, username_created, created_at)
             select a.no_sts, a.kd_skpd, a.tgl_sts, 
             (select STRING_AGG(CAST(keterangan AS VARCHAR(MAX)), ', ') from (
                 SELECT no_sts, keterangan from excel_setor b 
                 group by no_sts, keterangan 
             )as c where c.no_sts=a.no_sts) as keterangan,
-            (select sum(b.rupiah) from trdkasin_pkd b where b.no_sts=a.no_sts) as total, a.kd_sub_kegiatan, '4' as jns_trans, '1' no_cek, '1' as status, '0' as pot_khusus, 
+            (select sum(b.rupiah) from trdkasin_pkd b where b.no_sts=a.no_sts) as total, a.kd_sub_kegiatan, '4' as jns_trans, '1' no_cek, '0' as pot_khusus, 
             :username as username_created, GETDATE()
             from excel_setor a where a.no_sts not in (select no_sts from trhkasin_pkd)
             group by a.no_sts, a.kd_skpd, a.tgl_sts, a.kd_sub_kegiatan",
