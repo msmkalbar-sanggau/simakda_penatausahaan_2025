@@ -261,7 +261,8 @@ class PenerimaanController extends Controller
         $spjbulan = cek_status_spj_pend($kd_skpd);
         $data = DB::table('tr_terima as a')
             ->selectRaw("no_terima,no_tetap,tgl_terima,tgl_tetap,kd_skpd,keterangan as ket, sumber,
-        nilai, kd_rek6,kd_rek_lo,kd_sub_kegiatan,sts_tetap,(CASE WHEN month(tgl_terima)<=? THEN 1 ELSE 0 END) ketspj,user_name,kunci", [$spjbulan])
+        nilai, kd_rek6,kd_rek_lo,kd_sub_kegiatan,sts_tetap,(CASE WHEN month(tgl_terima)<=? THEN 1 ELSE 0 END) ketspj,user_name,kunci
+        ,(select count(c.no_sts) from trdkasin_pkd c where c.no_terima=a.no_terima) as cek_sts", [$spjbulan])
             ->where(['a.kd_skpd' => $kd_skpd])
             ->where(function ($query) {
                 $query->where('jenis', '<>', '2')->orWhereNull('jenis');
@@ -273,8 +274,10 @@ class PenerimaanController extends Controller
             $btn = '<a href="' . route("penerimaan_ini.edit", Crypt::encrypt($row->no_terima)) . '" class="btn btn-warning btn-sm"  style="margin-right:4px"><i class="uil-edit"></i></a>';
             if ($row->kunci != 0) {
                 $btn .= '';
+                if ($row->cek_sts == 0) {
+                    $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_terima . '\',\'' . $row->no_tetap . '\',\'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-trash"></i></a>';
+                }
             } else {
-
                 $btn .= '<a href="javascript:void(0);" onclick="hapus(\'' . $row->no_terima . '\',\'' . $row->no_tetap . '\',\'' . $row->kd_skpd . '\');" class="btn btn-danger btn-sm" style="margin-right:4px"><i class="uil-trash"></i></a>';
             }
             return $btn;
