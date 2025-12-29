@@ -17,6 +17,10 @@
             responsive: true,
             serverSide: true,
             processing: true,
+            lengthMenu: [
+                [5, 10, 25, 50, 100, -1],
+                [5, 10, 25, 50, 100, "All"],
+            ],
             ajax: {
                 "url": "{{ route('penerimaan_kas.detail_sts') }}",
                 "type": "POST",
