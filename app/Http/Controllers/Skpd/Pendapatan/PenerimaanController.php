@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 
@@ -1702,8 +1703,14 @@ class PenerimaanController extends Controller
                 'message' => '1',
                 'nomor' => $no_urut
             ]);
-        } catch (Exception $e) {
+        } catch (Exception $th) {
             DB::rollBack();
+
+            Log::error('Exception caught: ' . $th->getMessage(), [
+                'exception' => get_class($th),  // Type of exception
+                'file' => $th->getFile(),       // File where it occurred
+                'line' => $th->getLine(),       // Line number where it occurred
+            ]);
             return response()->json([
                 'message' => '0'
             ]);
