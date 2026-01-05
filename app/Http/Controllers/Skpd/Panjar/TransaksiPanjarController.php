@@ -297,58 +297,60 @@ class TransaksiPanjarController extends Controller
 
         $revisi4 = collect(DB::select("SELECT isnull(max(revisi_ke),0) as revisi from trhspd where left(kd_skpd,17)=left(?,17) and bulan_akhir='12'", [$kd_skpd]))->first();
 
-        $nilai_spd = collect(DB::select("SELECT sum(nilai)as total_spd from (
-                    SELECT
-                    'TW1' ket,isnull(SUM(a.nilai),0) AS nilai
-                    FROM
-                    trdspd a
-                    JOIN trhspd b ON a.no_spd = b.no_spd
-                    WHERE
-                    a.kd_unit = ?
-                    AND a.kd_sub_kegiatan = ?
-                    AND a.kd_rek6 = ?
-                    AND b.status = '1'
-                    and bulan_akhir='3'
-                    and revisi_ke=?
-                    UNION ALL
-                    SELECT
-                    'TW2' ket,isnull(SUM(a.nilai),0) AS nilai
-                    FROM
-                    trdspd a
-                    JOIN trhspd b ON a.no_spd = b.no_spd
-                    WHERE
-                    a.kd_unit = ?
-                    AND a.kd_sub_kegiatan = ?
-                    AND a.kd_rek6 = ?
-                    AND b.status = '1'
-                    and bulan_akhir='6'
-                    and revisi_ke=?
-                    UNION ALL
-                    SELECT
-                    'TW3' ket,isnull(SUM(a.nilai),0) AS nilai
-                    FROM
-                    trdspd a
-                    JOIN trhspd b ON a.no_spd = b.no_spd
-                    WHERE
-                    a.kd_unit = ?
-                    AND a.kd_sub_kegiatan = ?
-                    AND a.kd_rek6 = ?
-                    AND b.status = '1'
-                    and bulan_akhir='9'
-                    and revisi_ke=?
-                    UNION ALL
-                    SELECT
-                    'TW4' ket,isnull(SUM(a.nilai),0) AS nilai
-                    FROM
-                    trdspd a
-                    JOIN trhspd b ON a.no_spd = b.no_spd
-                    WHERE
-                    a.kd_unit = ?
-                    AND a.kd_sub_kegiatan = ?
-                    AND a.kd_rek6 = ?
-                    AND b.status = '1'
-                    and bulan_akhir='12'
-                    and revisi_ke=?)spd", [$kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi1->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi2->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi3->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi4->revisi,]))->first();
+        // $nilai_spd = collect(DB::select("SELECT sum(nilai)as total_spd from (
+        //             SELECT
+        //             'TW1' ket,isnull(SUM(a.nilai),0) AS nilai
+        //             FROM
+        //             trdspd a
+        //             JOIN trhspd b ON a.no_spd = b.no_spd
+        //             WHERE
+        //             a.kd_unit = ?
+        //             AND a.kd_sub_kegiatan = ?
+        //             AND a.kd_rek6 = ?
+        //             AND b.status = '1'
+        //             and bulan_akhir='3'
+        //             and revisi_ke=?
+        //             UNION ALL
+        //             SELECT
+        //             'TW2' ket,isnull(SUM(a.nilai),0) AS nilai
+        //             FROM
+        //             trdspd a
+        //             JOIN trhspd b ON a.no_spd = b.no_spd
+        //             WHERE
+        //             a.kd_unit = ?
+        //             AND a.kd_sub_kegiatan = ?
+        //             AND a.kd_rek6 = ?
+        //             AND b.status = '1'
+        //             and bulan_akhir='6'
+        //             and revisi_ke=?
+        //             UNION ALL
+        //             SELECT
+        //             'TW3' ket,isnull(SUM(a.nilai),0) AS nilai
+        //             FROM
+        //             trdspd a
+        //             JOIN trhspd b ON a.no_spd = b.no_spd
+        //             WHERE
+        //             a.kd_unit = ?
+        //             AND a.kd_sub_kegiatan = ?
+        //             AND a.kd_rek6 = ?
+        //             AND b.status = '1'
+        //             and bulan_akhir='9'
+        //             and revisi_ke=?
+        //             UNION ALL
+        //             SELECT
+        //             'TW4' ket,isnull(SUM(a.nilai),0) AS nilai
+        //             FROM
+        //             trdspd a
+        //             JOIN trhspd b ON a.no_spd = b.no_spd
+        //             WHERE
+        //             a.kd_unit = ?
+        //             AND a.kd_sub_kegiatan = ?
+        //             AND a.kd_rek6 = ?
+        //             AND b.status = '1'
+        //             and bulan_akhir='12'
+        //             and revisi_ke=?)spd", [$kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi1->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi2->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi3->revisi, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $revisi4->revisi,]))->first();
+
+        $nilai_spd = load_spd($kd_sub_kegiatan, $kd_skpd, $kd_rek6);
 
         if ($beban == '1') {
             $total_trans = collect(DB::select("SELECT SUM(nilai) total FROM
@@ -455,7 +457,7 @@ class TransaksiPanjarController extends Controller
 
         return response()->json([
             'angkas' => $nilai_angkas->nilai,
-            'spd' => $nilai_spd->total_spd,
+            'spd' => $nilai_spd->total,
             'transaksi' => $total_trans->total,
         ]);
     }
