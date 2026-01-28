@@ -493,6 +493,7 @@ class SetorSisaController extends Controller
                         'rupiah' => $value['rupiah'],
                         'kd_sub_kegiatan' => isset($data['kd_sub_kegiatan']) ? $data['kd_sub_kegiatan'] : '',
                         'kd_skpd' => $kd_skpd,
+                        'sumber' => $value['sumber']
                     ];
                 }, $data['detail']));
             }
