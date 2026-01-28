@@ -205,6 +205,8 @@ class TransaksiCmsController extends Controller
         $data = DB::select("SELECT sumber as sumber_dana,nm_sumber,sum(total) as nilai , (SELECT ISNULL(SUM(nilai),0) as nilai FROM trdtagih t  INNER JOIN trhtagih u  ON t.no_bukti=u.no_bukti AND t.kd_skpd=u.kd_skpd WHERE  t.kd_sub_kegiatan = ? AND
         u.kd_skpd = ? AND t.kd_rek = ? AND u.no_bukti  NOT IN (select no_tagih FROM trhspp WHERE kd_skpd=? ) and sumber=sumber)as lalu from trdpo where kd_sub_kegiatan = ? and kd_rek6 = ? and kd_skpd = ? and jns_ang = ? GROUP BY sumber, nm_sumber", [$kd_sub_kegiatan, $kd_skpd, $kd_rek6, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $kd_skpd, $jenis_ang]);
 
+        // dd($kd_sub_kegiatan, $kd_skpd, $kd_rek6, $kd_skpd, $kd_sub_kegiatan, $kd_rek6, $kd_skpd, $jenis_ang);
+
         return response()->json($data);
     }
 

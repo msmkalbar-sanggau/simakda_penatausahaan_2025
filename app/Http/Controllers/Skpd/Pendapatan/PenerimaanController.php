@@ -948,6 +948,7 @@ class PenerimaanController extends Controller
     // Penerimaan Lain PPKD
     public function indexPenerimaanKas()
     {
+        
         return view('skpd.penerimaan_kas.index');
     }
 
@@ -1425,11 +1426,12 @@ class PenerimaanController extends Controller
     }
 
     public function editPenerimaanKas($no_sts, $kd_skpd)
-    {
+    {   
+        
         $no_sts = Crypt::decrypt($no_sts);
         $skpd = Crypt::decrypt($kd_skpd);
         $kd_skpd = Auth::user()->kd_skpd;
-
+        
         $data = [
             'terima' => collect(DB::select("SELECT
             c.kd_sub_kegiatan AS kd_sub_kegiatan,
@@ -1448,7 +1450,7 @@ class PenerimaanController extends Controller
             ( SELECT nm_skpd FROM ms_skpd WHERE kd_skpd = a.kd_skpd ) AS nm_skpd,
             rtrim( a.jns_trans ) AS nm_trans,
             (
-            SELECT
+            SELECT TOP 1
                 rtrim( rek_bank ) AS rek_bank
             FROM
                 trhkasin_ppkd
@@ -1491,7 +1493,7 @@ class PenerimaanController extends Controller
             AND a.no_bukti= b.no_sts
             WHERE a.no_bukti = ? and a.kd_skpd = ?", [$no_sts, $skpd, $no_sts, $skpd]))->first(),
         ];
-        // dd($data['terima']);
+        
         return view('skpd.penerimaan_kas.edit')->with($data);
     }
 

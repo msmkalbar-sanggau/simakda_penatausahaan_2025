@@ -148,12 +148,12 @@
                 }
             })
 
-            if ((kdskpd != '1.03.0.00.0.00.02.0000' && kdskpd != '1.04.1.03.2.10.02.0000') && (status !=
-                    1 || status != '1') && total < nilai_min_gu) {
-                alert('LPJ Belum Mencapai 75%');
-                $('#simpan').prop('disabled', true);
-                return;
-            }
+            // if ((kdskpd != '1.03.0.00.0.00.02.0000' && kdskpd != '1.04.1.03.2.10.02.0000') && (status !=
+            //         1 || status != '1') && total < nilai_min_gu) {
+            //     alert('LPJ Belum Mencapai 75%');
+            //     $('#simpan').prop('disabled', true);
+            //     return;
+            // }
 
             let no_lpj = document.getElementById('no_lpj').value;
             if (no_lpj < 0) {

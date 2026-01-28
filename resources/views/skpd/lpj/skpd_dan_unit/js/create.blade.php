@@ -142,10 +142,10 @@
                 },
                 success: function(response) {
                     if (response.status != 1 || response.status != '1') {
-                        if (total < nilai_min_gu) {
-                            alert('LPJ Belum Mencapai 50%');
-                            return;
-                        }
+                        // if (total < nilai_min_gu) {
+                        //     alert('LPJ Belum Mencapai 50%');
+                        //     return;
+                        // }
                     }
                 }
             })
