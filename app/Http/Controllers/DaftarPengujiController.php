@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 
@@ -23,53 +24,63 @@ class DaftarPengujiController extends Controller
 
     public function loadData(Request $request)
     {
-        $search = $request->search["value"];
+        try {
+            // code...
 
-        $data = DB::table('trhuji as a')
-            ->select('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
-            ->selectRaw("(select count(*)as nilai from trduji where no_uji=a.no_uji and status='3') as status_dorman")
-            ->selectRaw("STRING_AGG(b.no_sp2d, ', ') AS no_sp2d")
-            ->join("trduji as b", function ($join) {
-                $join->on("a.no_uji", "=", "b.no_uji");
-            })
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->orWhere('b.no_sp2d', 'like', '%' . $search . '%')
-                        ->orWhere('a.no_uji', 'like', '%' . $search . '%');
-                });
-            })
-            ->groupBy('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
-            ->orderBy('a.tgl_uji')
-            ->orderByRaw("cast(left(a.no_uji,len(a.no_uji)-11) as int)")
-            ->get();
+            $search = $request->search["value"];
 
-        return DataTables::of($data)->filter(function () {}, true)->addIndexColumn()->addColumn('aksi', function ($row) {
-            if ($row->status_bank == 0 || $row->status_bank == null) {
-                $btn = '<a href="' . route("daftar_penguji.tampil", Crypt::encryptString($row->no_uji)) . '" class="btn btn-warning btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Daftar Penguji"><i class="uil-edit"></i></a>';
-                if ($row->sp2d_online == '1') {
-                    $btn .= '<a href="javascript:void(0);" onclick="siapKirim(\'' . $row->no_uji . '\',\'' . $row->status_bank . '\');" class="btn btn-primary btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Belum Siap Kirim"><i class="uil-exclamation-triangle"></i></a>';
+            $data = DB::table('trhuji as a')
+                ->select('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
+                ->selectRaw("(select count(*)as nilai from trduji where no_uji=a.no_uji and status='3') as status_dorman")
+                ->selectRaw("STRING_AGG(CONVERT(nvarchar(max), b.no_sp2d), N', ') AS no_sp2d")
+                ->join("trduji as b", function ($join) {
+                    $join->on("a.no_uji", "=", "b.no_uji");
+                })
+                ->when($search, function ($query, $search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->orWhere('b.no_sp2d', 'like', '%' . $search . '%')
+                            ->orWhere('a.no_uji', 'like', '%' . $search . '%');
+                    });
+                })
+                ->groupBy('a.no_uji', 'a.tgl_uji', 'a.status_bank', 'a.sp2d_online')
+                ->orderBy('a.tgl_uji')
+                ->orderByRaw("cast(left(a.no_uji,len(a.no_uji)-11) as int)")
+                ->get();
+
+            return DataTables::of($data)->filter(function () {}, true)->addIndexColumn()->addColumn('aksi', function ($row) {
+                if ($row->status_bank == 0 || $row->status_bank == null) {
+                    $btn = '<a href="' . route("daftar_penguji.tampil", Crypt::encryptString($row->no_uji)) . '" class="btn btn-warning btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Daftar Penguji"><i class="uil-edit"></i></a>';
+                    if ($row->sp2d_online == '1') {
+                        $btn .= '<a href="javascript:void(0);" onclick="siapKirim(\'' . $row->no_uji . '\',\'' . $row->status_bank . '\');" class="btn btn-primary btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Belum Siap Kirim"><i class="uil-exclamation-triangle"></i></a>';
+                    }
+                } else {
+                    $btn = '';
                 }
-            } else {
-                $btn = '';
-            }
-            if ($row->sp2d_online == '1' & ($row->status_bank == 1 || $row->status_bank == '1')) {
-                $btn .= '<a href="javascript:void(0);" onclick="siapKirim(\'' . $row->no_uji . '\',\'' . $row->status_bank . '\');" class="btn btn-danger btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Batalin Siap Kirim"><i class="uil-exclamation-triangle"></i></a>';
-            } else {
-                $btn .= '';
-            }
-            if ($row->status_bank == 5 || $row->status_bank == '5') {
-                $btn .= '<a href="javascript:void(0);" onclick="hapusData(\'' . $row->no_uji . '\');" class="btn btn-danger btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Sudah Dikirim"><i class="uil-trash"></i></a>';
-            } else {
-                $btn .= '';
-            }
-            if ($row->status_dorman > 0) {
-                $btn = '<a href="' . route("daftar_penguji.tampil", Crypt::encryptString($row->no_uji)) . '" class="btn btn-warning btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Daftar Penguji"><i class="uil-edit"></i></a>';
-            } else {
-                $btn .= '';
-            }
-            $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_uji . '\');" class="btn btn-dark btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Daftar Penguji"><i class="uil-print"></i></a>';
-            return $btn;
-        })->rawColumns(['aksi'])->make(true);
+                if ($row->sp2d_online == '1' & ($row->status_bank == 1 || $row->status_bank == '1')) {
+                    $btn .= '<a href="javascript:void(0);" onclick="siapKirim(\'' . $row->no_uji . '\',\'' . $row->status_bank . '\');" class="btn btn-danger btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Batalin Siap Kirim"><i class="uil-exclamation-triangle"></i></a>';
+                } else {
+                    $btn .= '';
+                }
+                if ($row->status_bank == 5 || $row->status_bank == '5') {
+                    $btn .= '<a href="javascript:void(0);" onclick="hapusData(\'' . $row->no_uji . '\');" class="btn btn-danger btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Sudah Dikirim"><i class="uil-trash"></i></a>';
+                } else {
+                    $btn .= '';
+                }
+                if ($row->status_dorman > 0) {
+                    $btn = '<a href="' . route("daftar_penguji.tampil", Crypt::encryptString($row->no_uji)) . '" class="btn btn-warning btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Daftar Penguji"><i class="uil-edit"></i></a>';
+                } else {
+                    $btn .= '';
+                }
+                $btn .= '<a href="javascript:void(0);" onclick="cetak(\'' . $row->no_uji . '\');" class="btn btn-dark btn-sm" style="margin-right:4px" data-bs-toggle="tooltip" data-bs-placement="top" title="Cetak Daftar Penguji"><i class="uil-print"></i></a>';
+                return $btn;
+            })->rawColumns(['aksi'])->make(true);
+        } catch (\Throwable $th) {
+            Log::error('Exception caught: ' . $th->getMessage(), [
+                'exception' => get_class($th),
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
+            ]);
+        }
     }
 
     public function detailPenguji(Request $request)
