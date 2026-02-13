@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -62,8 +63,8 @@ class PencairanSp2dController extends Controller
                 $join->on('a.no_spm', '=', 'b.no_spm');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
             })->where(['b.no_sp2d' => $no_sp2d, 'b.kd_skpd' => $kd_skpd,  'a.status_potongan' => '1'])
-            //->whereNotIn('a.kd_rek6', ['210601010007', '4140612'])
-            ->count();
+                //->whereNotIn('a.kd_rek6', ['210601010007', '4140612'])
+                ->count();
             if ($total_data > 0) {
                 $no_bukti = $no_kas + 1;
             }
@@ -110,7 +111,7 @@ class PencairanSp2dController extends Controller
                 DB::table('trhtransout')->where(['no_sp2d' => $no_sp2d, 'kd_skpd' => $kd_skpd])->delete();
             }
 
-            if (($beban == '6' && $jenis == '3' )) {
+            if (($beban == '6' && $jenis == '3')) {
                 DB::table('trdtransout')->where(['kd_skpd' => $kd_skpd, 'no_sp2d' => $no_sp2d])->delete();
                 DB::table('trhtransout')->where(['no_sp2d' => $no_sp2d, 'kd_skpd' => $kd_skpd])->delete();
             }
@@ -446,7 +447,7 @@ class PencairanSp2dController extends Controller
 
 
             // berhasil
-            if (($beban=='6' && $jenis == 3)) {
+            if (($beban == '6' && $jenis == 3)) {
                 DB::table('trhtransout')->insert([
                     'no_kas' => $no_kas,
                     'tgl_kas' => $tgl_cair,
@@ -520,8 +521,8 @@ class PencairanSp2dController extends Controller
                 // ]);
             }
 
-             // berhasil
-             if (($beban == 5)) {
+            // berhasil
+            if (($beban == 5)) {
                 if (isset($data_spp)) {
                     DB::table('trdtransout')->insert(array_map(function ($value) use ($no_kas, $no_sp2d, $beban) {
                         return [
@@ -552,7 +553,7 @@ class PencairanSp2dController extends Controller
             }
 
             // berhasil
-            if (($beban == '6' && $jenis ==3)) {
+            if (($beban == '6' && $jenis == 3)) {
                 if (isset($data_spp)) {
                     DB::table('trdtransout')->insert(array_map(function ($value) use ($no_kas, $no_sp2d, $beban) {
                         return [
@@ -606,6 +607,12 @@ class PencairanSp2dController extends Controller
                 'message' => '1'
             ]);
         } catch (Throwable $e) {
+            Log::error('Exception caught: ' . $e->getMessage(), [
+                'exception' => get_class($e),  // Type of exception
+                'file' => $e->getFile(),       // File where it occurred
+                'line' => $e->getLine(),       // Line number where it occurred
+            ]);
+
             return response()->json([
                 'message' => '0',
                 'error' => $e
@@ -613,16 +620,17 @@ class PencairanSp2dController extends Controller
         }
     }
 
-    public function cekCair(){
+    public function cekCair()
+    {
         $kd_skpd = Auth::user()->kd_skpd;
-        $skpd = collect(DB::select("SELECT kd_skpd, nm_skpd from ms_skpd where kd_skpd = ?",[$kd_skpd]))->first();
+        $skpd = collect(DB::select("SELECT kd_skpd, nm_skpd from ms_skpd where kd_skpd = ?", [$kd_skpd]))->first();
 
         $data =
-        [
-            'header' => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
-            'detail' => DB::select("SELECT no_sp2d, tgl_sp2d, no_spm, nm_skpd, keperluan, nilai from trhsp2d where status_terima = '1' and status = '0' and kd_skpd = ? order by no_sp2d",[$kd_skpd]),
-            'skpd' => $skpd->nm_skpd
-        ];
+            [
+                'header' => DB::table('config_app')->select('nm_pemda', 'nm_badan', 'logo_pemda_hp')->first(),
+                'detail' => DB::select("SELECT no_sp2d, tgl_sp2d, no_spm, nm_skpd, keperluan, nilai from trhsp2d where status_terima = '1' and status = '0' and kd_skpd = ? order by no_sp2d", [$kd_skpd]),
+                'skpd' => $skpd->nm_skpd
+            ];
         //dd($data['detail']);
         return view('skpd.pencairan_sp2d.cekcair')->with($data)->with('_blank');;
     }
