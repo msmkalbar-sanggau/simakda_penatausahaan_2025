@@ -948,7 +948,7 @@ class PenerimaanController extends Controller
     // Penerimaan Lain PPKD
     public function indexPenerimaanKas()
     {
-        
+
         return view('skpd.penerimaan_kas.index');
     }
 
@@ -1302,6 +1302,8 @@ class PenerimaanController extends Controller
                 $skpd = $data['kd_skpd'];
                 $giat = $data['kd_sub_kegiatan'];
             }
+
+
             $kas  = $nomorKas;
 
             DB::table('trhkasin_ppkd')
@@ -1426,12 +1428,12 @@ class PenerimaanController extends Controller
     }
 
     public function editPenerimaanKas($no_sts, $kd_skpd)
-    {   
-        
+    {
+
         $no_sts = Crypt::decrypt($no_sts);
         $skpd = Crypt::decrypt($kd_skpd);
         $kd_skpd = Auth::user()->kd_skpd;
-        
+
         $data = [
             'terima' => collect(DB::select("SELECT
             c.kd_sub_kegiatan AS kd_sub_kegiatan,
@@ -1464,7 +1466,7 @@ class PenerimaanController extends Controller
             LEFT JOIN trhkasin_ppkd b ON b.kd_skpd= a.kd_skpd
             AND b.no_sts= a.no_sts
             AND b.kd_skpd = a.kd_skpd
-            INNER JOIN trdkasin_pkd c on a.kd_skpd = c.kd_skpd
+            INNER JOIN trdkasin_pkd c on a.kd_skpd = c.kd_skpd and a.no_sts=c.no_sts
         WHERE a.no_sts = ?  and a.kd_skpd = ?
             UNION ALL
 
@@ -1493,7 +1495,7 @@ class PenerimaanController extends Controller
             AND a.no_bukti= b.no_sts
             WHERE a.no_bukti = ? and a.kd_skpd = ?", [$no_sts, $skpd, $no_sts, $skpd]))->first(),
         ];
-        
+
         return view('skpd.penerimaan_kas.edit')->with($data);
     }
 
