@@ -174,6 +174,7 @@ class UploadPendapatanController extends Controller
             //================================================= Penyetoran Tahun ini
             $rows = $sheets[2];
 
+            DB::table("excel_setor")->delete();
             for ($i = 1; $i < count($rows); $i++) {
                 $no_sts  = trim($rows[$i][1] ?? '');
                 $no_terima  = trim($rows[$i][2] ?? '');
@@ -193,7 +194,6 @@ class UploadPendapatanController extends Controller
                 $total =  preg_replace('/[^0-9.]/', '', $rows[$i][6] ?? 0);
 
                 if ($no_sts != "") {
-                    DB::table("excel_setor")->where("no_sts", $no_sts)->delete();
                     DB::table("excel_setor")->insert([
                         'no_sts' => $no_sts,
                         'no_terima' => $no_terima,
@@ -224,10 +224,10 @@ class UploadPendapatanController extends Controller
             DB::statement(
                 "INSERT into trhkasin_pkd (no_sts, kd_skpd, tgl_sts, keterangan, total, kd_sub_kegiatan, jns_trans, pot_khusus, username_created, created_at)
             select a.no_sts, a.kd_skpd, a.tgl_sts, 
-            (select STRING_AGG(CAST(keterangan AS VARCHAR(MAX)), ', ') from (
+            LEFT((select STRING_AGG(CAST(keterangan AS VARCHAR(MAX)), ', ') from (
                 SELECT no_sts, keterangan from excel_setor b 
                 group by no_sts, keterangan 
-            )as c where c.no_sts=a.no_sts) as keterangan,
+            )as c where c.no_sts=a.no_sts),2500) as keterangan,
             (select sum(b.rupiah) from trdkasin_pkd b where b.no_sts=a.no_sts) as total, a.kd_sub_kegiatan, '4' as jns_trans, '0' as pot_khusus, 
             :username as username_created, GETDATE()
             from excel_setor a where a.no_sts not in (select no_sts from trhkasin_pkd)
