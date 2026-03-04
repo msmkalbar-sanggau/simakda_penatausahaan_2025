@@ -101,6 +101,7 @@ class UploadPendapatanController extends Controller
 
             //============================================== End Validasi Double
 
+            DB::table("excel_terima")->delete();
             DB::beginTransaction();
             //================================================= Penerimaan Tahun ini
             $rows = $sheets[1];
