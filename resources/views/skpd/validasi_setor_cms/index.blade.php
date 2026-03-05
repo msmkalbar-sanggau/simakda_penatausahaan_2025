@@ -73,7 +73,7 @@
                                                     <td><input type="text"
                                                             style="border:none;background-color:white;text-align:right"
                                                             readonly id="sisa_saldo" class="form-control"
-                                                            value="{{ rupiah($sisa_bank->sisa) }}">
+                                                            value="{{ rupiah($sisa_bank) }}">
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -144,7 +144,7 @@
                                                     <td><input type="text"
                                                             style="border:none;background-color:white;text-align:right"
                                                             readonly id="total_upload" class="form-control"
-                                                            value="{{ rupiah($sisa_bank->sisa) }}">
+                                                            value="{{ rupiah($sisa_bank) }}">
                                                     </td>
                                                 </tr>
                                             </tbody>

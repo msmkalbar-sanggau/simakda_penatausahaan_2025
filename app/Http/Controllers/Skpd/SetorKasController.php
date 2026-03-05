@@ -419,7 +419,7 @@ class SetorKasController extends Controller
     public function indexValidasi()
     {
         $data = [
-            'sisa_bank' => sisa_bank()
+            'sisa_bank' => sisa_bank_setor_kas()
         ];
 
         return view('skpd.validasi_setor_cms.index')->with($data);
@@ -443,7 +443,7 @@ class SetorKasController extends Controller
                 $join->on('a.no_bukti', '=', 'b.no_bukti');
                 $join->on('a.kd_skpd', '=', 'b.kd_skpd');
             })->select('a.*', 'b.no_upload')->where(['a.kd_skpd_sumber' => $kd_skpd, 'a.status_upload' => '1', 'a.status_validasi' => '0'])->orderBy(DB::raw("CAST(a.no_bukti as int)"))->orderBy('a.kd_skpd')->get(),
-            'sisa_bank' => sisa_bank()
+            'sisa_bank' =>  sisa_bank_setor_kas()
         ];
 
         return view('skpd.validasi_setor_cms.create')->with($data);
