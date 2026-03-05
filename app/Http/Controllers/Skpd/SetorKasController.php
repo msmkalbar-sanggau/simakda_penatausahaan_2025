@@ -105,7 +105,7 @@ class SetorKasController extends Controller
             'rekening_awal' => DB::table('ms_skpd')->select('rekening')->where(['kd_skpd' => $kd_skpd])->orderBy('kd_skpd')->first(),
             'rekening_tujuan' => DB::table('ms_rekening_bank as a')->select('a.rekening', 'a.nm_rekening', 'a.bank', DB::raw("(SELECT nama FROM ms_bank WHERE kode=a.bank)"), 'a.keterangan', 'a.kd_skpd', 'a.jenis')->where(['a.kd_skpd' => $kd_skpd])->orderBy('a.nm_rekening')->get(),
             'bank_tujuan' => DB::table('ms_bank')->select('kode', 'nama')->get(),
-            'sisa_bank' => sisa_bank(),
+            'sisa_bank' => sisa_bank_setor_kas(),
             'setor' => DB::table('tr_setorpelimpahan_bank_cms')->where(['no_kas' => $no_kas, 'kd_skpd_sumber' => $kd_skpd])->first()
         ];
 
